@@ -111,189 +111,68 @@
 
 <script>
 
-window.addEventListener(
+if ("serviceWorker" in navigator) {
 
-    "load",
+    window.addEventListener(
 
-    async () => {
+        "load",
 
+        async function () {
 
-        if (
+            try {
 
-            !(
-                "serviceWorker"
-                in navigator
-            )
-
-        ) {
-
-            return;
-
-        }
-
-
-        try {
-
-
-            const registration =
-
-                await navigator
-                    .serviceWorker
-                    .register(
-
+                const registration =
+                    await navigator.serviceWorker.register(
                         "/service-worker.js"
-
                     );
 
 
-            console.log(
-                "Service Worker Registered"
-            );
+                console.log(
+                    "SERVICE WORKER REGISTERED"
+                );
 
 
-            /*
-             SERVICE WORKER READY
-            */
+                /*
+                 APP KE SAB PAGES CACHE KARNE KA MESSAGE
+                */
 
-            const readyRegistration =
+                navigator.serviceWorker.ready.then(
 
-                await navigator
-                    .serviceWorker
-                    .ready;
+                    function (registration) {
 
+                        if (
+                            registration.active
+                        ) {
 
-            /*
-             ALL APP PAGES CACHE
-            */
+                            registration.active.postMessage({
 
-            function cacheAllPages() {
-
-
-                if (
-
-                    readyRegistration.active
-
-                ) {
-
-                    readyRegistration
-                        .active
-                        .postMessage({
-
-                            type:
+                                type:
                                 "CACHE_APP_PAGES"
 
-                        });
+                            });
 
-
-                    console.log(
-                        "Cache message sent"
-                    );
-
-                }
-
-            }
-
-
-            /*
-             FIRST CACHE
-            */
-
-            cacheAllPages();
-
-
-            /*
-             RETRY AFTER 2 SECONDS
-            */
-
-            setTimeout(
-
-                cacheAllPages,
-
-                2000
-
-            );
-
-
-            /*
-             RETRY AFTER 5 SECONDS
-            */
-
-            setTimeout(
-
-                cacheAllPages,
-
-                5000
-
-            );
-
-
-            /*
-             CONTROLLER CHANGE
-            */
-
-            navigator.serviceWorker
-                .addEventListener(
-
-                    "controllerchange",
-
-                    () => {
-
-                        cacheAllPages();
+                        }
 
                     }
 
                 );
 
+            }
 
-            /*
-             CURRENT PAGE CACHE
-            */
+            catch (error) {
 
-            if (
-
-                navigator
-                    .serviceWorker
-                    .controller
-
-            ) {
-
-                navigator
-                    .serviceWorker
-                    .controller
-                    .postMessage({
-
-                        type:
-                            "CACHE_CURRENT_PAGE",
-
-                        path:
-                            window.location.pathname
-
-                    });
+                console.error(
+                    "SERVICE WORKER ERROR:",
+                    error
+                );
 
             }
 
-
         }
 
+    );
 
-        catch (error) {
-
-
-            console.error(
-
-                "Service Worker Error:",
-
-                error
-
-            );
-
-
-        }
-
-
-    }
-
-);
+}
 
 </script>
 
