@@ -1864,3 +1864,461 @@ td select {
 }
         
         
+
+/* =========================================================
+   PREMIUM UI OVERRIDES
+   SAWARIYA BILLING SYSTEM
+   ---------------------------------------------------------
+   Existing layout/responsive behavior is preserved.
+   This section adds a more polished, modern dashboard feel.
+   ========================================================= */
+
+:root {
+    --premium-brown: #6f3d1f;
+    --premium-brown-dark: #3a2114;
+    --premium-gold: #c18a45;
+    --premium-bg: #f4f1ed;
+    --premium-card: rgba(255,255,255,.96);
+    --premium-border: rgba(91,64,45,.12);
+    --premium-text: #241b15;
+    --premium-muted: #786f69;
+    --premium-shadow: 0 10px 30px rgba(58,33,20,.08);
+    --premium-shadow-hover: 0 16px 38px rgba(58,33,20,.14);
+}
+
+/* Background */
+body {
+    font-family: Inter, "Segoe UI", Arial, Helvetica, sans-serif;
+    background:
+        radial-gradient(circle at 0% 0%, rgba(193,138,69,.08), transparent 28%),
+        radial-gradient(circle at 100% 10%, rgba(111,61,31,.06), transparent 25%),
+        var(--premium-bg);
+    color: var(--premium-text);
+}
+
+/* Navbar */
+nav {
+    background:
+        linear-gradient(135deg, #2b180e 0%, #4a2818 52%, #6f3d1f 100%);
+    padding: 14px 5%;
+    min-height: 68px;
+    box-shadow:
+        0 8px 25px rgba(43,24,14,.20),
+        inset 0 -1px rgba(255,255,255,.08);
+    border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.logo {
+    font-size: 22px;
+    letter-spacing: .4px;
+    text-shadow: 0 2px 10px rgba(0,0,0,.2);
+}
+
+.links {
+    gap: 6px;
+}
+
+.links a {
+    padding: 9px 13px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    transition: all .22s ease;
+}
+
+.links a:hover {
+    background: rgba(255,255,255,.12);
+    border-color: rgba(255,255,255,.12);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 14px rgba(0,0,0,.12);
+}
+
+/* Main headings */
+.top h1 {
+    color: #2d1d14;
+    font-weight: 800;
+    letter-spacing: -.5px;
+}
+
+.top p,
+.muted {
+    color: var(--premium-muted);
+}
+
+/* Buttons */
+.btn,
+button {
+    background:
+        linear-gradient(135deg, #6f3d1f 0%, #a96531 100%);
+    border-radius: 11px;
+    box-shadow: 0 5px 14px rgba(111,61,31,.14);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::after,
+button::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        110deg,
+        transparent 20%,
+        rgba(255,255,255,.16) 45%,
+        transparent 70%
+    );
+    transform: translateX(-120%);
+    transition: transform .5s ease;
+    pointer-events: none;
+}
+
+.btn:hover::after,
+button:hover::after {
+    transform: translateX(120%);
+}
+
+.btn:hover,
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 9px 22px rgba(111,61,31,.22);
+}
+
+.secondary {
+    background: #fff;
+    color: #4b392d;
+    border: 1px solid var(--premium-border);
+    box-shadow: 0 4px 12px rgba(0,0,0,.05);
+}
+
+.dangerbtn {
+    background: linear-gradient(135deg, #9e1830, #c7354c);
+}
+
+/* Cards */
+.cards {
+    gap: 16px;
+}
+
+.cards > div {
+    background: var(--premium-card);
+    border: 1px solid var(--premium-border);
+    border-radius: 17px;
+    box-shadow: var(--premium-shadow);
+    position: relative;
+    overflow: hidden;
+}
+
+.cards > div::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(#c18a45, #6f3d1f);
+    opacity: .85;
+}
+
+.cards > div:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--premium-shadow-hover);
+}
+
+.cards span {
+    color: var(--premium-muted);
+    font-weight: 600;
+}
+
+.cards b {
+    color: #2e2119;
+    font-weight: 800;
+}
+
+/* Panels */
+.panel {
+    background: var(--premium-card);
+    border: 1px solid var(--premium-border);
+    border-radius: 17px;
+    padding: 22px;
+    box-shadow: var(--premium-shadow);
+}
+
+.panel h2,
+.panel h3 {
+    color: #302018;
+    letter-spacing: -.2px;
+}
+
+/* Form controls */
+.formgrid input,
+.formgrid select,
+.formgrid textarea,
+.formgrid button,
+.search,
+select,
+input,
+textarea {
+    border: 1px solid #ddd5ce;
+    border-radius: 11px;
+    background: rgba(255,255,255,.98);
+    color: #2d241f;
+    box-shadow: 0 2px 7px rgba(45,32,24,.025);
+    transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+    border-color: #c9b7a8;
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+.search:focus {
+    border-color: #a66a39;
+    box-shadow:
+        0 0 0 4px rgba(166,106,57,.11),
+        0 5px 15px rgba(74,40,24,.06);
+}
+
+/* Search */
+.search {
+    box-shadow:
+        0 5px 18px rgba(45,32,24,.06),
+        inset 0 1px rgba(255,255,255,.9);
+}
+
+/* Tables */
+.table-wrap {
+    border: 1px solid var(--premium-border);
+    border-radius: 13px;
+    box-shadow: 0 5px 18px rgba(45,32,24,.045);
+}
+
+table {
+    background: #fff;
+}
+
+th {
+    background:
+        linear-gradient(180deg, #fbf8f5, #f4eee9);
+    color: #49372b;
+    border-bottom: 1px solid #e5dcd5;
+    letter-spacing: .15px;
+}
+
+th,
+td {
+    padding: 13px 12px;
+}
+
+tbody tr {
+    transition: background .18s ease;
+}
+
+tbody tr:hover {
+    background: #fcf8f4;
+}
+
+.product-link {
+    color: #70401f;
+}
+
+.product-link:hover {
+    color: #a05c2c;
+}
+
+/* Billing suggestions */
+.suggestions {
+    background: #fff;
+    border-radius: 11px;
+    padding: 5px;
+    box-shadow: 0 10px 28px rgba(45,32,24,.10);
+    border: 1px solid var(--premium-border);
+}
+
+.suggestions button {
+    background: #fbf7f3;
+    border-radius: 8px;
+    color: #382a21;
+}
+
+.suggestions button:hover {
+    background: #f1e6dc;
+}
+
+/* Bill total */
+.grand {
+    color: #5f3218;
+    font-weight: 900;
+}
+
+/* Report summary */
+.report-summary > div {
+    background: linear-gradient(145deg, #fff, #faf6f2);
+    border: 1px solid var(--premium-border);
+    border-radius: 13px;
+    box-shadow: 0 5px 16px rgba(45,32,24,.045);
+}
+
+.report-summary span {
+    color: var(--premium-muted);
+    font-weight: 600;
+}
+
+/* Customer box */
+.customerbox input,
+.customerbox textarea {
+    border-color: #ddd5ce;
+    box-shadow: 0 3px 12px rgba(45,32,24,.035);
+}
+
+/* Login */
+.login {
+    background:
+        radial-gradient(circle at 15% 15%, rgba(193,138,69,.25), transparent 25%),
+        radial-gradient(circle at 85% 85%, rgba(255,255,255,.10), transparent 28%),
+        linear-gradient(135deg, #211209 0%, #4c2918 55%, #8a512a 100%);
+}
+
+.login-card {
+    background: rgba(255,255,255,.97);
+    border: 1px solid rgba(255,255,255,.55);
+    border-radius: 22px;
+    box-shadow:
+        0 25px 70px rgba(0,0,0,.30),
+        0 2px 10px rgba(0,0,0,.08);
+    backdrop-filter: blur(12px);
+}
+
+.brandbig {
+    filter: drop-shadow(0 5px 12px rgba(111,61,31,.15));
+}
+
+.login-card h1,
+.login-card h2 {
+    color: #342218;
+}
+
+/* Error */
+.error {
+    background: #fff5f5;
+    color: #9e2031;
+    border: 1px solid #f0cccc;
+    border-radius: 10px;
+}
+
+/* Mobile premium polish */
+@media (max-width: 600px) {
+
+    nav {
+        border-radius: 0 0 18px 18px;
+        box-shadow: 0 7px 22px rgba(43,24,14,.18);
+    }
+
+    .links a {
+        border: 1px solid rgba(255,255,255,.09);
+        box-shadow: 0 3px 9px rgba(0,0,0,.08);
+    }
+
+    .top h1 {
+        font-weight: 850;
+    }
+
+    .cards > div {
+        border-radius: 14px;
+        box-shadow: 0 7px 20px rgba(45,32,24,.07);
+    }
+
+    .panel {
+        border-radius: 16px;
+        box-shadow: 0 7px 22px rgba(45,32,24,.07);
+    }
+
+    /* Premium product cards */
+    table.product-table tbody tr.productrow {
+        border: 1px solid rgba(111,61,31,.14) !important;
+        border-radius: 16px !important;
+        box-shadow:
+            0 8px 24px rgba(58,33,20,.075),
+            0 1px 2px rgba(58,33,20,.04) !important;
+        background: #fff !important;
+    }
+
+    table.product-table tbody tr.productrow td:nth-child(1) {
+        background:
+            linear-gradient(135deg, #f8f1eb, #f3e8df) !important;
+        padding: 16px !important;
+        border-bottom: 1px solid #e5d6cb !important;
+    }
+
+    table.product-table tbody tr.productrow td:nth-child(1) .product-link {
+        color: #633517 !important;
+        font-weight: 800 !important;
+    }
+
+    table.product-table tbody tr.productrow td:not(:first-child) {
+        background: #fff !important;
+    }
+
+    table.product-table tbody tr.productrow td:not(:first-child)::before {
+        color: #79695e !important;
+        font-weight: 700 !important;
+        letter-spacing: .15px;
+    }
+
+    table.product-table td input,
+    table.product-table td select {
+        border-color: #ddd0c6;
+        border-radius: 9px;
+        background: #fcfaf8;
+        box-shadow: inset 0 1px 3px rgba(0,0,0,.025);
+    }
+
+    .search {
+        border-radius: 13px;
+        box-shadow:
+            0 7px 20px rgba(45,32,24,.07),
+            0 0 0 1px rgba(111,61,31,.03);
+    }
+
+    .billfoot .grand {
+        background: linear-gradient(135deg, #fff8f2, #f7ede4);
+        border: 1px solid #ead9ca;
+        border-radius: 12px;
+    }
+}
+
+/* Touch devices: remove hover jump */
+@media (hover: none) {
+    .cards > div:hover,
+    .btn:hover,
+    button:hover,
+    .links a:hover {
+        transform: none;
+    }
+}
+
+/* Better scrollbar */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #b99778 #eee8e2;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #eee8e2;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(#b99778, #765034);
+    border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #684329;
+}
