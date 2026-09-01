@@ -111,74 +111,189 @@
 
 <script>
 
-window.addEventListener("load", async () => {
+window.addEventListener(
 
-    if (!("serviceWorker" in navigator)) {
-        return;
-    }
+    "load",
 
-    try {
-
-        const registration =
-            await navigator.serviceWorker.register(
-                "/service-worker.js"
-            );
-
-        console.log(
-            "Service Worker Registered"
-        );
-
-        const readyRegistration =
-            await navigator.serviceWorker.ready;
+    async () => {
 
 
-        /*
-         ACTIVE SERVICE WORKER KO
-         SAB APP PAGES CACHE KARNE BOLO
-        */
+        if (
 
-        if (readyRegistration.active) {
+            !(
+                "serviceWorker"
+                in navigator
+            )
 
-            readyRegistration.active.postMessage({
-                type: "CACHE_APP_PAGES"
-            });
+        ) {
+
+            return;
 
         }
 
 
-        /*
-         AGAR NAYA SERVICE WORKER
-         CONTROL LE TO DOBARA CACHE MESSAGE BHEJO
-        */
+        try {
 
-        navigator.serviceWorker.addEventListener(
-            "controllerchange",
-            () => {
+
+            const registration =
+
+                await navigator
+                    .serviceWorker
+                    .register(
+
+                        "/service-worker.js"
+
+                    );
+
+
+            console.log(
+                "Service Worker Registered"
+            );
+
+
+            /*
+             SERVICE WORKER READY
+            */
+
+            const readyRegistration =
+
+                await navigator
+                    .serviceWorker
+                    .ready;
+
+
+            /*
+             ALL APP PAGES CACHE
+            */
+
+            function cacheAllPages() {
+
 
                 if (
-                    navigator.serviceWorker.controller
+
+                    readyRegistration.active
+
                 ) {
 
-                    navigator.serviceWorker.controller.postMessage({
-                        type: "CACHE_APP_PAGES"
-                    });
+                    readyRegistration
+                        .active
+                        .postMessage({
+
+                            type:
+                                "CACHE_APP_PAGES"
+
+                        });
+
+
+                    console.log(
+                        "Cache message sent"
+                    );
 
                 }
 
             }
-        );
 
 
-    } catch (error) {
+            /*
+             FIRST CACHE
+            */
 
-        console.error(
-            "Service Worker Error:",
-            error
-        );
+            cacheAllPages();
+
+
+            /*
+             RETRY AFTER 2 SECONDS
+            */
+
+            setTimeout(
+
+                cacheAllPages,
+
+                2000
+
+            );
+
+
+            /*
+             RETRY AFTER 5 SECONDS
+            */
+
+            setTimeout(
+
+                cacheAllPages,
+
+                5000
+
+            );
+
+
+            /*
+             CONTROLLER CHANGE
+            */
+
+            navigator.serviceWorker
+                .addEventListener(
+
+                    "controllerchange",
+
+                    () => {
+
+                        cacheAllPages();
+
+                    }
+
+                );
+
+
+            /*
+             CURRENT PAGE CACHE
+            */
+
+            if (
+
+                navigator
+                    .serviceWorker
+                    .controller
+
+            ) {
+
+                navigator
+                    .serviceWorker
+                    .controller
+                    .postMessage({
+
+                        type:
+                            "CACHE_CURRENT_PAGE",
+
+                        path:
+                            window.location.pathname
+
+                    });
+
+            }
+
+
+        }
+
+
+        catch (error) {
+
+
+            console.error(
+
+                "Service Worker Error:",
+
+                error
+
+            );
+
+
+        }
+
 
     }
 
-});
+);
 
 </script>
 
