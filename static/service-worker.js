@@ -1,10 +1,9 @@
 /* =========================================================
    SAWARIYA BILLING SYSTEM
-   FULL APP OFFLINE SERVICE WORKER
+   FULL OFFLINE SERVICE WORKER
    ========================================================= */
 
-
-const CACHE_NAME = "sawariya-offline-v10";
+const CACHE_NAME = "sawariya-offline-v11";
 
 
 /* =========================================================
@@ -29,7 +28,7 @@ const STATIC_FILES = [
 
 
 /* =========================================================
-   APP PAGES
+   MAIN APP PAGES
    ========================================================= */
 
 const APP_ROUTES = [
@@ -49,6 +48,92 @@ const APP_ROUTES = [
     "/reports"
 
 ];
+
+
+
+/* =========================================================
+   CACHE ALL APP PAGES
+   ========================================================= */
+
+async function cacheAppPages() {
+
+    const cache =
+        await caches.open(
+            CACHE_NAME
+        );
+
+
+    for (
+        const path of APP_ROUTES
+    ) {
+
+        try {
+
+            const response =
+                await fetch(
+                    path,
+                    {
+                        credentials: "include",
+
+                        cache: "reload"
+                    }
+                );
+
+
+            /*
+             PAGE SUCCESSFULLY LOAD HUI
+            */
+
+            if (
+                response &&
+                response.ok &&
+                response.type === "basic"
+            ) {
+
+                const finalUrl =
+                    new URL(
+                        response.url
+                    );
+
+
+                /*
+                 Redirected login page cache mat karo
+                */
+
+                if (
+                    finalUrl.pathname === path
+                ) {
+
+                    await cache.put(
+                        path,
+                        response.clone()
+                    );
+
+
+                    console.log(
+                        "OFFLINE PAGE CACHED:",
+                        path
+                    );
+
+                }
+
+            }
+
+        }
+
+        catch (error) {
+
+            console.warn(
+                "PAGE CACHE FAILED:",
+                path,
+                error
+            );
+
+        }
+
+    }
+
+}
 
 
 
@@ -73,7 +158,7 @@ self.addEventListener(
 
 
                 /*
-                 STATIC FILES CACHE
+                 CACHE STATIC FILES
                 */
 
                 for (
@@ -86,8 +171,7 @@ self.addEventListener(
                             await fetch(
                                 path,
                                 {
-                                    cache:
-                                        "reload"
+                                    cache: "reload"
                                 }
                             );
 
@@ -108,7 +192,7 @@ self.addEventListener(
                     catch (error) {
 
                         console.warn(
-                            "Static cache failed:",
+                            "STATIC CACHE FAILED:",
                             path,
                             error
                         );
@@ -116,6 +200,13 @@ self.addEventListener(
                     }
 
                 }
+
+
+                /*
+                 TRY TO CACHE APP PAGES
+                */
+
+                await cacheAppPages();
 
 
                 await self.skipWaiting();
@@ -152,18 +243,46 @@ self.addEventListener(
 
                     keys
                         .filter(
+
                             key =>
-                                key !== CACHE_NAME
+                                key !==
+                                CACHE_NAME
+
                         )
                         .map(
+
                             key =>
-                                caches.delete(key)
+                                caches.delete(
+                                    key
+                                )
+
                         )
 
                 );
 
 
                 await self.clients.claim();
+
+
+                /*
+                 ACTIVATION KE BAAD
+                 APP PAGES CACHE KARO
+                */
+
+                try {
+
+                    await cacheAppPages();
+
+                }
+
+                catch (error) {
+
+                    console.warn(
+                        "APP CACHE ERROR:",
+                        error
+                    );
+
+                }
 
             })()
 
@@ -172,114 +291,6 @@ self.addEventListener(
     }
 
 );
-
-
-
-/* =========================================================
-   CACHE ALL APP PAGES
-   ========================================================= */
-
-async function cacheAppPages() {
-
-
-    const cache =
-        await caches.open(
-            CACHE_NAME
-        );
-
-
-    for (
-        const path of APP_ROUTES
-    ) {
-
-        try {
-
-            console.log(
-                "Caching page:",
-                path
-            );
-
-
-            const response =
-                await fetch(
-                    path,
-                    {
-                        credentials:
-                            "include",
-
-                        cache:
-                            "reload"
-                    }
-                );
-
-
-            /*
-             LOGIN REDIRECT KO CACHE NAHI KARNA
-            */
-
-            const finalUrl =
-                new URL(
-                    response.url
-                );
-
-
-            if (
-
-                response.ok &&
-
-                response.type ===
-                    "basic" &&
-
-                finalUrl.pathname ===
-                    path
-
-            ) {
-
-                await cache.put(
-                    path,
-                    response.clone()
-                );
-
-
-                console.log(
-                    "Cached:",
-                    path
-                );
-
-            }
-
-            else {
-
-                console.warn(
-                    "Page not cached:",
-                    path,
-
-                    "Final URL:",
-
-                    finalUrl.pathname
-                );
-
-            }
-
-        }
-
-        catch (error) {
-
-            console.warn(
-
-                "Could not cache:",
-
-                path,
-
-                error
-
-            );
-
-        }
-
-    }
-
-}
 
 
 
@@ -311,7 +322,7 @@ self.addEventListener(
 
 
         /*
-         SINGLE PAGE CACHE
+         CURRENT PAGE CACHE
         */
 
         if (
@@ -331,7 +342,9 @@ self.addEventListener(
                             event.data.path;
 
 
-                        if (!path) {
+                        if (
+                            !path
+                        ) {
 
                             return;
 
@@ -358,12 +371,19 @@ self.addEventListener(
 
 
                         if (
-                            response.ok
+
+                            response.ok &&
+                            response.type ===
+                            "basic"
+
                         ) {
 
                             await cache.put(
+
                                 path,
+
                                 response.clone()
+
                             );
 
                         }
@@ -373,7 +393,11 @@ self.addEventListener(
                     catch (error) {
 
                         console.warn(
+
+                            "CURRENT PAGE CACHE ERROR:",
+
                             error
+
                         );
 
                     }
@@ -406,7 +430,7 @@ self.addEventListener(
 
 
         /*
-         ONLY GET
+         ONLY GET REQUEST
         */
 
         if (
@@ -427,10 +451,8 @@ self.addEventListener(
         /*
          API REQUESTS
 
-         API ko service worker cache nahi karega.
-
-         Offline API functionality
-         JavaScript + IndexedDB se handle hogi.
+         API offline handling
+         JavaScript + IndexedDB karega.
         */
 
         if (
@@ -447,7 +469,7 @@ self.addEventListener(
 
 
         /*
-         LOGOUT OFFLINE CACHE NAHI
+         LOGOUT CACHE NAHI KARNA
         */
 
         if (
@@ -460,6 +482,7 @@ self.addEventListener(
             return;
 
         }
+
 
 
         /* =================================================
@@ -509,6 +532,7 @@ self.addEventListener(
 
 
                         if (
+                            response &&
                             response.ok
                         ) {
 
@@ -519,8 +543,11 @@ self.addEventListener(
 
 
                             await cache.put(
+
                                 request,
+
                                 response.clone()
+
                             );
 
                         }
@@ -532,12 +559,14 @@ self.addEventListener(
 
                     catch (error) {
 
-
                         return new Response(
+
                             "",
+
                             {
                                 status: 503
                             }
+
                         );
 
                     }
@@ -552,8 +581,9 @@ self.addEventListener(
         }
 
 
+
         /* =================================================
-           HTML / APP PAGES
+           APP HTML PAGES
            NETWORK FIRST
            OFFLINE = CACHE
            ================================================= */
@@ -561,12 +591,14 @@ self.addEventListener(
         if (
 
             request.mode ===
-                "navigate"
+            "navigate"
 
             ||
 
             request.headers
-                .get("accept")
+                .get(
+                    "accept"
+                )
                 ?.includes(
                     "text/html"
                 )
@@ -580,7 +612,9 @@ self.addEventListener(
 
 
                     /*
-                     ONLINE TRY
+                     ONLINE:
+                     NETWORK SE LOAD KARO
+                     AUR CACHE UPDATE KARO
                     */
 
                     try {
@@ -593,12 +627,10 @@ self.addEventListener(
 
                         if (
 
-                            response.ok
-
-                            &&
-
+                            response &&
+                            response.ok &&
                             response.type ===
-                                "basic"
+                            "basic"
 
                         ) {
 
@@ -609,7 +641,7 @@ self.addEventListener(
 
 
                             /*
-                             EXACT PATH CACHE
+                             EXACT PAGE PATH CACHE
                             */
 
                             await cache.put(
@@ -633,7 +665,7 @@ self.addEventListener(
 
                         /*
                          OFFLINE:
-                         EXACT PATH SEARCH
+                         EXACT PAGE CACHE
                         */
 
                         const cache =
@@ -649,7 +681,7 @@ self.addEventListener(
 
 
                         /*
-                         REQUEST MATCH
+                         SEARCH IGNORE QUERY
                         */
 
                         if (
@@ -658,21 +690,47 @@ self.addEventListener(
 
                             cached =
                                 await caches.match(
+
                                     request,
+
                                     {
                                         ignoreSearch:
                                             true
                                     }
+
                                 );
 
                         }
 
+
+                        /*
+                         PAGE MIL GAYA
+                        */
 
                         if (
                             cached
                         ) {
 
                             return cached;
+
+                        }
+
+
+                        /*
+                         HOME FALLBACK
+                        */
+
+                        const home =
+                            await cache.match(
+                                "/"
+                            );
+
+
+                        if (
+                            home
+                        ) {
+
+                            return home;
 
                         }
 
@@ -697,7 +755,7 @@ self.addEventListener(
 
 
                         /*
-                         LAST FALLBACK
+                         FINAL OFFLINE FALLBACK
                         */
 
                         return new Response(
@@ -725,7 +783,6 @@ self.addEventListener(
 
                             </head>
 
-
                             <body
                                 style="
                                     font-family:Arial;
@@ -737,22 +794,13 @@ self.addEventListener(
                                     Sawariya Billing
                                 </h2>
 
-
                                 <p>
                                     Offline mode is active.
                                 </p>
 
-
                                 <p>
-                                    This page has not been
-                                    cached yet.
-                                </p>
-
-
-                                <p>
-                                    Connect to the internet,
-                                    login once, and reload
-                                    the application.
+                                    Please connect internet once
+                                    and open all pages.
                                 </p>
 
                             </body>
@@ -762,13 +810,13 @@ self.addEventListener(
 
                             {
 
-                                status:
-                                    200,
+                                status: 200,
 
                                 headers: {
 
                                     "Content-Type":
-                                        "text/html; charset=utf-8"
+
+                                    "text/html; charset=utf-8"
 
                                 }
 
@@ -786,7 +834,6 @@ self.addEventListener(
             return;
 
         }
-
 
     }
 
