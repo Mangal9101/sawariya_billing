@@ -1,0 +1,373 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<main>
+
+    <!-- =========================
+         PAGE TITLE
+         ========================= -->
+
+    <div class="top">
+        <div>
+            <h1>Customers</h1>
+        </div>
+    </div>
+
+
+    <!-- =========================
+         ADD CUSTOMER FORM
+         ========================= -->
+
+    <section class="panel">
+
+        <form class="formgrid">
+
+            <input
+                name="name"
+                placeholder="Name"
+                required
+            >
+
+            <input
+                name="phone"
+                placeholder="Mobile"
+            >
+
+            <input
+                name="address"
+                placeholder="Address"
+            >
+
+            <button
+                class="btn"
+                formaction="/customers/add"
+                formmethod="post"
+            >
+                Add Customer
+            </button>
+
+        </form>
+
+    </section>
+
+
+    <!-- =========================
+         CUSTOMER LIST
+         ========================= -->
+
+    <section class="panel customer-list-panel">
+
+        <table class="customer-table">
+
+            <thead>
+
+                <tr>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for c in customers %}
+
+                <tr class="customer-row">
+
+
+                    <!-- NAME -->
+
+                    <td data-label="Name">
+
+                        <span class="customer-label">
+                            Name
+                        </span>
+
+                        <span class="customer-value">
+                            {{ c.name }}
+                        </span>
+
+                    </td>
+
+
+                    <!-- PHONE -->
+
+                    <td data-label="Phone">
+
+                        <span class="customer-label">
+                            Phone
+                        </span>
+
+                        <span class="customer-value">
+
+                            {% if c.phone %}
+                                {{ c.phone }}
+                            {% else %}
+                                -
+                            {% endif %}
+
+                        </span>
+
+                    </td>
+
+
+                    <!-- ADDRESS -->
+
+                    <td data-label="Address">
+
+                        <span class="customer-label">
+                            Address
+                        </span>
+
+                        <span class="customer-value">
+
+                            {% if c.address %}
+                                {{ c.address }}
+                            {% else %}
+                                -
+                            {% endif %}
+
+                        </span>
+
+                    </td>
+
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+
+                    <td
+                        colspan="3"
+                        class="no-customer"
+                    >
+                        No customers found.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </section>
+
+</main>
+
+
+<!-- =========================
+     CUSTOMER PAGE CSS
+     ========================= -->
+
+<style>
+
+
+/* =====================================
+   DESKTOP TABLE
+   ===================================== */
+
+.customer-table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+}
+
+
+.customer-table th {
+
+    text-align: left;
+
+}
+
+
+.customer-label {
+
+    display: none;
+
+}
+
+
+
+/* =====================================
+   MOBILE VIEW
+   ===================================== */
+
+@media (max-width: 600px) {
+
+
+    /* TABLE */
+
+    table.customer-table {
+
+        display: block !important;
+
+        width: 100% !important;
+
+        min-width: 0 !important;
+
+        background: transparent !important;
+
+    }
+
+
+    /* HIDE DESKTOP HEADER */
+
+    table.customer-table thead {
+
+        display: none !important;
+
+    }
+
+
+    /* TBODY */
+
+    table.customer-table tbody {
+
+        display: block !important;
+
+        width: 100% !important;
+
+    }
+
+
+    /* EACH CUSTOMER CARD */
+
+    table.customer-table tr.customer-row {
+
+        display: block !important;
+
+        width: 100% !important;
+
+        margin-bottom: 16px !important;
+
+        border: 1px solid #dddddd !important;
+
+        border-radius: 12px !important;
+
+        overflow: hidden !important;
+
+        background: #ffffff !important;
+
+    }
+
+
+    /* EACH ROW */
+
+    table.customer-table tr.customer-row td {
+
+        display: flex !important;
+
+        width: 100% !important;
+
+        align-items: center !important;
+
+        justify-content: space-between !important;
+
+        gap: 15px !important;
+
+        padding: 16px 20px !important;
+
+        border: none !important;
+
+        border-bottom: 1px solid #eeeeee !important;
+
+        box-sizing: border-box !important;
+
+        text-align: left !important;
+
+        min-height: 58px !important;
+
+        background: #ffffff !important;
+
+    }
+
+
+    /* LAST ROW */
+
+    table.customer-table
+    tr.customer-row
+    td:last-child {
+
+        border-bottom: none !important;
+
+    }
+
+
+    /* =====================================
+       LEFT SIDE LABEL
+       ===================================== */
+
+    table.customer-table .customer-label {
+
+        display: block !important;
+
+        width: 85px !important;
+
+        flex-shrink: 0 !important;
+
+        font-weight: 700 !important;
+
+        color: #5d5149 !important;
+
+        text-align: left !important;
+
+    }
+
+
+    /* =====================================
+       RIGHT SIDE VALUE
+       ===================================== */
+
+    table.customer-table .customer-value {
+
+        display: block !important;
+
+        flex: 1 !important;
+
+        text-align: right !important;
+
+        word-break: break-word !important;
+
+        overflow-wrap: anywhere !important;
+
+    }
+
+
+    /* ADDRESS ROW */
+
+    table.customer-table
+    tr.customer-row
+    td:nth-child(3) {
+
+        align-items: flex-start !important;
+
+    }
+
+
+    /* EMPTY CUSTOMER */
+
+    .no-customer {
+
+        display: block !important;
+
+        text-align: center !important;
+
+        padding: 20px !important;
+
+    }
+
+}
+
+
+</style>
+
+
+{% endblock %}

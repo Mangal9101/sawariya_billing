@@ -1,0 +1,785 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<main>
+
+    <!-- =========================
+         PAGE HEADER
+         ========================= -->
+
+    <div class="top">
+
+        <div>
+
+            <h1>Products</h1>
+
+            <p>Manage prices and stock.</p>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         PRODUCT MESSAGES
+         ========================= -->
+
+    {% if request.query_params.get('error') == 'product_exists' %}
+
+        <div class="product-message product-error">
+            ⚠️ This product already exists.
+        </div>
+
+    {% elif request.query_params.get('error') == 'sku_exists' %}
+
+        <div class="product-message product-error">
+            ⚠️ This SKU already exists.
+        </div>
+
+    {% elif request.query_params.get('error') == 'duplicate' %}
+
+        <div class="product-message product-error">
+            ⚠️ Product already exists.
+        </div>
+
+    {% elif request.query_params.get('error') == 'empty' %}
+
+        <div class="product-message product-error">
+            ⚠️ Product name cannot be empty.
+        </div>
+
+    {% elif request.query_params.get('error') == 'server' %}
+
+        <div class="product-message product-error">
+            ⚠️ Something went wrong. Please try again.
+        </div>
+
+    {% elif request.query_params.get('success') == 'added' %}
+
+        <div class="product-message product-success">
+            ✅ Product added successfully.
+        </div>
+
+    {% endif %}
+
+
+    <!-- =========================
+         ADD PRODUCT FORM
+         ========================= -->
+
+    <section class="panel">
+
+        <form
+            class="formgrid"
+            method="post"
+            action="/products/add"
+        >
+
+            <input
+                name="name"
+                placeholder="Product name"
+                required
+            >
+
+            <input
+                name="sku"
+                placeholder="SKU"
+            >
+
+            <input
+                name="quantity"
+                type="number"
+                min="0"
+                value="0"
+                placeholder="Opening stock"
+            >
+
+            <input
+                name="min_stock"
+                type="number"
+                min="0"
+                value="5"
+                placeholder="Min stock"
+            >
+
+            <input
+                name="purchase_price"
+                type="number"
+                min="0"
+                step="0.01"
+                value="0"
+                placeholder="Purchase price"
+            >
+
+            <input
+                name="wholesale_price"
+                type="number"
+                min="0"
+                step="0.01"
+                value="0"
+                placeholder="Wholesale price"
+            >
+
+            <input
+                name="retailer_price"
+                type="number"
+                min="0"
+                step="0.01"
+                value="0"
+                placeholder="Retail price"
+            >
+
+            <button
+                type="submit"
+                class="btn"
+            >
+                Add Product
+            </button>
+
+        </form>
+
+    </section>
+
+
+    <!-- =========================
+         PRODUCT LIST
+         ========================= -->
+
+    <section class="panel">
+
+
+        <!-- SEARCH -->
+
+        <input
+            id="search"
+            class="search"
+            type="search"
+            placeholder="🔍 Type to search product..."
+            autocomplete="off"
+        >
+
+
+        <!-- PRODUCT TABLE -->
+
+        <table class="product-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>Name</th>
+
+                    <th>Stock</th>
+
+                    <th>Purchase</th>
+
+                    <th>Wholesale</th>
+
+                    <th>Retail</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for p in products %}
+
+                <tr
+                    class="productrow"
+                    data-product-name="{{ p.name|lower }}"
+                    data-product-sku="{{ (p.sku or '')|lower }}"
+                >
+
+                    <!-- NAME -->
+
+                    <td>
+
+                        <a
+                            class="product-link"
+                            href="/products/{{ p.id }}/edit"
+                        >
+                            {{ p.name }}
+                        </a>
+
+                    </td>
+
+
+                    <!-- STOCK -->
+
+                    <td>
+
+                        {{ p.quantity or 0 }}
+
+                    </td>
+
+
+                    <!-- PURCHASE -->
+
+                    <td>
+
+                        ₹{{ '%.2f'|format(p.purchase_price or 0) }}
+
+                    </td>
+
+
+                    <!-- WHOLESALE -->
+
+                    <td>
+
+                        ₹{{ '%.2f'|format(p.wholesale_price or 0) }}
+
+                    </td>
+
+
+                    <!-- RETAIL -->
+
+                    <td>
+
+                        ₹{{ '%.2f'|format(p.retailer_price or 0) }}
+
+                    </td>
+
+                </tr>
+
+                {% else %}
+
+                <tr id="emptyProducts">
+
+                    <td
+                        colspan="5"
+                        style="
+                            text-align:center;
+                            padding:20px;
+                        "
+                    >
+                        No products added yet.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+
+        <!-- NO RESULT MESSAGE -->
+
+        <p
+            id="noResults"
+            style="
+                display:none;
+                text-align:center;
+                padding:15px;
+                font-weight:600;
+            "
+        >
+            No product found.
+        </p>
+
+    </section>
+
+</main>
+
+
+<!-- =========================================
+     PRODUCT SEARCH SCRIPT
+     ========================================= -->
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const searchInput =
+            document.getElementById(
+                "search"
+            );
+
+
+        const productRows =
+            document.querySelectorAll(
+                "table.product-table tbody tr.productrow"
+            );
+
+
+        const noResults =
+            document.getElementById(
+                "noResults"
+            );
+
+
+        if (!searchInput) {
+
+            return;
+
+        }
+
+
+        function filterProducts() {
+
+            const query =
+                searchInput.value
+                .toLowerCase()
+                .trim();
+
+
+            let visibleCount = 0;
+
+
+            productRows.forEach(
+                function (row) {
+
+                    const productName =
+                        (
+                            row.dataset.productName
+                            || ""
+                        )
+                        .toLowerCase();
+
+
+                    const productSku =
+                        (
+                            row.dataset.productSku
+                            || ""
+                        )
+                        .toLowerCase();
+
+
+                    const matches =
+                        productName.includes(query)
+                        ||
+                        productSku.includes(query);
+
+
+                    if (matches) {
+
+                        row.classList.remove(
+                            "search-hidden"
+                        );
+
+                        visibleCount++;
+
+                    } else {
+
+                        row.classList.add(
+                            "search-hidden"
+                        );
+
+                    }
+
+                }
+            );
+
+
+            if (
+                query !== ""
+                &&
+                visibleCount === 0
+            ) {
+
+                noResults.style.display =
+                    "block";
+
+            } else {
+
+                noResults.style.display =
+                    "none";
+
+            }
+
+        }
+
+
+        searchInput.addEventListener(
+            "input",
+            filterProducts
+        );
+
+
+        searchInput.addEventListener(
+            "search",
+            filterProducts
+        );
+
+    }
+);
+
+</script>
+
+
+
+<!-- =========================================
+     PRODUCT PAGE CSS
+     ========================================= -->
+
+<style>
+
+
+/* =========================================
+   SEARCH BAR
+   ========================================= */
+
+#search {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    margin-bottom: 15px;
+
+}
+
+
+/* =========================================
+   SEARCH HIDE
+   ========================================= */
+
+table.product-table
+tbody
+tr.productrow.search-hidden {
+
+    display: none !important;
+
+}
+
+
+/* =========================================
+   PRODUCT SUCCESS / ERROR MESSAGE
+   ========================================= */
+
+.product-message {
+
+    width: 100%;
+
+    padding: 12px 15px;
+
+    margin: 12px 0 18px;
+
+    border-radius: 10px;
+
+    font-weight: 600;
+
+    box-sizing: border-box;
+
+    text-align: center;
+
+}
+
+
+.product-error {
+
+    background: #fff0f0;
+
+    border: 1px solid #f3b8b8;
+
+    color: #b42318;
+
+}
+
+
+.product-success {
+
+    background: #effaf3;
+
+    border: 1px solid #b7e3c5;
+
+    color: #167a3d;
+
+}
+
+
+/* =========================================
+   MOBILE PRODUCT CARDS
+   ========================================= */
+
+@media (max-width: 600px) {
+
+
+    table.product-table {
+
+        display: block !important;
+
+        width: 100% !important;
+
+        max-width: 100% !important;
+
+        min-width: 0 !important;
+
+        background: transparent !important;
+
+        border: none !important;
+
+    }
+
+
+    table.product-table thead {
+
+        display: none !important;
+
+    }
+
+
+    table.product-table tbody {
+
+        display: block !important;
+
+        width: 100% !important;
+
+    }
+
+
+    table.product-table
+    tbody
+    tr.productrow {
+
+        display: block !important;
+
+        width: 100% !important;
+
+        box-sizing: border-box !important;
+
+        margin-bottom: 16px !important;
+
+        background: #ffffff !important;
+
+        border: 1px solid #dddddd !important;
+
+        border-radius: 12px !important;
+
+        overflow: hidden !important;
+
+    }
+
+
+    table.product-table
+    tbody
+    tr.productrow.search-hidden {
+
+        display: none !important;
+
+    }
+
+
+    table.product-table
+    tbody
+    tr.productrow
+    td {
+
+        display: flex !important;
+
+        width: 100% !important;
+
+        box-sizing: border-box !important;
+
+        align-items: center !important;
+
+        justify-content: space-between !important;
+
+        padding: 12px 15px !important;
+
+        min-height: 50px !important;
+
+        border: none !important;
+
+        border-bottom:
+            1px solid #eeeeee !important;
+
+        white-space: normal !important;
+
+        overflow: visible !important;
+
+        text-overflow: unset !important;
+
+        text-align: right !important;
+
+        background: #ffffff !important;
+
+    }
+
+
+    table.product-table
+    tbody
+    tr.productrow
+    td:last-child {
+
+        border-bottom: none !important;
+
+    }
+
+
+    /* PRODUCT NAME */
+
+    table.product-table
+    tbody
+    tr.productrow
+    td:first-child {
+
+        display: block !important;
+
+        padding: 15px !important;
+
+        background: #f8f4f1 !important;
+
+        text-align: left !important;
+
+        border-bottom:
+            1px solid #e5e5e5 !important;
+
+    }
+
+
+    table.product-table
+    tbody
+    tr.productrow
+    td:first-child::before {
+
+        display: none !important;
+
+    }
+
+
+    /* PRODUCT LINK */
+
+    table.product-table
+    .product-link {
+
+        display: block !important;
+
+        width: 100% !important;
+
+        font-size: 17px !important;
+
+        font-weight: 700 !important;
+
+        white-space: normal !important;
+
+        overflow: visible !important;
+
+        text-overflow: unset !important;
+
+        overflow-wrap: anywhere !important;
+
+        word-break: break-word !important;
+
+    }
+
+
+    /* LABELS */
+
+    table.product-table
+    tbody
+    tr.productrow
+    td:nth-child(2)::before {
+
+        content: "Stock";
+
+    }
+
+
+    table.product-table
+    tbody
+    tr.productrow
+    td:nth-child(3)::before {
+
+        content: "Purchase";
+
+    }
+
+
+    table.product-table
+    tbody
+    tr.productrow
+    td:nth-child(4)::before {
+
+        content: "Wholesale";
+
+    }
+
+
+    table.product-table
+    tbody
+    tr.productrow
+    td:nth-child(5)::before {
+
+        content: "Retail";
+
+    }
+
+
+    table.product-table
+    tbody
+    tr.productrow
+    td:not(:first-child)::before {
+
+        display: block !important;
+
+        font-weight: 700 !important;
+
+        color: #5d5149 !important;
+
+        margin-right: 15px !important;
+
+        flex-shrink: 0 !important;
+
+        text-align: left !important;
+
+    }
+
+
+    /* WHOLESALE HIGHLIGHT */
+
+    table.product-table
+    tbody
+    tr.productrow
+    td:nth-child(4) {
+
+        background: #fff8e8 !important;
+
+        font-weight: 700 !important;
+
+    }
+
+
+    /* RETAIL HIGHLIGHT */
+
+    table.product-table
+    tbody
+    tr.productrow
+    td:nth-child(5) {
+
+        background: #f0faf4 !important;
+
+        font-weight: 700 !important;
+
+    }
+
+
+}
+
+
+/* =========================================
+   DESKTOP
+   ========================================= */
+
+@media (min-width: 601px) {
+
+    table.product-table
+    tbody
+    tr.productrow.search-hidden {
+
+        display: none !important;
+
+    }
+
+}
+
+</style>
+
+
+{% endblock %}

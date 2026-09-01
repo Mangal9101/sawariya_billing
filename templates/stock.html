@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<main>
+
+    <h1>Stock Management</h1>
+
+    <section class="panel">
+
+        <table class="stock-table">
+
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Current Stock</th>
+                    <th>Minimum</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for p in products %}
+
+                <tr class="stock-row">
+
+                    <td>
+                        {{ p.name }}
+                    </td>
+
+                    <td>
+                        {{ p.quantity }}
+                    </td>
+
+                    <td>
+                        {{ p.min_stock }}
+                    </td>
+
+                    <td>
+
+                        {% if p.quantity <= p.min_stock %}
+
+                            <span class="danger">
+                                LOW STOCK
+                            </span>
+
+                        {% else %}
+
+                            <span class="ok">
+                                In Stock
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </section>
+
+</main>
+
+
+<!-- =====================================
+     STOCK MOBILE CSS
+     ===================================== -->
+
+<style>
+
+@media (max-width: 600px) {
+
+    /* TABLE */
+
+    table.stock-table {
+        display: block !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        background: transparent !important;
+    }
+
+
+    /* HIDE TABLE HEADER */
+
+    table.stock-table thead {
+        display: none !important;
+    }
+
+
+    /* TBODY */
+
+    table.stock-table tbody {
+        display: block !important;
+        width: 100% !important;
+    }
+
+
+    /* ==============================
+       EACH PRODUCT CARD
+       ============================== */
+
+    table.stock-table tr.stock-row {
+        display: block !important;
+
+        width: 100% !important;
+
+        margin-bottom: 16px !important;
+
+        background: #ffffff !important;
+
+        border: 1px solid #dddddd !important;
+
+        border-radius: 12px !important;
+
+        overflow: hidden !important;
+    }
+
+
+    /* ==============================
+       EACH ROW INSIDE CARD
+       ============================== */
+
+    table.stock-table tr.stock-row td {
+        display: flex !important;
+
+        width: 100% !important;
+
+        box-sizing: border-box !important;
+
+        align-items: center !important;
+
+        justify-content: space-between !important;
+
+        padding: 13px 15px !important;
+
+        border: none !important;
+
+        border-bottom: 1px solid #eeeeee !important;
+
+        text-align: right !important;
+
+        background: #ffffff !important;
+    }
+
+
+    /* LAST ROW */
+
+    table.stock-table tr.stock-row td:last-child {
+        border-bottom: none !important;
+    }
+
+
+    /* ==============================
+       PRODUCT NAME
+       ============================== */
+
+    table.stock-table tr.stock-row td:nth-child(1) {
+        background: #f8f4f1 !important;
+
+        font-size: 17px !important;
+
+        font-weight: 700 !important;
+
+        text-align: right !important;
+    }
+
+
+    /* ==============================
+       LEFT SIDE LABELS
+       ============================== */
+
+    table.stock-table tr.stock-row td:nth-child(1)::before {
+        content: "Product";
+    }
+
+
+    table.stock-table tr.stock-row td:nth-child(2)::before {
+        content: "Current Stock";
+    }
+
+
+    table.stock-table tr.stock-row td:nth-child(3)::before {
+        content: "Minimum";
+    }
+
+
+    table.stock-table tr.stock-row td:nth-child(4)::before {
+        content: "Status";
+    }
+
+
+    /* LABEL STYLE */
+
+    table.stock-table tr.stock-row td::before {
+
+        display: block !important;
+
+        font-weight: 700 !important;
+
+        color: #5d5149 !important;
+
+        margin-right: 15px !important;
+
+        flex-shrink: 0 !important;
+
+        text-align: left !important;
+    }
+
+
+    /* ==============================
+       STATUS
+       ============================== */
+
+    table.stock-table .danger,
+    table.stock-table .ok {
+
+        display: inline-block !important;
+
+        padding: 5px 10px !important;
+
+        border-radius: 6px !important;
+
+        font-size: 13px !important;
+
+        font-weight: 700 !important;
+    }
+
+}
+
+</style>
+
+{% endblock %}

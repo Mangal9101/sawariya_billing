@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="print-page">
+    <section class="panel invoice-print">
+        <div class="invoice-print-head">
+            <div>
+                <h1>SAWARIYA CONFECTIONARY</h1>
+                <p>Invoice / Bill</p>
+            </div>
+            <div class="invoice-meta">
+                <b>{{ invoice.invoice_no }}</b><br>
+                {{ invoice.created_at|ist_time_text }}
+            </div>
+        </div>
+
+        <div class="invoice-customer">
+            <b>Customer:</b>
+            {{ invoice.customer.name if invoice.customer and invoice.customer.name else 'Walk-in Customer' }}
+            {% if invoice.customer and invoice.customer.phone %}
+                &nbsp; | &nbsp; <b>Mobile:</b> {{ invoice.customer.phone }}
+            {% endif %}
+            {% if invoice.customer and invoice.customer.address %}
+                &nbsp; | &nbsp; <b>Address:</b> {{ invoice.customer.address }}
+            {% endif %}
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in invoice.items %}
+                <tr>
+                    <td>{{ item.product_name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>₹{{ '%.2f'|format(item.price|float) }}</td>
+                    <td>₹{{ '%.2f'|format(item.amount|float) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="invoice-totals">
+            <div>Subtotal: <b>₹{{ '%.2f'|format(invoice.subtotal|float) }}</b></div>
+            <div>Discount: <b>₹{{ '%.2f'|format(invoice.discount|float) }}</b></div>
+            <div class="invoice-grand">Total: <b>₹{{ '%.2f'|format(invoice.total|float) }}</b></div>
+            <div>Paid: <b>₹{{ '%.2f'|format(invoice.paid|float) }}</b></div>
+            <div>Due: <b>₹{{ '%.2f'|format(invoice.due|float) }}</b></div>
+            <div>Payment: <b>{{ invoice.payment_mode }}</b></div>
+        </div>
+
+        <p class="invoice-thanks">Thank you! 🙏</p>
+
+        <div class="no-print invoice-actions">
+            <button class="btn" onclick="window.print()">🖨️ Print Bill</button>
+            <a class="btn secondary" href="/billing">New Bill</a>
+            <a class="btn secondary" href="/reports">Reports</a>
+        </div>
+    </section>
+</main>
+
+<style>
+.invoice-print { max-width: 900px; margin: 20px auto; }
+.invoice-print-head { display:flex; justify-content:space-between; gap:20px; border-bottom:2px solid #222; padding-bottom:14px; }
+.invoice-print-head h1 { margin:0; }
+.invoice-meta { text-align:right; }
+.invoice-customer { padding:14px 0; }
+.invoice-print table { width:100%; border-collapse:collapse; }
+.invoice-print th, .invoice-print td { padding:10px; border-bottom:1px solid #ddd; text-align:left; }
+.invoice-print th:nth-child(n+2), .invoice-print td:nth-child(n+2) { text-align:right; }
+.invoice-totals { margin:18px 0 0 auto; max-width:320px; display:grid; gap:7px; text-align:right; }
+.invoice-grand { font-size:20px; border-top:2px solid #222; padding-top:8px; }
+.invoice-thanks { text-align:center; margin-top:28px; font-weight:700; }
+.invoice-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:20px; }
+@media print {
+    nav, .no-print { display:none !important; }
+    body { background:#fff !important; }
+    .panel { box-shadow:none !important; border:0 !important; }
+    .print-page { margin:0 !important; }
+}
+</style>
+{% endblock %}
