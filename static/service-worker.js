@@ -1,34 +1,26 @@
 /* =========================================================
    SAWARIYA BILLING SYSTEM
-   SERVICE WORKER
-   FULL OFFLINE + ONLINE SUPPORT
+   SIMPLE OFFLINE SERVICE WORKER
    ========================================================= */
 
-const CACHE_NAME = "sawariya-offline-v6";
+const CACHE_NAME = "sawariya-v10";
 
 
 /* =========================================================
-   STATIC FILES
+   FILES
    ========================================================= */
 
 const STATIC_FILES = [
     "/static/css/style.css",
-
     "/static/js/billing.js",
     "/static/js/offline-db.js",
-
     "/manifest.json",
-
     "/static/icons/icon-192.png",
     "/static/icons/icon-512.png"
 ];
 
 
-/* =========================================================
-   APP PAGES
-   ========================================================= */
-
-const APP_ROUTES = [
+const APP_PAGES = [
     "/",
     "/dashboard",
     "/billing",
@@ -47,49 +39,79 @@ self.addEventListener("install", event => {
 
     event.waitUntil(
 
-        caches
-            .open(CACHE_NAME)
+        (async () => {
 
-            .then(async cache => {
+            const cache = await caches.open(CACHE_NAME);
 
-                /*
-                 Static files cache karo.
-                 Agar ek file missing ho to
-                 poora service worker fail na ho.
-                */
 
-                await Promise.all(
-                    STATIC_FILES.map(async path => {
+            /* STATIC FILES */
 
-                        try {
+            for (const url of STATIC_FILES) {
 
-                            const response = await fetch(path);
+                try {
 
-                            if (response.ok) {
+                    const response = await fetch(url);
 
-                                await cache.put(
-                                    path,
-                                    response.clone()
-                                );
+                    if (response && response.ok) {
 
-                            }
+                        await cache.put(
+                            url,
+                            response.clone()
+                        );
 
-                        } catch (error) {
+                    }
 
-                            console.warn(
-                                "Static cache failed:",
-                                path,
-                                error
-                            );
+                } catch (error) {
 
-                        }
+                    console.log(
+                        "Static cache failed:",
+                        url,
+                        error
+                    );
 
-                    })
-                );
+                }
 
-            })
+            }
 
-            .then(() => self.skipWaiting())
+
+            /*
+             APP PAGES CACHE
+            */
+
+            for (const url of APP_PAGES) {
+
+                try {
+
+                    const response = await fetch(url, {
+                        credentials: "same-origin"
+                    });
+
+
+                    if (response && response.ok) {
+
+                        await cache.put(
+                            url,
+                            response.clone()
+                        );
+
+                    }
+
+                } catch (error) {
+
+                    console.log(
+                        "Page cache failed:",
+                        url,
+                        error
+                    );
+
+                }
+
+            }
+
+
+            await self.skipWaiting();
+
+        })()
 
     );
 
@@ -104,27 +126,23 @@ self.addEventListener("activate", event => {
 
     event.waitUntil(
 
-        caches
-            .keys()
+        (async () => {
 
-            .then(keys => {
+            const keys = await caches.keys();
 
-                return Promise.all(
 
-                    keys
-                        .filter(
-                            key => key !== CACHE_NAME
-                        )
+            await Promise.all(
 
-                        .map(
-                            key => caches.delete(key)
-                        )
+                keys
+                    .filter(key => key !== CACHE_NAME)
+                    .map(key => caches.delete(key))
 
-                );
+            );
 
-            })
 
-            .then(() => self.clients.claim())
+            await self.clients.claim();
+
+        })()
 
     );
 
@@ -132,433 +150,92 @@ self.addEventListener("activate", event => {
 
 
 /* =========================================================
-   CACHE ALL APP PAGES
-   ========================================================= */
-
-async function cacheAppPages() {
-
-    const cache = await caches.open(CACHE_NAME);
-
-
-    for (const path of APP_ROUTES) {
-
-        try {
-
-            const response = await fetch(path, {
-
-                method: "GET",
-
-                credentials: "include",
-
-                cache: "no-store",
-
-                redirect: "follow"
-
-            });
-
-
-            /*
-             Sirf successful HTML page cache karo
-            */
-
-            if (
-                response.ok &&
-                response.type === "basic"
-            ) {
-
-                const contentType =
-                    response.headers.get(
-                        "content-type"
-                    ) || "";
-
-
-                if (
-                    contentType.includes(
-                        "text/html"
-                    )
-                ) {
-
-                    await cache.put(
-                        path,
-                        response.clone()
-                    );
-
-
-                    console.log(
-                        "Cached page:",
-                        path
-                    );
-
-                }
-
-            }
-
-        } catch (error) {
-
-            console.warn(
-                "Could not cache page:",
-                path,
-                error
-            );
-
-        }
-
-    }
-
-}
-
-
-/* =========================================================
-   MESSAGE FROM APP
-   ========================================================= */
-
-self.addEventListener(
-    "message",
-    event => {
-
-        if (
-            event.data?.type ===
-            "CACHE_APP_PAGES"
-        ) {
-
-            event.waitUntil(
-                cacheAppPages()
-            );
-
-        }
-
-
-        /*
-         Single page cache
-        */
-
-        if (
-            event.data?.type ===
-            "CACHE_PAGE"
-        ) {
-
-            const path =
-                event.data?.path;
-
-
-            if (!path) return;
-
-
-            event.waitUntil(
-
-                caches
-                    .open(CACHE_NAME)
-
-                    .then(async cache => {
-
-                        try {
-
-                            const response =
-                                await fetch(
-                                    path,
-                                    {
-                                        credentials:
-                                            "include",
-
-                                        cache:
-                                            "no-store"
-                                    }
-                                );
-
-
-                            if (
-                                response.ok &&
-                                response.type ===
-                                "basic"
-                            ) {
-
-                                await cache.put(
-                                    path,
-                                    response.clone()
-                                );
-
-                            }
-
-                        } catch (error) {
-
-                            console.warn(
-                                "Could not cache:",
-                                path
-                            );
-
-                        }
-
-                    })
-
-            );
-
-        }
-
-    }
-);
-
-
-/* =========================================================
    FETCH
    ========================================================= */
 
-self.addEventListener(
-    "fetch",
-    event => {
+self.addEventListener("fetch", event => {
 
-        const request =
-            event.request;
+    const request = event.request;
 
 
-        /*
-         POST / PUT / DELETE
-         Service worker me intercept nahi
-        */
+    /*
+     ONLY GET
+    */
 
-        if (
-            request.method !== "GET"
-        ) {
+    if (request.method !== "GET") {
 
-            return;
+        return;
 
-        }
+    }
 
 
-        const url =
-            new URL(
-                request.url
-            );
+    const url = new URL(request.url);
 
 
-        /*
-         Sirf same origin handle karo
-        */
+    /*
+     ONLY SAME ORIGIN
+    */
 
-        if (
-            url.origin !==
-            self.location.origin
-        ) {
+    if (
+        url.origin !== self.location.origin
+    ) {
 
-            return;
+        return;
 
-        }
+    }
 
 
-        /*
-         API ko service worker cache nahi karega.
-         Offline API ka kaam IndexedDB karega.
-        */
+    /*
+     API REQUESTS SKIP
+    */
 
-        if (
-            url.pathname.startsWith(
-                "/api/"
-            )
-        ) {
+    if (
+        url.pathname.startsWith("/api/")
+    ) {
 
-            return;
+        return;
 
-        }
+    }
 
 
-        /*
-         Logout kabhi cache nahi hona chahiye
-        */
+    /*
+     LOGOUT SKIP
+    */
 
-        if (
-            url.pathname ===
-            "/logout"
-        ) {
+    if (
+        url.pathname === "/logout"
+    ) {
 
-            return;
+        return;
 
-        }
+    }
 
 
-        /* =================================================
-           STATIC FILES
-           CACHE FIRST
-           ================================================= */
+    /* =====================================================
+       HTML PAGES
+       NETWORK FIRST
+       CACHE FALLBACK
+       ===================================================== */
 
-        if (
+    if (request.mode === "navigate") {
 
-            url.pathname.startsWith(
-                "/static/"
-            )
+        event.respondWith(
 
-            ||
+            (async () => {
 
-            url.pathname ===
-            "/manifest.json"
+                try {
 
-        ) {
+                    const response = await fetch(request);
 
-            event.respondWith(
 
-                caches
-                    .match(request)
+                    /*
+                     ONLINE PAGE CACHE UPDATE
+                    */
 
-                    .then(cached => {
-
-                        if (cached) {
-
-                            return cached;
-
-                        }
-
-
-                        return fetch(request)
-
-                            .then(response => {
-
-                                if (
-                                    response &&
-                                    response.ok
-                                ) {
-
-                                    const copy =
-                                        response.clone();
-
-
-                                    caches
-                                        .open(
-                                            CACHE_NAME
-                                        )
-
-                                        .then(cache => {
-
-                                            cache.put(
-                                                request,
-                                                copy
-                                            );
-
-                                        });
-
-                                }
-
-
-                                return response;
-
-                            })
-
-                            .catch(() => {
-
-                                return caches.match(
-                                    url.pathname
-                                );
-
-                            });
-
-                    })
-
-            );
-
-
-            return;
-
-        }
-
-
-        /* =================================================
-           HTML / APP PAGES
-           NETWORK FIRST
-           OFFLINE = CACHE
-           ================================================= */
-
-        if (
-
-            request.mode ===
-            "navigate"
-
-            ||
-
-            request.headers
-                .get("accept")
-                ?.includes(
-                    "text/html"
-                )
-
-        ) {
-
-            event.respondWith(
-
-                fetch(request, {
-
-                    credentials:
-                        "include"
-
-                })
-
-                    .then(async response => {
-
-                        /*
-                         Online response ko cache karo
-                        */
-
-                        if (
-
-                            response &&
-                            response.ok &&
-                            response.type ===
-                            "basic"
-
-                        ) {
-
-                            const contentType =
-                                response.headers.get(
-                                    "content-type"
-                                ) || "";
-
-
-                            /*
-                             Sirf HTML cache karo
-                            */
-
-                            if (
-
-                                contentType.includes(
-                                    "text/html"
-                                )
-
-                            ) {
-
-                                const cache =
-                                    await caches.open(
-                                        CACHE_NAME
-                                    );
-
-
-                                /*
-                                 Actual request cache
-                                */
-
-                                await cache.put(
-                                    request,
-                                    response.clone()
-                                );
-
-
-                                /*
-                                 Path bhi cache karo.
-                                 Isse query string
-                                 ki problem nahi hogi.
-                                */
-
-                                await cache.put(
-                                    url.pathname,
-                                    response.clone()
-                                );
-
-                            }
-
-                        }
-
-
-                        return response;
-
-                    })
-
-
-                    .catch(async () => {
+                    if (
+                        response &&
+                        response.ok
+                    ) {
 
                         const cache =
                             await caches.open(
@@ -566,192 +243,204 @@ self.addEventListener(
                             );
 
 
-                        /*
-                         1. Exact request
-                        */
+                        await cache.put(
+                            url.pathname,
+                            response.clone()
+                        );
 
-                        let cached =
-                            await cache.match(
-                                request
-                            );
+                    }
 
 
-                        if (cached) {
+                    return response;
 
-                            return cached;
+                } catch (error) {
 
-                        }
+                    /*
+                     OFFLINE CACHE
+                    */
 
+                    const cache =
+                        await caches.open(
+                            CACHE_NAME
+                        );
 
-                        /*
-                         2. Clean path
-                        */
 
-                        cached =
-                            await cache.match(
-                                url.pathname
-                            );
+                    const cached =
+                        await cache.match(
+                            url.pathname
+                        );
 
 
-                        if (cached) {
+                    if (cached) {
 
-                            return cached;
+                        return cached;
 
-                        }
+                    }
 
 
-                        /*
-                         3. Ignore search parameters
-                        */
+                    /*
+                     HOME FALLBACK
+                    */
 
-                        cached =
-                            await caches.match(
-                                request,
-                                {
-                                    ignoreSearch:
-                                        true
-                                }
-                            );
+                    const home =
+                        await cache.match("/");
 
 
-                        if (cached) {
+                    if (home) {
 
-                            return cached;
+                        return home;
 
-                        }
+                    }
 
 
-                        /*
-                         4. Billing fallback
-                        */
+                    /*
+                     FINAL FALLBACK
+                    */
 
-                        cached =
-                            await cache.match(
-                                "/billing"
-                            );
+                    return new Response(
 
+                        `
+                        <!DOCTYPE html>
 
-                        if (cached) {
+                        <html>
 
-                            return cached;
+                        <head>
 
-                        }
+                            <meta charset="UTF-8">
 
+                            <meta
+                                name="viewport"
+                                content="width=device-width, initial-scale=1"
+                            >
 
-                        /*
-                         FINAL OFFLINE PAGE
-                        */
+                            <title>
+                                Sawariya Offline
+                            </title>
 
-                        return new Response(
+                        </head>
 
-                            `
-                            <!doctype html>
+                        <body>
 
-                            <html lang="en">
+                            <h1>
+                                Sawariya Billing
+                            </h1>
 
-                            <head>
+                            <h3>
+                                You are offline
+                            </h3>
 
-                                <meta charset="utf-8">
+                            <p>
+                                Please connect once to
+                                the internet and open
+                                the app.
+                            </p>
 
-                                <meta
-                                    name="viewport"
-                                    content="width=device-width, initial-scale=1"
-                                >
+                        </body>
 
-                                <meta
-                                    name="theme-color"
-                                    content="#7b3f18"
-                                >
+                        </html>
+                        `,
 
-                                <title>
-                                    Sawariya Offline
-                                </title>
+                        {
+                            status: 200,
 
+                            headers: {
 
-                                <style>
-
-                                    body {
-
-                                        margin: 0;
-
-                                        padding: 30px;
-
-                                        font-family:
-                                            Arial,
-                                            sans-serif;
-
-                                        background:
-                                            #f5f5f5;
-
-                                        color:
-                                            #222;
-
-                                    }
-
-
-                                    h2 {
-
-                                        color:
-                                            #7b3f18;
-
-                                    }
-
-                                </style>
-
-                            </head>
-
-
-                            <body>
-
-                                <h2>
-                                    Sawariya Offline
-                                </h2>
-
-
-                                <p>
-
-                                    This page has not been
-                                    cached yet.
-
-                                </p>
-
-
-                                <p>
-
-                                    Connect to the internet,
-                                    login once, and open this
-                                    section once.
-
-                                </p>
-
-                            </body>
-
-                            </html>
-                            `,
-
-                            {
-
-                                status: 200,
-
-                                headers: {
-
-                                    "Content-Type":
-                                        "text/html; charset=utf-8"
-
-                                }
+                                "Content-Type":
+                                    "text/html"
 
                             }
 
-                        );
+                        }
 
-                    })
+                    );
 
-            );
+                }
+
+            })()
+
+        );
 
 
-            return;
-
-        }
+        return;
 
     }
-);
+
+
+    /* =====================================================
+       STATIC FILES
+       CACHE FIRST
+       ===================================================== */
+
+    if (
+
+        url.pathname.startsWith("/static/")
+
+        ||
+
+        url.pathname === "/manifest.json"
+
+    ) {
+
+        event.respondWith(
+
+            (async () => {
+
+                const cached =
+                    await caches.match(request);
+
+
+                if (cached) {
+
+                    return cached;
+
+                }
+
+
+                try {
+
+                    const response =
+                        await fetch(request);
+
+
+                    if (
+                        response &&
+                        response.ok
+                    ) {
+
+                        const cache =
+                            await caches.open(
+                                CACHE_NAME
+                            );
+
+
+                        await cache.put(
+                            request,
+                            response.clone()
+                        );
+
+                    }
+
+
+                    return response;
+
+                } catch (error) {
+
+                    return new Response(
+                        "",
+                        {
+                            status: 503
+                        }
+                    );
+
+                }
+
+            })()
+
+        );
+
+
+        return;
+
+    }
+
+});
