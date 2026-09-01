@@ -1,20 +1,498 @@
 {% extends 'base.html' %}
+
 {% block content %}
+
 <main>
-<div class="top"><div><h1>New Billing</h1><p>Billing हमेशा Wholesale Price पर होगी. Customer details optional हैं.</p></div></div>
-<section class="panel">
-<div class="billhead">
-<input id="productSearch" class="search" placeholder="🔍 Search product..." autocomplete="off">
-<div class="customerbox"><b>Customer Details (Optional)</b><input id="customerName" placeholder="Customer Name"><input id="customerPhone" placeholder="Mobile No."><textarea id="customerAddress" placeholder="Address" rows="2"></textarea></div>
-</div>
-<div id="suggestions" class="suggestions"></div>
-<div class="billing-table-wrap"><table class="billing-items-table"><thead><tr><th>Product</th><th>Qty</th><th>Wholesale Price</th><th>Amount</th><th>Action</th></tr></thead><tbody id="cart"></tbody></table></div>
-<div class="billfoot"><label>Discount <input id="discount" type="number" min="0" step="0.01" value="0"></label><label>Payment <select id="payment"><option>Cash</option><option>UPI</option><option>Card</option><option>Credit</option></select></label><label>Paid <input id="paid" type="number" min="0" step="0.01" value="0"></label><div class="grand">Total: ₹<span id="total">0.00</span></div><button class="btn" onclick="saveBill()">Save & Print Bill</button></div>
-</section>
+
+    <!-- =====================================================
+         PAGE HEADER
+         ===================================================== -->
+
+    <div class="top">
+
+        <div>
+
+            <h1>New Billing</h1>
+
+            <p>
+                Billing हमेशा Wholesale Price पर होगी.
+                Customer details optional हैं.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         BILLING PANEL
+         ===================================================== -->
+
+    <section class="panel">
+
+        <!-- =================================================
+             BILL HEADER
+             ================================================= -->
+
+        <div class="billhead">
+
+            <!-- PRODUCT SEARCH -->
+
+            <input
+                id="productSearch"
+                class="search"
+                type="search"
+                placeholder="🔍 Search product..."
+                autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"
+            >
+
+
+            <!-- CUSTOMER DETAILS -->
+
+            <div class="customerbox">
+
+                <b>
+                    Customer Details (Optional)
+                </b>
+
+                <input
+                    id="customerName"
+                    type="text"
+                    placeholder="Customer Name"
+                    autocomplete="off"
+                >
+
+                <input
+                    id="customerPhone"
+                    type="tel"
+                    placeholder="Mobile No."
+                    autocomplete="off"
+                >
+
+                <textarea
+                    id="customerAddress"
+                    placeholder="Address"
+                    rows="2"
+                ></textarea>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             PRODUCT SUGGESTIONS
+             ================================================= -->
+
+        <div
+            id="suggestions"
+            class="suggestions"
+        ></div>
+
+
+        <!-- =================================================
+             BILLING ITEMS TABLE
+             ================================================= -->
+
+        <div class="billing-table-wrap">
+
+            <table class="billing-items-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Product
+                        </th>
+
+                        <th>
+                            Qty
+                        </th>
+
+                        <th>
+                            Wholesale Price
+                        </th>
+
+                        <th>
+                            Amount
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="cart"></tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- =================================================
+             BILL FOOTER
+             ================================================= -->
+
+        <div class="billfoot">
+
+            <label>
+
+                Discount
+
+                <input
+                    id="discount"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value="0"
+                >
+
+            </label>
+
+
+            <label>
+
+                Payment
+
+                <select id="payment">
+
+                    <option value="Cash">
+                        Cash
+                    </option>
+
+                    <option value="UPI">
+                        UPI
+                    </option>
+
+                    <option value="Card">
+                        Card
+                    </option>
+
+                    <option value="Credit">
+                        Credit
+                    </option>
+
+                </select>
+
+            </label>
+
+
+            <label>
+
+                Paid
+
+                <input
+                    id="paid"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value="0"
+                >
+
+            </label>
+
+
+            <div class="grand">
+
+                Total: ₹<span id="total">0.00</span>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="btn"
+                onclick="saveBill()"
+            >
+                Save & Print Bill
+            </button>
+
+        </div>
+
+    </section>
+
 </main>
+
+
+<!-- =========================================================
+     IMPORTANT SCRIPT ORDER
+
+     1. IndexedDB
+     2. Billing JS
+
+     billing.js depends on SawariyaDB.
+     इसलिए database file पहले load होना जरूरी है.
+     ========================================================= -->
+
+<script src="/static/js/offline-db.js"></script>
+
 <script src="/static/js/billing.js"></script>
+
+
 <style>
-.billing-table-wrap{width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;margin-top:10px;padding-bottom:8px}.billing-items-table{width:100%;min-width:650px;border-collapse:collapse}.billing-items-table th,.billing-items-table td{white-space:nowrap;vertical-align:middle}.billing-items-table th:nth-child(1),.billing-items-table td:nth-child(1){min-width:180px}.billing-items-table th:nth-child(2),.billing-items-table td:nth-child(2){min-width:80px;text-align:center}.billing-items-table th:nth-child(3),.billing-items-table td:nth-child(3){min-width:150px;text-align:center}.billing-items-table th:nth-child(4),.billing-items-table td:nth-child(4){min-width:120px;text-align:right}.billing-items-table th:nth-child(5),.billing-items-table td:nth-child(5){min-width:80px;text-align:center}.billing-items-table input[type=number]{width:60px;min-width:60px;height:38px;padding:5px;text-align:center;box-sizing:border-box}.delete-btn{display:inline-flex;width:38px;min-width:38px;height:38px;align-items:center;justify-content:center;padding:0;cursor:pointer}
-@media(max-width:600px){.billing-table-wrap{width:100%!important;max-width:100%!important;overflow-x:auto!important;overflow-y:hidden!important;-webkit-overflow-scrolling:touch!important;padding-bottom:10px!important}.billing-items-table{width:650px!important;min-width:650px!important;table-layout:auto!important}.billing-items-table th{font-size:13px!important;padding:10px 12px!important;white-space:nowrap!important}.billing-items-table td{font-size:14px!important;padding:10px 12px!important;white-space:nowrap!important}.billing-items-table th:nth-child(1),.billing-items-table td:nth-child(1){min-width:160px!important}.billing-items-table th:nth-child(2),.billing-items-table td:nth-child(2){min-width:75px!important;text-align:center!important}.billing-items-table th:nth-child(3),.billing-items-table td:nth-child(3){min-width:145px!important;text-align:center!important}.billing-items-table th:nth-child(4),.billing-items-table td:nth-child(4){min-width:115px!important;text-align:right!important}.billing-items-table th:nth-child(5),.billing-items-table td:nth-child(5){min-width:70px!important;text-align:center!important}.billing-items-table input[type=number]{width:55px!important;min-width:55px!important;height:38px!important;font-size:14px!important}.delete-btn{width:36px!important;min-width:36px!important;height:36px!important;font-size:17px!important}}
+
+/* =========================================================
+   BILLING TABLE
+   ========================================================= */
+
+.billing-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    margin-top: 10px;
+    padding-bottom: 8px;
+}
+
+
+.billing-items-table {
+    width: 100%;
+    min-width: 650px;
+    border-collapse: collapse;
+}
+
+
+.billing-items-table th,
+.billing-items-table td {
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+
+/* =========================================================
+   PRODUCT COLUMN
+   ========================================================= */
+
+.billing-items-table th:nth-child(1),
+.billing-items-table td:nth-child(1) {
+    min-width: 180px;
+}
+
+
+/* =========================================================
+   QTY COLUMN
+   ========================================================= */
+
+.billing-items-table th:nth-child(2),
+.billing-items-table td:nth-child(2) {
+    min-width: 80px;
+    text-align: center;
+}
+
+
+/* =========================================================
+   PRICE COLUMN
+   ========================================================= */
+
+.billing-items-table th:nth-child(3),
+.billing-items-table td:nth-child(3) {
+    min-width: 150px;
+    text-align: center;
+}
+
+
+/* =========================================================
+   AMOUNT COLUMN
+   ========================================================= */
+
+.billing-items-table th:nth-child(4),
+.billing-items-table td:nth-child(4) {
+    min-width: 120px;
+    text-align: right;
+}
+
+
+/* =========================================================
+   ACTION COLUMN
+   ========================================================= */
+
+.billing-items-table th:nth-child(5),
+.billing-items-table td:nth-child(5) {
+    min-width: 80px;
+    text-align: center;
+}
+
+
+/* =========================================================
+   QUANTITY INPUT
+   ========================================================= */
+
+.billing-items-table input[type="number"] {
+    width: 60px;
+    min-width: 60px;
+    height: 38px;
+    padding: 5px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   DELETE BUTTON
+   ========================================================= */
+
+.delete-btn {
+    display: inline-flex;
+    width: 38px;
+    min-width: 38px;
+    height: 38px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   PRODUCT SUGGESTION BUTTON
+   ========================================================= */
+
+.suggestions {
+    position: relative;
+    z-index: 1000;
+}
+
+
+.suggestions .product-suggestion {
+    width: 100%;
+    min-height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    padding: 10px 12px;
+
+    text-align: left;
+
+    cursor: pointer;
+}
+
+
+.suggestions .product-suggestion span {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+
+.suggestions .product-suggestion small {
+    opacity: 0.7;
+}
+
+
+.suggestions .product-suggestion:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .billing-table-wrap {
+        width: 100% !important;
+        max-width: 100% !important;
+
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+
+        -webkit-overflow-scrolling: touch !important;
+
+        padding-bottom: 10px !important;
+    }
+
+
+    .billing-items-table {
+        width: 650px !important;
+        min-width: 650px !important;
+
+        table-layout: auto !important;
+    }
+
+
+    .billing-items-table th {
+        font-size: 13px !important;
+        padding: 10px 12px !important;
+        white-space: nowrap !important;
+    }
+
+
+    .billing-items-table td {
+        font-size: 14px !important;
+        padding: 10px 12px !important;
+        white-space: nowrap !important;
+    }
+
+
+    .billing-items-table th:nth-child(1),
+    .billing-items-table td:nth-child(1) {
+        min-width: 160px !important;
+    }
+
+
+    .billing-items-table th:nth-child(2),
+    .billing-items-table td:nth-child(2) {
+        min-width: 75px !important;
+        text-align: center !important;
+    }
+
+
+    .billing-items-table th:nth-child(3),
+    .billing-items-table td:nth-child(3) {
+        min-width: 145px !important;
+        text-align: center !important;
+    }
+
+
+    .billing-items-table th:nth-child(4),
+    .billing-items-table td:nth-child(4) {
+        min-width: 115px !important;
+        text-align: right !important;
+    }
+
+
+    .billing-items-table th:nth-child(5),
+    .billing-items-table td:nth-child(5) {
+        min-width: 70px !important;
+        text-align: center !important;
+    }
+
+
+    .billing-items-table input[type="number"] {
+        width: 55px !important;
+        min-width: 55px !important;
+        height: 38px !important;
+        font-size: 14px !important;
+    }
+
+
+    .delete-btn {
+        width: 36px !important;
+        min-width: 36px !important;
+        height: 36px !important;
+        font-size: 17px !important;
+    }
+
+
+    .suggestions .product-suggestion {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+}
+
 </style>
+
 {% endblock %}
