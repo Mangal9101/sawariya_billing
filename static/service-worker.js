@@ -703,17 +703,47 @@ self.addEventListener(
                         }
 
 
-                        /*
-                         PAGE MIL GAYA
-                        */
+                      /*
+ PAGE MIL GAYA
+*/
 
-                        if (
-                            cached
-                        ) {
+if (
+    cached
+) {
 
-                            return cached;
+    return cached;
 
-                        }
+}
+
+
+/*
+ REPORTS SPECIAL FALLBACK
+
+ Reports URL me date query ho sakti hai:
+
+ /reports?date=2026-09-01
+
+ Offline me cached /reports page use karo.
+*/
+
+if (
+    url.pathname === "/reports"
+) {
+
+    const reportsPage =
+        await cache.match(
+            "/reports"
+        );
+
+    if (
+        reportsPage
+    ) {
+
+        return reportsPage;
+
+    }
+
+}
 
 
                         /*
