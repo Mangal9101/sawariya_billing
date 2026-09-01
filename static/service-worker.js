@@ -1,8 +1,9 @@
-const CACHE_NAME = "sawariya-v2";
-const APP_SHELL = [
+const CACHE_NAME = "sawariya-pwa-v3";
+
+const STATIC_CACHE = [
     "/static/css/style.css",
     "/static/js/billing.js",
-    "/static/manifest.json",
+    "/manifest.json",
     "/static/icons/icon-192.png",
     "/static/icons/icon-512.png"
 ];
@@ -10,20 +11,20 @@ const APP_SHELL = [
 self.addEventListener("install", event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then(cache => cache.addAll(APP_SHELL))
+            .then(cache => cache.addAll(STATIC_CACHE))
             .then(() => self.skipWaiting())
     );
 });
 
 self.addEventListener("activate", event => {
     event.waitUntil(
-        caches.keys()
-            .then(keys => Promise.all(
+        caches.keys().then(keys =>
+            Promise.all(
                 keys
                     .filter(key => key !== CACHE_NAME)
                     .map(key => caches.delete(key))
-            ))
-            .then(() => self.clients.claim())
+            )
+        ).then(() => self.clients.claim())
     );
 });
 
@@ -34,20 +35,17 @@ self.addEventListener("fetch", event => {
 
     const url = new URL(request.url);
 
-    // Never cache authenticated/API responses. They can contain user-specific
-    // data and must always come from the current local/online server.
+    // API ko abhi cache nahi karna.
+    // IndexedDB hum next step me add karenge.
     if (
         url.pathname.startsWith("/api/") ||
-        url.pathname === "/login" ||
         url.pathname === "/logout"
     ) {
         return;
     }
 
-    // Static assets: cache first.
-    if (
-        url.pathname.startsWith("/static/")
-    ) {
+    // Static files
+    if (url.pathname.startsWith("/static/")) {
         event.respondWith(
             caches.match(request).then(cached => {
                 if (cached) return cached;
@@ -55,33 +53,96 @@ self.addEventListener("fetch", event => {
                 return fetch(request).then(response => {
                     if (response.ok) {
                         const copy = response.clone();
-                        caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
+
+                        caches.open(CACHE_NAME)
+                            .then(cache => cache.put(request, copy));
                     }
+
                     return response;
                 });
             })
         );
+
         return;
     }
 
-    // Pages: network first, cached fallback. This keeps online data fresh
-    // while allowing already visited pages to open when the network drops.
-    event.respondWith(
-        fetch(request)
-            .then(response => {
-                if (response.ok && response.type === "basic") {
-                    const copy = response.clone();
-                    caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
-                }
-                return response;
-            })
-            .catch(() =>
-                caches.match(request).then(cached =>
-                    cached || new Response(
-                        "<h2>Offline</h2><p>Please start the local Sawariya server to use billing offline.</p>",
-                        { headers: { "Content-Type": "text/html; charset=utf-8" } }
-                    )
-                )
-            )
-    );
+    // HTML pages
+    if (
+        request.mode === "navigate" ||
+        request.headers.get("accept")?.includes("text/html")
+    ) {
+        event.respondWith(
+            fetch(request)
+                .then(response => {
+
+                    // Online page successfully open hua,
+                    // to uska copy cache me save karo.
+                    if (
+                        response.ok &&
+                        response.type === "basic"
+                    ) {
+                        const copy = response.clone();
+
+                        caches.open(CACHE_NAME)
+                            .then(cache => cache.put(request, copy));
+                    }
+
+                    return response;
+                })
+                .catch(() => {
+
+                    // Internet OFF:
+                    // pehle exact page ka cached version.
+                    return caches.match(request)
+                        .then(cached => {
+
+                            if (cached) {
+                                return cached;
+                            }
+
+                            // Exact page cache nahi hai to login
+                            // cached page try karo.
+                            return caches.match("/login")
+                                .then(loginPage => {
+
+                                    if (loginPage) {
+                                        return loginPage;
+                                    }
+
+                                    return new Response(
+                                        `
+                                        <!doctype html>
+                                        <html>
+                                        <head>
+                                            <meta charset="utf-8">
+                                            <meta name="viewport"
+                                                content="width=device-width,initial-scale=1">
+                                            <title>Sawariya Offline</title>
+                                        </head>
+
+                                        <body>
+                                            <h2>Sawariya is offline</h2>
+
+                                            <p>
+                                                Please open this page once
+                                                while online.
+                                            </p>
+                                        </body>
+                                        </html>
+                                        `,
+                                        {
+                                            status: 200,
+                                            headers: {
+                                                "Content-Type":
+                                                    "text/html; charset=utf-8"
+                                            }
+                                        }
+                                    );
+                                });
+                        });
+                })
+        );
+
+        return;
+    }
 });
