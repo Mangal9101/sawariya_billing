@@ -4,36 +4,16 @@ from decimal import Decimal
 from urllib.parse import quote
 
 from fastapi import FastAPI, Request, Form
-from fastapi.responses import (
-    HTMLResponse,
-    RedirectResponse,
-    JSONResponse,
-    FileResponse
-)
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-
 from starlette.middleware.sessions import SessionMiddleware
 
 from sqlalchemy import (
-    create_engine,
-    Column,
-    Integer,
-    String,
-    Numeric,
-    DateTime,
-    ForeignKey,
-    Text,
-    func,
+    create_engine, Column, Integer, String, Numeric,
+    DateTime, ForeignKey, Text, func, text
 )
-
-from sqlalchemy.orm import (
-    declarative_base,
-    sessionmaker,
-    relationship,
-    joinedload,
-)
-
+from sqlalchemy.orm import declarative_base, sessionmaker, relationship, joinedload
 from sqlalchemy.exc import IntegrityError
 
 
@@ -41,48 +21,34 @@ from sqlalchemy.exc import IntegrityError
 # INDIA TIMEZONE
 # =========================================================
 
-IST = timezone(
-    timedelta(hours=5, minutes=30)
-)
+IST = timezone(timedelta(hours=5, minutes=30))
 
 
 def utc_to_ist(dt):
-
     if not dt:
         return dt
 
     if dt.tzinfo is None:
-        dt = dt.replace(
-            tzinfo=timezone.utc
-        )
+        dt = dt.replace(tzinfo=timezone.utc)
 
     return dt.astimezone(IST)
 
 
 def ist_day_to_utc_range(selected_date):
-
     start_ist = datetime.combine(
         selected_date,
         datetime.min.time()
-    ).replace(
-        tzinfo=IST
-    )
+    ).replace(tzinfo=IST)
 
-    end_ist = start_ist + timedelta(
-        days=1
-    )
+    end_ist = start_ist + timedelta(days=1)
 
     start_utc = start_ist.astimezone(
         timezone.utc
-    ).replace(
-        tzinfo=None
-    )
+    ).replace(tzinfo=None)
 
     end_utc = end_ist.astimezone(
         timezone.utc
-    ).replace(
-        tzinfo=None
-    )
+    ).replace(tzinfo=None)
 
     return start_utc, end_utc
 
@@ -91,62 +57,31 @@ def ist_day_to_utc_range(selected_date):
 # DATABASE
 # =========================================================
 
-# Online (Render): PostgreSQL via DATABASE_URL
-# Offline/local: SQLite file next to this application.
-#
-# This is intentionally automatic:
-# - DATABASE_URL present  -> PostgreSQL
-# - DATABASE_URL missing  -> local SQLite
-#
-# Therefore the same FastAPI routes, templates and business logic work
-# in both environments. The two databases are separate unless you add
-# an explicit sync/import process.
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
+if not DATABASE_URL:
+    raise RuntimeError(
+        "DATABASE_URL is not set. "
+        "Please add PostgreSQL DATABASE_URL in Render Environment."
+    )
 
 if DATABASE_URL.startswith("postgres://"):
-    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
-
-if DATABASE_URL:
-    # Render/online database
-    engine = create_engine(
-        DATABASE_URL,
-        pool_pre_ping=True,
-        future=True
-    )
-    DATABASE_MODE = "PostgreSQL (online)"
-else:
-    # Local/offline database
-    sqlite_path = os.getenv(
-        "OFFLINE_DB_PATH",
-        os.path.join(BASE_DIR, "sawariya_billing.db")
+    DATABASE_URL = DATABASE_URL.replace(
+        "postgres://",
+        "postgresql://",
+        1
     )
 
-    engine = create_engine(
-        f"sqlite:///{sqlite_path}",
-        connect_args={"check_same_thread": False},
-        future=True
-    )
-    DATABASE_MODE = "SQLite (offline/local)"
-
-    # SQLite does not enforce foreign keys by default.
-    from sqlalchemy import event
-
-    @event.listens_for(engine, "connect")
-    def _enable_sqlite_foreign_keys(dbapi_connection, connection_record):
-        cursor = dbapi_connection.cursor()
-        cursor.execute("PRAGMA foreign_keys=ON")
-        cursor.close()
-
+engine = create_engine(
+    DATABASE_URL,
+    pool_pre_ping=True
+)
 
 SessionLocal = sessionmaker(
     bind=engine,
     autoflush=False,
     autocommit=False
 )
-
 
 Base = declarative_base()
 
@@ -156,13 +91,9 @@ Base = declarative_base()
 # =========================================================
 
 class Product(Base):
-
     __tablename__ = "products"
 
-    id = Column(
-        Integer,
-        primary_key=True
-    )
+    id = Column(Integer, primary_key=True)
 
     name = Column(
         String(150),
@@ -203,13 +134,9 @@ class Product(Base):
 
 
 class Customer(Base):
-
     __tablename__ = "customers"
 
-    id = Column(
-        Integer,
-        primary_key=True
-    )
+    id = Column(Integer, primary_key=True)
 
     name = Column(
         String(150),
@@ -228,18 +155,22 @@ class Customer(Base):
 
 
 class Invoice(Base):
-
     __tablename__ = "invoices"
 
-    id = Column(
-        Integer,
-        primary_key=True
-    )
+    id = Column(Integer, primary_key=True)
 
     invoice_no = Column(
         String(50),
         unique=True,
         nullable=False
+    )
+
+    # Offline bill duplicate protection
+    client_bill_id = Column(
+        String(100),
+        unique=True,
+        nullable=True,
+        index=True
     )
 
     customer_id = Column(
@@ -283,9 +214,7 @@ class Invoice(Base):
         default=datetime.utcnow
     )
 
-    customer = relationship(
-        "Customer"
-    )
+    customer = relationship("Customer")
 
     items = relationship(
         "InvoiceItem",
@@ -294,13 +223,9 @@ class Invoice(Base):
 
 
 class InvoiceItem(Base):
-
     __tablename__ = "invoice_items"
 
-    id = Column(
-        Integer,
-        primary_key=True
-    )
+    id = Column(Integer, primary_key=True)
 
     invoice_id = Column(
         Integer,
@@ -313,9 +238,7 @@ class InvoiceItem(Base):
         nullable=True
     )
 
-    product_name = Column(
-        String(150)
-    )
+    product_name = Column(String(150))
 
     quantity = Column(
         Integer,
@@ -332,23 +255,15 @@ class InvoiceItem(Base):
         nullable=False
     )
 
-    product = relationship(
-        "Product"
-    )
+    product = relationship("Product")
 
 
 class Purchase(Base):
-
     __tablename__ = "purchases"
 
-    id = Column(
-        Integer,
-        primary_key=True
-    )
+    id = Column(Integer, primary_key=True)
 
-    supplier = Column(
-        String(150)
-    )
+    supplier = Column(String(150))
 
     total = Column(
         Numeric(12, 2),
@@ -362,48 +277,59 @@ class Purchase(Base):
 
 
 class StockMovement(Base):
-
     __tablename__ = "stock_movements"
 
-    id = Column(
-        Integer,
-        primary_key=True
-    )
+    id = Column(Integer, primary_key=True)
 
     product_id = Column(
         Integer,
         ForeignKey("products.id")
     )
 
-    movement_type = Column(
-        String(30)
-    )
+    movement_type = Column(String(30))
 
-    quantity = Column(
-        Integer
-    )
+    quantity = Column(Integer)
 
-    note = Column(
-        String(250)
-    )
+    note = Column(String(250))
 
     created_at = Column(
         DateTime,
         default=datetime.utcnow
     )
 
-    product = relationship(
-        "Product"
-    )
+    product = relationship("Product")
 
 
 # =========================================================
-# CREATE TABLES
+# CREATE TABLES + MIGRATIONS
 # =========================================================
 
-Base.metadata.create_all(
-    engine
-)
+Base.metadata.create_all(engine)
+
+
+def run_migrations():
+    with engine.begin() as connection:
+        connection.execute(
+            text(
+                """
+                ALTER TABLE invoices
+                ADD COLUMN IF NOT EXISTS client_bill_id VARCHAR(100)
+                """
+            )
+        )
+
+        connection.execute(
+            text(
+                """
+                CREATE UNIQUE INDEX IF NOT EXISTS
+                ix_invoices_client_bill_id
+                ON invoices (client_bill_id)
+                """
+            )
+        )
+
+
+run_migrations()
 
 
 # =========================================================
@@ -435,11 +361,10 @@ app.add_middleware(
 
 app.mount(
     "/static",
-    StaticFiles(
-        directory=os.path.join(BASE_DIR, "static")
-    ),
+    StaticFiles(directory="static"),
     name="static"
 )
+
 
 # =========================================================
 # PWA FILES
@@ -447,58 +372,29 @@ app.mount(
 
 @app.get("/manifest.json")
 def manifest():
-
     return FileResponse(
-        os.path.join(BASE_DIR, "static", "manifest.json"),
+        "static/manifest.json",
         media_type="application/manifest+json"
     )
 
 
 @app.get("/service-worker.js")
 def service_worker():
-
     return FileResponse(
-        os.path.join(
-            BASE_DIR,
-            "static",
-            "service-worker.js"
-        ),
-        media_type="application/javascript",
-        headers={
-            "Cache-Control":
-                "no-cache, no-store, must-revalidate",
-
-            "Pragma":
-                "no-cache",
-
-            "Expires":
-                "0",
-
-            "Service-Worker-Allowed":
-                "/"
-        }
+        "static/service-worker.js",
+        media_type="application/javascript"
     )
+
 
 # =========================================================
 # TEMPLATES
 # =========================================================
 
 templates = Jinja2Templates(
-    directory=os.path.join(BASE_DIR, "templates")
+    directory="templates"
 )
 
-
-templates.env.filters[
-    "ist_time"
-] = utc_to_ist
-
-def ist_time_text(dt):
-    value = utc_to_ist(dt)
-    return value.strftime("%d-%m-%Y %H:%M") if value else ""
-
-templates.env.filters[
-    "ist_time_text"
-] = ist_time_text
+templates.env.filters["ist_time"] = utc_to_ist
 
 
 # =========================================================
@@ -519,35 +415,21 @@ def db():
     return SessionLocal()
 
 
-def login_required(
-    request: Request
-):
-    return request.session.get(
-        "username"
-    )
+def login_required(request: Request):
+    return request.session.get("username")
 
 
 def money(value):
-    return float(
-        value or 0
-    )
+    return float(value or 0)
 
 
 # =========================================================
 # HOME
 # =========================================================
 
-@app.get(
-    "/",
-    response_class=HTMLResponse
-)
-def home(
-    request: Request
-):
-
-    if not login_required(
-        request
-    ):
+@app.get("/", response_class=HTMLResponse)
+def home(request: Request):
+    if not login_required(request):
         return RedirectResponse(
             "/login",
             status_code=303
@@ -563,14 +445,8 @@ def home(
 # LOGIN PAGE
 # =========================================================
 
-@app.get(
-    "/login",
-    response_class=HTMLResponse
-)
-def login_page(
-    request: Request
-):
-
+@app.get("/login", response_class=HTMLResponse)
+def login_page(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="login.html",
@@ -582,25 +458,15 @@ def login_page(
 # LOGIN
 # =========================================================
 
-@app.post(
-    "/login",
-    response_class=HTMLResponse
-)
+@app.post("/login", response_class=HTMLResponse)
 def login(
     request: Request,
     username: str = Form(...),
     password: str = Form(...)
 ):
-
-    if USERS.get(
-        username
-    ) == password:
-
+    if USERS.get(username) == password:
         request.session.clear()
-
-        request.session[
-            "username"
-        ] = username
+        request.session["username"] = username
 
         return RedirectResponse(
             "/dashboard",
@@ -611,8 +477,7 @@ def login(
         request=request,
         name="login.html",
         context={
-            "error":
-                "Invalid username or password"
+            "error": "Invalid username or password"
         }
     )
 
@@ -621,13 +486,8 @@ def login(
 # LOGOUT
 # =========================================================
 
-@app.get(
-    "/logout"
-)
-def logout(
-    request: Request
-):
-
+@app.get("/logout")
+def logout(request: Request):
     request.session.clear()
 
     return RedirectResponse(
@@ -640,17 +500,9 @@ def logout(
 # DASHBOARD
 # =========================================================
 
-@app.get(
-    "/dashboard",
-    response_class=HTMLResponse
-)
-def dashboard(
-    request: Request
-):
-
-    username = login_required(
-        request
-    )
+@app.get("/dashboard", response_class=HTMLResponse)
+def dashboard(request: Request):
+    username = login_required(request)
 
     if not username:
         return RedirectResponse(
@@ -661,68 +513,37 @@ def dashboard(
     d = db()
 
     try:
+        today = datetime.now(IST).date()
 
-        today = datetime.now(
-            IST
-        ).date()
-
-        start_utc, end_utc = (
-            ist_day_to_utc_range(
-                today
-            )
+        start_utc, end_utc = ist_day_to_utc_range(
+            today
         )
-
-        # TODAY SALES
 
         sales = (
             d.query(
                 func.coalesce(
-                    func.sum(
-                        Invoice.total
-                    ),
+                    func.sum(Invoice.total),
                     0
                 )
             )
-            .filter(
-                Invoice.created_at
-                >= start_utc
-            )
-            .filter(
-                Invoice.created_at
-                < end_utc
-            )
+            .filter(Invoice.created_at >= start_utc)
+            .filter(Invoice.created_at < end_utc)
             .scalar()
             or 0
         )
-
-        # TODAY BILLS
 
         bills = (
-            d.query(
-                func.count(
-                    Invoice.id
-                )
-            )
-            .filter(
-                Invoice.created_at
-                >= start_utc
-            )
-            .filter(
-                Invoice.created_at
-                < end_utc
-            )
+            d.query(func.count(Invoice.id))
+            .filter(Invoice.created_at >= start_utc)
+            .filter(Invoice.created_at < end_utc)
             .scalar()
             or 0
         )
-
-        # TOTAL STOCK
 
         stock = (
             d.query(
                 func.coalesce(
-                    func.sum(
-                        Product.quantity
-                    ),
+                    func.sum(Product.quantity),
                     0
                 )
             )
@@ -730,26 +551,17 @@ def dashboard(
             or 0
         )
 
-        # LOW STOCK
-
         low = (
-            d.query(
-                Product
-            )
+            d.query(Product)
             .filter(
-                Product.quantity
-                <= Product.min_stock
+                Product.quantity <= Product.min_stock
             )
             .count()
         )
 
         products = (
-            d.query(
-                Product
-            )
-            .order_by(
-                Product.name
-            )
+            d.query(Product)
+            .order_by(Product.name)
             .all()
         )
 
@@ -767,7 +579,6 @@ def dashboard(
         )
 
     finally:
-
         d.close()
 
 
@@ -775,17 +586,9 @@ def dashboard(
 # PRODUCTS PAGE
 # =========================================================
 
-@app.get(
-    "/products",
-    response_class=HTMLResponse
-)
-def products_page(
-    request: Request
-):
-
-    username = login_required(
-        request
-    )
+@app.get("/products", response_class=HTMLResponse)
+def products_page(request: Request):
+    username = login_required(request)
 
     if not username:
         return RedirectResponse(
@@ -796,14 +599,9 @@ def products_page(
     d = db()
 
     try:
-
         products = (
-            d.query(
-                Product
-            )
-            .order_by(
-                Product.name
-            )
+            d.query(Product)
+            .order_by(Product.name)
             .all()
         )
 
@@ -817,7 +615,6 @@ def products_page(
         )
 
     finally:
-
         d.close()
 
 
@@ -825,9 +622,7 @@ def products_page(
 # ADD PRODUCT
 # =========================================================
 
-@app.post(
-    "/products/add"
-)
+@app.post("/products/add")
 def add_product(
     request: Request,
     name: str = Form(...),
@@ -838,10 +633,7 @@ def add_product(
     wholesale_price: float = Form(0),
     retailer_price: float = Form(0)
 ):
-
-    if not login_required(
-        request
-    ):
+    if not login_required(request):
         return RedirectResponse(
             "/login",
             status_code=303
@@ -851,7 +643,6 @@ def add_product(
     clean_sku = sku.strip()
 
     if not clean_name:
-
         return RedirectResponse(
             "/products?error=empty",
             status_code=303
@@ -860,44 +651,32 @@ def add_product(
     d = db()
 
     try:
-
         existing_product = (
-            d.query(
-                Product
-            )
+            d.query(Product)
             .filter(
-                func.lower(
-                    Product.name
-                )
+                func.lower(Product.name)
                 == clean_name.lower()
             )
             .first()
         )
 
         if existing_product:
-
             return RedirectResponse(
                 "/products?error=product_exists",
                 status_code=303
             )
 
         if clean_sku:
-
             existing_sku = (
-                d.query(
-                    Product
-                )
+                d.query(Product)
                 .filter(
-                    func.lower(
-                        Product.sku
-                    )
+                    func.lower(Product.sku)
                     == clean_sku.lower()
                 )
                 .first()
             )
 
             if existing_sku:
-
                 return RedirectResponse(
                     "/products?error=sku_exists",
                     status_code=303
@@ -906,36 +685,17 @@ def add_product(
         product = Product(
             name=clean_name,
             sku=clean_sku or None,
-            quantity=max(
-                quantity,
-                0
-            ),
-            min_stock=max(
-                min_stock,
-                0
-            ),
-            purchase_price=max(
-                purchase_price,
-                0
-            ),
-            wholesale_price=max(
-                wholesale_price,
-                0
-            ),
-            retailer_price=max(
-                retailer_price,
-                0
-            )
+            quantity=max(quantity, 0),
+            min_stock=max(min_stock, 0),
+            purchase_price=max(purchase_price, 0),
+            wholesale_price=max(wholesale_price, 0),
+            retailer_price=max(retailer_price, 0)
         )
 
-        d.add(
-            product
-        )
-
+        d.add(product)
         d.commit()
 
     except IntegrityError:
-
         d.rollback()
 
         return RedirectResponse(
@@ -944,7 +704,6 @@ def add_product(
         )
 
     except Exception:
-
         d.rollback()
 
         return RedirectResponse(
@@ -953,7 +712,6 @@ def add_product(
         )
 
     finally:
-
         d.close()
 
     return RedirectResponse(
@@ -974,10 +732,7 @@ def edit_product(
     request: Request,
     pid: int
 ):
-
-    username = login_required(
-        request
-    )
+    username = login_required(request)
 
     if not username:
         return RedirectResponse(
@@ -988,14 +743,9 @@ def edit_product(
     d = db()
 
     try:
-
-        product = d.get(
-            Product,
-            pid
-        )
+        product = d.get(Product, pid)
 
         if not product:
-
             return RedirectResponse(
                 "/products",
                 status_code=303
@@ -1011,7 +761,6 @@ def edit_product(
         )
 
     finally:
-
         d.close()
 
 
@@ -1019,9 +768,7 @@ def edit_product(
 # UPDATE PRODUCT
 # =========================================================
 
-@app.post(
-    "/products/{pid}/update"
-)
+@app.post("/products/{pid}/update")
 def update_product(
     request: Request,
     pid: int,
@@ -1033,10 +780,7 @@ def update_product(
     wholesale_price: float = Form(0),
     retailer_price: float = Form(0)
 ):
-
-    if not login_required(
-        request
-    ):
+    if not login_required(request):
         return RedirectResponse(
             "/login",
             status_code=303
@@ -1046,7 +790,6 @@ def update_product(
     clean_sku = sku.strip()
 
     if not clean_name:
-
         return RedirectResponse(
             f"/products/{pid}/edit?error=empty",
             status_code=303
@@ -1055,114 +798,60 @@ def update_product(
     d = db()
 
     try:
-
-        product = d.get(
-            Product,
-            pid
-        )
+        product = d.get(Product, pid)
 
         if not product:
-
             return RedirectResponse(
                 "/products",
                 status_code=303
             )
 
         duplicate_name = (
-            d.query(
-                Product
-            )
+            d.query(Product)
             .filter(
-                func.lower(
-                    Product.name
-                )
+                func.lower(Product.name)
                 == clean_name.lower()
             )
-            .filter(
-                Product.id != pid
-            )
+            .filter(Product.id != pid)
             .first()
         )
 
         if duplicate_name:
-
             return RedirectResponse(
-                f"/products/{pid}/edit"
-                f"?error=product_exists",
+                f"/products/{pid}/edit?error=product_exists",
                 status_code=303
             )
 
         if clean_sku:
-
             duplicate_sku = (
-                d.query(
-                    Product
-                )
+                d.query(Product)
                 .filter(
-                    func.lower(
-                        Product.sku
-                    )
+                    func.lower(Product.sku)
                     == clean_sku.lower()
                 )
-                .filter(
-                    Product.id != pid
-                )
+                .filter(Product.id != pid)
                 .first()
             )
 
             if duplicate_sku:
-
                 return RedirectResponse(
-                    f"/products/{pid}/edit"
-                    f"?error=sku_exists",
+                    f"/products/{pid}/edit?error=sku_exists",
                     status_code=303
                 )
 
-        old_quantity = (
-            product.quantity
-            or 0
-        )
-
-        new_quantity = max(
-            quantity,
-            0
-        )
+        old_quantity = product.quantity or 0
+        new_quantity = max(quantity, 0)
 
         product.name = clean_name
-
-        product.sku = (
-            clean_sku
-            or None
-        )
-
+        product.sku = clean_sku or None
         product.quantity = new_quantity
-
-        product.min_stock = max(
-            min_stock,
-            0
-        )
-
-        product.purchase_price = max(
-            purchase_price,
-            0
-        )
-
-        product.wholesale_price = max(
-            wholesale_price,
-            0
-        )
-
-        product.retailer_price = max(
-            retailer_price,
-            0
-        )
+        product.min_stock = max(min_stock, 0)
+        product.purchase_price = max(purchase_price, 0)
+        product.wholesale_price = max(wholesale_price, 0)
+        product.retailer_price = max(retailer_price, 0)
 
         if old_quantity != new_quantity:
-
-            difference = (
-                new_quantity
-                - old_quantity
-            )
+            difference = new_quantity - old_quantity
 
             d.add(
                 StockMovement(
@@ -1176,27 +865,22 @@ def update_product(
         d.commit()
 
     except IntegrityError:
-
         d.rollback()
 
         return RedirectResponse(
-            f"/products/{pid}/edit"
-            f"?error=duplicate",
+            f"/products/{pid}/edit?error=duplicate",
             status_code=303
         )
 
     except Exception:
-
         d.rollback()
 
         return RedirectResponse(
-            f"/products/{pid}/edit"
-            f"?error=server",
+            f"/products/{pid}/edit?error=server",
             status_code=303
         )
 
     finally:
-
         d.close()
 
     return RedirectResponse(
@@ -1209,17 +893,12 @@ def update_product(
 # DELETE PRODUCT
 # =========================================================
 
-@app.post(
-    "/products/{pid}/delete"
-)
+@app.post("/products/{pid}/delete")
 def delete_product(
     request: Request,
     pid: int
 ):
-
-    if not login_required(
-        request
-    ):
+    if not login_required(request):
         return RedirectResponse(
             "/login",
             status_code=303
@@ -1228,54 +907,36 @@ def delete_product(
     d = db()
 
     try:
-
-        product = d.get(
-            Product,
-            pid
-        )
+        product = d.get(Product, pid)
 
         if not product:
-
             return RedirectResponse(
                 "/products",
                 status_code=303
             )
 
         invoice_item_exists = (
-            d.query(
-                InvoiceItem.id
-            )
-            .filter(
-                InvoiceItem.product_id
-                == pid
-            )
+            d.query(InvoiceItem.id)
+            .filter(InvoiceItem.product_id == pid)
             .first()
         )
 
         if invoice_item_exists:
-
             return RedirectResponse(
                 "/products?error=used_in_invoice",
                 status_code=303
             )
 
-        d.query(
-            StockMovement
-        ).filter(
-            StockMovement.product_id
-            == pid
+        d.query(StockMovement).filter(
+            StockMovement.product_id == pid
         ).delete(
             synchronize_session=False
         )
 
-        d.delete(
-            product
-        )
-
+        d.delete(product)
         d.commit()
 
     except IntegrityError:
-
         d.rollback()
 
         return RedirectResponse(
@@ -1284,7 +945,6 @@ def delete_product(
         )
 
     except Exception:
-
         d.rollback()
 
         return RedirectResponse(
@@ -1293,7 +953,6 @@ def delete_product(
         )
 
     finally:
-
         d.close()
 
     return RedirectResponse(
@@ -1304,24 +963,18 @@ def delete_product(
 
 # =========================================================
 # PRODUCT SEARCH API
+# ONLINE + OFFLINE PRODUCT DOWNLOAD
 # =========================================================
 
-@app.get(
-    "/api/products"
-)
+@app.get("/api/products")
 def api_products(
     request: Request,
     q: str = ""
 ):
-
-    if not login_required(
-        request
-    ):
-
+    if not login_required(request):
         return JSONResponse(
             {
-                "error":
-                    "unauthorized"
+                "error": "unauthorized"
             },
             status_code=401
         )
@@ -1329,60 +982,52 @@ def api_products(
     d = db()
 
     try:
+        clean_q = (q or "").strip()
+
+        query = d.query(Product)
+
+        if clean_q:
+            search_value = f"%{clean_q}%"
+
+            query = query.filter(
+                Product.name.ilike(search_value)
+                |
+                Product.sku.ilike(search_value)
+            )
+
+            query = query.limit(50)
 
         products = (
-            d.query(
-                Product
-            )
-            .filter(
-                Product.name.ilike(
-                    f"%{q.strip()}%"
-                )
-            )
-            .order_by(
-                Product.name
-            )
-            .limit(30)
+            query
+            .order_by(Product.name)
             .all()
         )
 
         output = []
 
         for product in products:
-
             output.append(
                 {
-                    "id":
-                        product.id,
-
-                    "name":
-                        product.name,
-
-                    "stock":
-                        product.quantity
-                        or 0,
-
-                    "purchase":
-                        money(
-                            product.purchase_price
-                        ),
-
-                    "wholesale":
-                        money(
-                            product.wholesale_price
-                        ),
-
-                    "retail":
-                        money(
-                            product.retailer_price
-                        )
+                    "id": product.id,
+                    "name": product.name,
+                    "sku": product.sku or "",
+                    "code": product.sku or "",
+                    "stock": product.quantity or 0,
+                    "purchase": money(
+                        product.purchase_price
+                    ),
+                    "wholesale": money(
+                        product.wholesale_price
+                    ),
+                    "retail": money(
+                        product.retailer_price
+                    )
                 }
             )
 
         return output
 
     finally:
-
         d.close()
 
 
@@ -1390,20 +1035,11 @@ def api_products(
 # BILLING PAGE
 # =========================================================
 
-@app.get(
-    "/billing",
-    response_class=HTMLResponse
-)
-def billing(
-    request: Request
-):
-
-    username = login_required(
-        request
-    )
+@app.get("/billing", response_class=HTMLResponse)
+def billing(request: Request):
+    username = login_required(request)
 
     if not username:
-
         return RedirectResponse(
             "/login",
             status_code=303
@@ -1412,14 +1048,9 @@ def billing(
     d = db()
 
     try:
-
         customers = (
-            d.query(
-                Customer
-            )
-            .order_by(
-                Customer.name
-            )
+            d.query(Customer)
+            .order_by(Customer.name)
             .all()
         )
 
@@ -1433,64 +1064,90 @@ def billing(
         )
 
     finally:
-
         d.close()
 
 
 # =========================================================
 # SAVE BILL
+# ONLINE + OFFLINE SYNC SUPPORT
 # =========================================================
 
-@app.post(
-    "/billing/save"
-)
-async def save_bill(
-    request: Request
-):
-
-    if not login_required(
-        request
-    ):
-
+@app.post("/billing/save")
+async def save_bill(request: Request):
+    if not login_required(request):
         return JSONResponse(
             {
-                "error":
-                    "unauthorized"
+                "error": "unauthorized"
             },
             status_code=401
         )
 
     try:
-
         data = await request.json()
 
     except Exception:
-
         return JSONResponse(
             {
-                "error":
-                    "Invalid JSON data"
+                "error": "Invalid JSON data"
             },
             status_code=400
         )
 
-    items = data.get(
-        "items",
-        []
-    )
+    # Offline duplicate protection
+    client_bill_id = str(
+        data.get(
+            "client_bill_id",
+            ""
+        )
+        or ""
+    ).strip()
+
+    # Quick duplicate check
+    if client_bill_id:
+        d = db()
+
+        try:
+            existing_invoice = (
+                d.query(Invoice)
+                .filter(
+                    Invoice.client_bill_id
+                    == client_bill_id
+                )
+                .first()
+            )
+
+            if existing_invoice:
+                return {
+                    "ok": True,
+                    "already_saved": True,
+                    "invoice_no":
+                        existing_invoice.invoice_no,
+                    "total":
+                        float(
+                            existing_invoice.total
+                            or 0
+                        ),
+                    "due":
+                        float(
+                            existing_invoice.due
+                            or 0
+                        )
+                }
+
+        finally:
+            d.close()
+
+    items = data.get("items", [])
 
     if not items:
-
         return JSONResponse(
             {
-                "error":
-                    "No products selected"
+                "error": "No products selected"
             },
             status_code=400
         )
 
     try:
-
         discount = Decimal(
             str(
                 data.get(
@@ -1502,9 +1159,7 @@ async def save_bill(
         )
 
         if discount < 0:
-            discount = Decimal(
-                "0"
-            )
+            discount = Decimal("0")
 
         payment = str(
             data.get(
@@ -1525,121 +1180,139 @@ async def save_bill(
         )
 
         if paid < 0:
-            paid = Decimal(
-                "0"
-            )
+            paid = Decimal("0")
 
     except Exception:
-
         return JSONResponse(
             {
-                "error":
-                    "Invalid billing values"
+                "error": "Invalid billing values"
             },
             status_code=400
         )
 
-    customer = (
-        data.get(
-            "customer"
-        )
-        or {}
-    )
+    customer = data.get("customer") or {}
 
-    if not isinstance(
-        customer,
-        dict
-    ):
+    if not isinstance(customer, dict):
         customer = {}
 
     d = db()
 
-    subtotal = Decimal(
-        "0"
-    )
-
+    subtotal = Decimal("0")
     clean = []
 
     try:
+        # Double duplicate check for simultaneous requests
+        if client_bill_id:
+            existing_invoice = (
+                d.query(Invoice)
+                .filter(
+                    Invoice.client_bill_id
+                    == client_bill_id
+                )
+                .first()
+            )
 
-        # PRODUCTS
-        #
-        # Aggregate duplicate product lines before checking stock. This
-        # prevents a cart containing the same product twice from selling
-        # more units than are actually available.
+            if existing_invoice:
+                return {
+                    "ok": True,
+                    "already_saved": True,
+                    "invoice_no":
+                        existing_invoice.invoice_no,
+                    "total":
+                        float(
+                            existing_invoice.total
+                            or 0
+                        ),
+                    "due":
+                        float(
+                            existing_invoice.due
+                            or 0
+                        )
+                }
 
-        requested = {}
-
+        # Validate products and stock
         for item in items:
-            try:
-                product_id = int(item.get("product_id"))
-                qty = int(item.get("quantity"))
-            except (TypeError, ValueError):
-                raise ValueError("Invalid product or quantity")
+            product_id = int(
+                item.get("product_id")
+            )
 
-            if qty <= 0:
-                raise ValueError("Invalid quantity")
+            qty = int(
+                item.get("quantity")
+            )
 
-            requested[product_id] = requested.get(product_id, 0) + qty
-
-        for product_id, qty in requested.items():
-
-            product = d.get(Product, product_id)
+            product = d.get(
+                Product,
+                product_id
+            )
 
             if not product:
-                raise ValueError("Invalid product")
+                raise ValueError(
+                    "Invalid product"
+                )
 
-            available_stock = int(product.quantity or 0)
+            if qty <= 0:
+                raise ValueError(
+                    "Invalid quantity"
+                )
+
+            available_stock = (
+                product.quantity
+                or 0
+            )
 
             if available_stock < qty:
                 raise ValueError(
-                    f"Insufficient stock: {product.name} "
-                    f"({available_stock} available, {qty} requested)"
+                    f"Insufficient stock: "
+                    f"{product.name} "
+                    f"({available_stock} available)"
                 )
 
-            price = Decimal(str(product.wholesale_price or 0))
+            # Billing uses wholesale price
+            price = Decimal(
+                str(
+                    product.wholesale_price
+                    or 0
+                )
+            )
 
             if price < 0:
                 price = Decimal("0")
 
             amount = price * qty
+
             subtotal += amount
 
-            clean.append((product, qty, price, amount))
-
-        # TOTAL
+            clean.append(
+                (
+                    product,
+                    qty,
+                    price,
+                    amount
+                )
+            )
 
         if discount > subtotal:
             discount = subtotal
 
         total = subtotal - discount
-
         paid = min(paid, total)
-
         due = total - paid
 
-        # CUSTOMER
-
+        # Customer
         customer_id = None
 
         customer_name = str(
-            customer.get(
-                "name"
-            )
+            customer.get("name")
             or ""
         ).strip()
 
         customer_phone = str(
-            customer.get(
-                "phone"
-            )
+            customer.get("phone")
             or ""
         ).strip()
 
         customer_address = str(
-            customer.get(
-                "address"
-            )
+            customer.get("address")
             or ""
         ).strip()
 
@@ -1648,7 +1321,6 @@ async def save_bill(
             or customer_phone
             or customer_address
         ):
-
             new_customer = Customer(
                 name=(
                     customer_name
@@ -1664,17 +1336,10 @@ async def save_bill(
                 )
             )
 
-            d.add(
-                new_customer
-            )
-
+            d.add(new_customer)
             d.flush()
 
-            customer_id = (
-                new_customer.id
-            )
-
-        # INVOICE NUMBER
+            customer_id = new_customer.id
 
         invoice_no = (
             "INV-"
@@ -1683,10 +1348,12 @@ async def save_bill(
             )[:-3]
         )
 
-        # CREATE INVOICE
-
         invoice = Invoice(
             invoice_no=invoice_no,
+            client_bill_id=(
+                client_bill_id
+                or None
+            ),
             customer_id=customer_id,
             subtotal=subtotal,
             discount=discount,
@@ -1696,15 +1363,10 @@ async def save_bill(
             due=due
         )
 
-        d.add(
-            invoice
-        )
-
+        d.add(invoice)
         d.flush()
 
-        # SAVE ITEMS
-        # UPDATE STOCK
-
+        # Save items + update stock
         for (
             product,
             qty,
@@ -1713,7 +1375,7 @@ async def save_bill(
         ) in clean:
 
             product.quantity = (
-                product.quantity
+                (product.quantity or 0)
                 - qty
             )
 
@@ -1726,9 +1388,7 @@ async def save_bill(
                 amount=amount
             )
 
-            d.add(
-                invoice_item
-            )
+            d.add(invoice_item)
 
             d.add(
                 StockMovement(
@@ -1743,26 +1403,439 @@ async def save_bill(
 
         return {
             "ok": True,
-            "invoice_id": invoice.id,
+            "already_saved": False,
             "invoice_no": invoice_no,
             "total": float(total),
             "due": float(due)
         }
 
-    except Exception as e:
+    except IntegrityError:
+        d.rollback()
 
+        if client_bill_id:
+            try:
+                existing_invoice = (
+                    d.query(Invoice)
+                    .filter(
+                        Invoice.client_bill_id
+                        == client_bill_id
+                    )
+                    .first()
+                )
+
+                if existing_invoice:
+                    return {
+                        "ok": True,
+                        "already_saved": True,
+                        "invoice_no":
+                            existing_invoice.invoice_no,
+                        "total":
+                            float(
+                                existing_invoice.total
+                                or 0
+                            ),
+                        "due":
+                            float(
+                                existing_invoice.due
+                                or 0
+                            )
+                    }
+
+            except Exception:
+                pass
+
+        return JSONResponse(
+            {
+                "error": "Duplicate invoice"
+            },
+            status_code=400
+        )
+
+    except Exception as e:
         d.rollback()
 
         return JSONResponse(
             {
-                "error":
-                    str(e)
+                "error": str(e)
             },
             status_code=400
         )
 
     finally:
+        d.close()
 
+
+# =========================================================
+# OFFLINE SYNC / BOOTSTRAP API
+# =========================================================
+# These endpoints are used by the PWA to move local IndexedDB
+# changes to PostgreSQL when the device comes back online.
+# =========================================================
+
+@app.get("/api/offline/bootstrap")
+def offline_bootstrap(request: Request):
+    """Download the current server data needed by an offline device."""
+    if not login_required(request):
+        return JSONResponse({"error": "unauthorized"}, status_code=401)
+
+    d = db()
+    try:
+        products = d.query(Product).order_by(Product.id).all()
+        customers = d.query(Customer).order_by(Customer.id).all()
+
+        return {
+            "ok": True,
+            "products": [
+                {
+                    "id": p.id,
+                    "name": p.name,
+                    "sku": p.sku or "",
+                    "quantity": int(p.quantity or 0),
+                    "min_stock": int(p.min_stock or 0),
+                    "purchase_price": float(p.purchase_price or 0),
+                    "wholesale_price": float(p.wholesale_price or 0),
+                    "retailer_price": float(p.retailer_price or 0),
+                    "updated_at": None,
+                }
+                for p in products
+            ],
+            "customers": [
+                {
+                    "id": c.id,
+                    "name": c.name or "",
+                    "phone": c.phone or "",
+                    "address": c.address or "",
+                }
+                for c in customers
+            ],
+        }
+    finally:
+        d.close()
+
+
+@app.post("/api/offline/sync")
+async def offline_sync(request: Request):
+    """
+    Receive queued IndexedDB operations.
+
+    Supported operations:
+      - product_add
+      - product_update
+      - product_delete
+      - customer_add
+      - bill
+
+    Every operation may contain a local_id so the browser can map its
+    local record to the server record returned in `mappings`.
+    """
+    if not login_required(request):
+        return JSONResponse({"error": "unauthorized"}, status_code=401)
+
+    try:
+        payload = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON data"}, status_code=400)
+
+    operations = payload.get("operations", [])
+    if not isinstance(operations, list):
+        return JSONResponse({"error": "operations must be a list"}, status_code=400)
+
+    d = db()
+    results = []
+    mappings = []
+
+    def clean_text(value):
+        return str(value or "").strip()
+
+    def as_decimal(value):
+        try:
+            return Decimal(str(value or 0))
+        except Exception:
+            return Decimal("0")
+
+    try:
+        for op in operations:
+            if not isinstance(op, dict):
+                continue
+
+            op_id = clean_text(op.get("local_id"))
+            op_type = clean_text(op.get("type"))
+            data = op.get("data") or {}
+
+            if op_type == "product_add":
+                name = clean_text(data.get("name"))
+                sku = clean_text(data.get("sku"))
+                if not name:
+                    raise ValueError("Product name cannot be empty")
+
+                existing = d.query(Product).filter(
+                    func.lower(Product.name) == name.lower()
+                ).first()
+                if existing:
+                    mappings.append({
+                        "local_id": op_id,
+                        "entity": "product",
+                        "server_id": existing.id,
+                        "status": "already_exists",
+                    })
+                    results.append({"local_id": op_id, "ok": True})
+                    continue
+
+                if sku:
+                    existing_sku = d.query(Product).filter(
+                        func.lower(Product.sku) == sku.lower()
+                    ).first()
+                    if existing_sku:
+                        mappings.append({
+                            "local_id": op_id,
+                            "entity": "product",
+                            "server_id": existing_sku.id,
+                            "status": "already_exists",
+                        })
+                        results.append({"local_id": op_id, "ok": True})
+                        continue
+
+                product = Product(
+                    name=name,
+                    sku=sku or None,
+                    quantity=max(int(data.get("quantity", 0) or 0), 0),
+                    min_stock=max(int(data.get("min_stock", 5) or 0), 0),
+                    purchase_price=max(as_decimal(data.get("purchase_price")), Decimal("0")),
+                    wholesale_price=max(as_decimal(data.get("wholesale_price")), Decimal("0")),
+                    retailer_price=max(as_decimal(data.get("retailer_price")), Decimal("0")),
+                )
+                d.add(product)
+                d.flush()
+
+                mappings.append({
+                    "local_id": op_id,
+                    "entity": "product",
+                    "server_id": product.id,
+                    "status": "created",
+                })
+                results.append({"local_id": op_id, "ok": True})
+
+            elif op_type == "product_update":
+                server_id = int(data.get("server_id") or data.get("id"))
+                product = d.get(Product, server_id)
+                if not product:
+                    raise ValueError("Product not found")
+
+                name = clean_text(data.get("name"))
+                sku = clean_text(data.get("sku"))
+                if not name:
+                    raise ValueError("Product name cannot be empty")
+
+                duplicate_name = d.query(Product).filter(
+                    func.lower(Product.name) == name.lower(),
+                    Product.id != server_id,
+                ).first()
+                if duplicate_name:
+                    raise ValueError("Product already exists")
+
+                if sku:
+                    duplicate_sku = d.query(Product).filter(
+                        func.lower(Product.sku) == sku.lower(),
+                        Product.id != server_id,
+                    ).first()
+                    if duplicate_sku:
+                        raise ValueError("SKU already exists")
+
+                old_quantity = int(product.quantity or 0)
+                new_quantity = max(int(data.get("quantity", 0) or 0), 0)
+
+                product.name = name
+                product.sku = sku or None
+                product.quantity = new_quantity
+                product.min_stock = max(int(data.get("min_stock", 5) or 0), 0)
+                product.purchase_price = max(as_decimal(data.get("purchase_price")), Decimal("0"))
+                product.wholesale_price = max(as_decimal(data.get("wholesale_price")), Decimal("0"))
+                product.retailer_price = max(as_decimal(data.get("retailer_price")), Decimal("0"))
+
+                if old_quantity != new_quantity:
+                    d.add(StockMovement(
+                        product_id=server_id,
+                        movement_type="Adjustment",
+                        quantity=new_quantity - old_quantity,
+                        note="Offline product edit",
+                    ))
+
+                results.append({"local_id": op_id, "ok": True, "server_id": server_id})
+
+            elif op_type == "product_delete":
+                server_id = int(data.get("server_id") or data.get("id"))
+                product = d.get(Product, server_id)
+                if product:
+                    used = d.query(InvoiceItem.id).filter(
+                        InvoiceItem.product_id == server_id
+                    ).first()
+                    if used:
+                        raise ValueError("Product is already used in an invoice")
+
+                    d.query(StockMovement).filter(
+                        StockMovement.product_id == server_id
+                    ).delete(synchronize_session=False)
+                    d.delete(product)
+
+                results.append({"local_id": op_id, "ok": True, "server_id": server_id})
+
+            elif op_type == "customer_add":
+                name = clean_text(data.get("name")) or "Walk-in Customer"
+                phone = clean_text(data.get("phone"))
+                address = clean_text(data.get("address"))
+
+                customer = Customer(
+                    name=name,
+                    phone=phone or None,
+                    address=address or None,
+                )
+                d.add(customer)
+                d.flush()
+
+                mappings.append({
+                    "local_id": op_id,
+                    "entity": "customer",
+                    "server_id": customer.id,
+                    "status": "created",
+                })
+                results.append({"local_id": op_id, "ok": True})
+
+            elif op_type == "bill":
+                # Bill payload follows the same shape as /billing/save.
+                bill = data
+                client_bill_id = clean_text(bill.get("client_bill_id"))
+
+                if client_bill_id:
+                    existing_invoice = d.query(Invoice).filter(
+                        Invoice.client_bill_id == client_bill_id
+                    ).first()
+                    if existing_invoice:
+                        results.append({
+                            "local_id": op_id,
+                            "ok": True,
+                            "already_saved": True,
+                            "server_id": existing_invoice.id,
+                            "invoice_no": existing_invoice.invoice_no,
+                        })
+                        continue
+
+                items = bill.get("items") or []
+                if not items:
+                    raise ValueError("No products selected")
+
+                discount = max(as_decimal(bill.get("discount")), Decimal("0"))
+                paid = max(as_decimal(bill.get("paid")), Decimal("0"))
+                payment = clean_text(bill.get("payment_mode")) or "Cash"
+
+                subtotal = Decimal("0")
+                clean_items = []
+
+                for item in items:
+                    product_id = int(item.get("product_id"))
+                    qty = int(item.get("quantity"))
+                    product = d.get(Product, product_id)
+                    if not product:
+                        raise ValueError(f"Invalid product: {product_id}")
+                    if qty <= 0:
+                        raise ValueError("Invalid quantity")
+
+                    available = int(product.quantity or 0)
+                    if available < qty:
+                        raise ValueError(
+                            f"Insufficient stock: {product.name} ({available} available)"
+                        )
+
+                    price = max(as_decimal(product.wholesale_price), Decimal("0"))
+                    amount = price * qty
+                    subtotal += amount
+                    clean_items.append((product, qty, price, amount))
+
+                discount = min(discount, subtotal)
+                total = subtotal - discount
+                paid = min(paid, total)
+                due = total - paid
+
+                customer_data = bill.get("customer") or {}
+                customer_id = None
+                customer_name = clean_text(customer_data.get("name"))
+                customer_phone = clean_text(customer_data.get("phone"))
+                customer_address = clean_text(customer_data.get("address"))
+
+                if customer_name or customer_phone or customer_address:
+                    customer = Customer(
+                        name=customer_name or "Walk-in Customer",
+                        phone=customer_phone or None,
+                        address=customer_address or None,
+                    )
+                    d.add(customer)
+                    d.flush()
+                    customer_id = customer.id
+
+                invoice_no = "INV-" + datetime.utcnow().strftime("%Y%m%d%H%M%S%f")[:-3]
+                invoice = Invoice(
+                    invoice_no=invoice_no,
+                    client_bill_id=client_bill_id or None,
+                    customer_id=customer_id,
+                    subtotal=subtotal,
+                    discount=discount,
+                    total=total,
+                    payment_mode=payment,
+                    paid=paid,
+                    due=due,
+                )
+                d.add(invoice)
+                d.flush()
+
+                for product, qty, price, amount in clean_items:
+                    product.quantity = int(product.quantity or 0) - qty
+                    d.add(InvoiceItem(
+                        invoice_id=invoice.id,
+                        product_id=product.id,
+                        product_name=product.name,
+                        quantity=qty,
+                        price=price,
+                        amount=amount,
+                    ))
+                    d.add(StockMovement(
+                        product_id=product.id,
+                        movement_type="Sale",
+                        quantity=-qty,
+                        note=invoice_no,
+                    ))
+
+                results.append({
+                    "local_id": op_id,
+                    "ok": True,
+                    "already_saved": False,
+                    "server_id": invoice.id,
+                    "invoice_no": invoice_no,
+                    "total": float(total),
+                    "due": float(due),
+                })
+
+            else:
+                raise ValueError(f"Unsupported sync operation: {op_type}")
+
+        d.commit()
+        return {
+            "ok": True,
+            "results": results,
+            "mappings": mappings,
+        }
+
+    except IntegrityError:
+        d.rollback()
+        return JSONResponse(
+            {"ok": False, "error": "Duplicate or conflicting data", "results": results},
+            status_code=409,
+        )
+    except Exception as e:
+        d.rollback()
+        return JSONResponse(
+            {"ok": False, "error": str(e), "results": results},
+            status_code=400,
+        )
+    finally:
         d.close()
 
 
@@ -1770,20 +1843,11 @@ async def save_bill(
 # CUSTOMERS PAGE
 # =========================================================
 
-@app.get(
-    "/customers",
-    response_class=HTMLResponse
-)
-def customers(
-    request: Request
-):
-
-    username = login_required(
-        request
-    )
+@app.get("/customers", response_class=HTMLResponse)
+def customers(request: Request):
+    username = login_required(request)
 
     if not username:
-
         return RedirectResponse(
             "/login",
             status_code=303
@@ -1792,14 +1856,9 @@ def customers(
     d = db()
 
     try:
-
         customers_list = (
-            d.query(
-                Customer
-            )
-            .order_by(
-                Customer.name
-            )
+            d.query(Customer)
+            .order_by(Customer.name)
             .all()
         )
 
@@ -1807,15 +1866,12 @@ def customers(
             request=request,
             name="customers.html",
             context={
-                "customers":
-                    customers_list,
-                "username":
-                    username
+                "customers": customers_list,
+                "username": username
             }
         )
 
     finally:
-
         d.close()
 
 
@@ -1823,20 +1879,14 @@ def customers(
 # ADD CUSTOMER
 # =========================================================
 
-@app.post(
-    "/customers/add"
-)
+@app.post("/customers/add")
 def add_customer(
     request: Request,
     name: str = Form(""),
     phone: str = Form(""),
     address: str = Form("")
 ):
-
-    if not login_required(
-        request
-    ):
-
+    if not login_required(request):
         return RedirectResponse(
             "/login",
             status_code=303
@@ -1845,24 +1895,17 @@ def add_customer(
     d = db()
 
     try:
-
         d.add(
             Customer(
-                name=name.strip()
-                or None,
-
-                phone=phone.strip()
-                or None,
-
-                address=address.strip()
-                or None
+                name=name.strip() or None,
+                phone=phone.strip() or None,
+                address=address.strip() or None
             )
         )
 
         d.commit()
 
     except Exception:
-
         d.rollback()
 
         return RedirectResponse(
@@ -1871,11 +1914,10 @@ def add_customer(
         )
 
     finally:
-
         d.close()
 
     return RedirectResponse(
-        "/customers",
+        "/customers?success=added",
         status_code=303
     )
 
@@ -1884,20 +1926,11 @@ def add_customer(
 # STOCK PAGE
 # =========================================================
 
-@app.get(
-    "/stock",
-    response_class=HTMLResponse
-)
-def stock(
-    request: Request
-):
-
-    username = login_required(
-        request
-    )
+@app.get("/stock", response_class=HTMLResponse)
+def stock(request: Request):
+    username = login_required(request)
 
     if not username:
-
         return RedirectResponse(
             "/login",
             status_code=303
@@ -1906,14 +1939,9 @@ def stock(
     d = db()
 
     try:
-
         products = (
-            d.query(
-                Product
-            )
-            .order_by(
-                Product.name
-            )
+            d.query(Product)
+            .order_by(Product.name)
             .all()
         )
 
@@ -1921,15 +1949,12 @@ def stock(
             request=request,
             name="stock.html",
             context={
-                "products":
-                    products,
-                "username":
-                    username
+                "products": products,
+                "username": username
             }
         )
 
     finally:
-
         d.close()
 
 
@@ -1937,21 +1962,14 @@ def stock(
 # REPORTS
 # =========================================================
 
-@app.get(
-    "/reports",
-    response_class=HTMLResponse
-)
+@app.get("/reports", response_class=HTMLResponse)
 def reports(
     request: Request,
     date: str = ""
 ):
-
-    username = login_required(
-        request
-    )
+    username = login_required(request)
 
     if not username:
-
         return RedirectResponse(
             "/login",
             status_code=303
@@ -1959,61 +1977,44 @@ def reports(
 
     report_date = (
         date
-        or datetime.now(
-            IST
-        ).strftime(
+        or datetime.now(IST).strftime(
             "%Y-%m-%d"
         )
     )
 
     try:
-
         selected = datetime.strptime(
             report_date,
             "%Y-%m-%d"
         ).date()
 
     except ValueError:
-
-        selected = datetime.now(
-            IST
-        ).date()
+        selected = datetime.now(IST).date()
 
         report_date = selected.strftime(
             "%Y-%m-%d"
         )
 
-    start_utc, end_utc = (
-        ist_day_to_utc_range(
-            selected
-        )
+    start_utc, end_utc = ist_day_to_utc_range(
+        selected
     )
 
     d = db()
 
     try:
-
         invoices = (
-            d.query(
-                Invoice
-            )
+            d.query(Invoice)
             .options(
-                joinedload(
-                    Invoice.customer
-                ),
-                joinedload(
-                    Invoice.items
-                ).joinedload(
+                joinedload(Invoice.customer),
+                joinedload(Invoice.items).joinedload(
                     InvoiceItem.product
                 )
             )
             .filter(
-                Invoice.created_at
-                >= start_utc
+                Invoice.created_at >= start_utc
             )
             .filter(
-                Invoice.created_at
-                < end_utc
+                Invoice.created_at < end_utc
             )
             .order_by(
                 Invoice.created_at.desc()
@@ -2021,24 +2022,12 @@ def reports(
             .all()
         )
 
-        sales = Decimal(
-            "0"
-        )
-
-        paid = Decimal(
-            "0"
-        )
-
-        due = Decimal(
-            "0"
-        )
-
-        net_profit = Decimal(
-            "0"
-        )
+        sales = Decimal("0")
+        paid = Decimal("0")
+        due = Decimal("0")
+        net_profit = Decimal("0")
 
         for invoice in invoices:
-
             invoice_total = Decimal(
                 str(
                     invoice.total
@@ -2062,12 +2051,9 @@ def reports(
                 )
             )
 
-            invoice_profit = Decimal(
-                "0"
-            )
+            invoice_profit = Decimal("0")
 
             for item in invoice.items:
-
                 selling_price = Decimal(
                     str(
                         item.price
@@ -2075,12 +2061,9 @@ def reports(
                     )
                 )
 
-                purchase_price = Decimal(
-                    "0"
-                )
+                purchase_price = Decimal("0")
 
                 if item.product:
-
                     purchase_price = Decimal(
                         str(
                             item.product.purchase_price
@@ -2100,9 +2083,7 @@ def reports(
                     - purchase_price
                 ) * quantity
 
-                invoice_profit += (
-                    item_profit
-                )
+                invoice_profit += item_profit
 
             discount = Decimal(
                 str(
@@ -2111,102 +2092,35 @@ def reports(
                 )
             )
 
-            invoice_profit -= (
-                discount
-            )
+            invoice_profit -= discount
 
             if invoice_profit < 0:
+                invoice_profit = Decimal("0")
 
-                invoice_profit = Decimal(
-                    "0"
-                )
+            # Temporary value for template use
+            invoice.net_profit = invoice_profit
 
-            invoice.net_profit = (
-                invoice_profit
-            )
-
-            net_profit += (
-                invoice_profit
-            )
+            net_profit += invoice_profit
 
         summary = {
-            "bills":
-                len(invoices),
-
-            "sales":
-                sales,
-
-            "paid":
-                paid,
-
-            "due":
-                due,
-
-            "net_profit":
-                net_profit
+            "bills": len(invoices),
+            "sales": sales,
+            "paid": paid,
+            "due": due,
+            "net_profit": net_profit
         }
 
         return templates.TemplateResponse(
             request=request,
             name="reports.html",
             context={
-                "invoices":
-                    invoices,
-
-                "username":
-                    username,
-
-                "report_date":
-                    report_date,
-
-                "summary":
-                    summary
+                "invoices": invoices,
+                "username": username,
+                "report_date": report_date,
+                "summary": summary
             }
         )
 
-    finally:
-
-        d.close()
-
-
-# =========================================================
-# PRINT / VIEW INVOICE
-# =========================================================
-
-@app.get(
-    "/invoice/{invoice_id}",
-    response_class=HTMLResponse
-)
-def view_invoice(
-    request: Request,
-    invoice_id: int
-):
-    if not login_required(request):
-        return RedirectResponse("/login", status_code=303)
-
-    d = db()
-    try:
-        invoice = (
-            d.query(Invoice)
-            .options(
-                joinedload(Invoice.customer),
-                joinedload(Invoice.items)
-            )
-            .filter(Invoice.id == invoice_id)
-            .first()
-        )
-
-        if not invoice:
-            return RedirectResponse("/reports", status_code=303)
-
-        return templates.TemplateResponse(
-            request=request,
-            name="invoice.html",
-            context={
-                "invoice": invoice,
-                "username": request.session.get("username")
-            }
-        )
     finally:
         d.close()
 
@@ -2215,18 +2129,12 @@ def view_invoice(
 # SHARE INVOICE ON WHATSAPP
 # =========================================================
 
-@app.get(
-    "/invoice/{invoice_id}/whatsapp"
-)
+@app.get("/invoice/{invoice_id}/whatsapp")
 def share_invoice_whatsapp(
     request: Request,
     invoice_id: int
 ):
-
-    if not login_required(
-        request
-    ):
-
+    if not login_required(request):
         return RedirectResponse(
             "/login",
             status_code=303
@@ -2235,39 +2143,27 @@ def share_invoice_whatsapp(
     d = db()
 
     try:
-
         invoice = (
-            d.query(
-                Invoice
-            )
+            d.query(Invoice)
             .options(
-                joinedload(
-                    Invoice.customer
-                ),
-                joinedload(
-                    Invoice.items
-                )
+                joinedload(Invoice.customer),
+                joinedload(Invoice.items)
             )
             .filter(
-                Invoice.id
-                == invoice_id
+                Invoice.id == invoice_id
             )
             .first()
         )
 
         if not invoice:
-
             return RedirectResponse(
                 "/reports",
                 status_code=303
             )
 
-        # CUSTOMER PHONE
-
         phone = ""
 
         if invoice.customer:
-
             phone = (
                 invoice.customer.phone
                 or ""
@@ -2280,32 +2176,18 @@ def share_invoice_whatsapp(
             .replace("+", "")
         )
 
-        if (
-            phone
-            and len(phone) == 10
-        ):
+        if phone and len(phone) == 10:
+            phone = "91" + phone
 
-            phone = (
-                "91"
-                + phone
-            )
-
-        # CUSTOMER NAME
-
-        customer_name = (
-            "Walk-in Customer"
-        )
+        customer_name = "Walk-in Customer"
 
         if (
             invoice.customer
             and invoice.customer.name
         ):
-
             customer_name = (
                 invoice.customer.name
             )
-
-        # DATE
 
         created_time = utc_to_ist(
             invoice.created_at
@@ -2314,24 +2196,18 @@ def share_invoice_whatsapp(
         date_text = ""
 
         if created_time:
-
             date_text = (
                 created_time.strftime(
                     "%d-%m-%Y %H:%M"
                 )
             )
 
-        # MESSAGE
-
         message = (
             "🧾 *SAWARIYA CONFECTIONARY*\n"
             "------------------------------\n\n"
-            f"*Invoice:* "
-            f"{invoice.invoice_no}\n"
-            f"*Date:* "
-            f"{date_text}\n\n"
-            f"*Customer:* "
-            f"{customer_name}\n"
+            f"*Invoice:* {invoice.invoice_no}\n"
+            f"*Date:* {date_text}\n\n"
+            f"*Customer:* {customer_name}\n"
         )
 
         message += (
@@ -2340,29 +2216,19 @@ def share_invoice_whatsapp(
         )
 
         for item in invoice.items:
-
             product_name = (
                 item.product_name
                 or "Product"
             )
 
-            qty = (
-                item.quantity
-                or 0
-            )
+            qty = item.quantity or 0
 
             price = Decimal(
-                str(
-                    item.price
-                    or 0
-                )
+                str(item.price or 0)
             )
 
             amount = Decimal(
-                str(
-                    item.amount
-                    or 0
-                )
+                str(item.amount or 0)
             )
 
             message += (
@@ -2379,19 +2245,14 @@ def share_invoice_whatsapp(
             "Thank you! 🙏"
         )
 
-        encoded_message = quote(
-            message
-        )
+        encoded_message = quote(message)
 
         if phone:
-
             whatsapp_url = (
                 f"https://wa.me/{phone}"
                 f"?text={encoded_message}"
             )
-
         else:
-
             whatsapp_url = (
                 "https://wa.me/"
                 f"?text={encoded_message}"
@@ -2403,5 +2264,4 @@ def share_invoice_whatsapp(
         )
 
     finally:
-
         d.close()
