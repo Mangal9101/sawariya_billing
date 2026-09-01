@@ -1,11 +1,10 @@
 /* =========================================================
    SAWARIYA BILLING SYSTEM
-   SERVICE WORKER
-   STABLE OFFLINE + ONLINE
+   FULL APP OFFLINE SERVICE WORKER
    ========================================================= */
 
 
-const CACHE_NAME = "sawariya-v20";
+const CACHE_NAME = "sawariya-offline-v10";
 
 
 /* =========================================================
@@ -16,9 +15,9 @@ const STATIC_FILES = [
 
     "/static/css/style.css",
 
-    "/static/js/offline-db.js",
-
     "/static/js/billing.js",
+
+    "/static/js/offline-db.js",
 
     "/manifest.json",
 
@@ -33,7 +32,7 @@ const STATIC_FILES = [
    APP PAGES
    ========================================================= */
 
-const APP_PAGES = [
+const APP_ROUTES = [
 
     "/",
 
@@ -52,12 +51,15 @@ const APP_PAGES = [
 ];
 
 
+
 /* =========================================================
    INSTALL
    ========================================================= */
 
 self.addEventListener(
+
     "install",
+
     event => {
 
         event.waitUntil(
@@ -71,11 +73,7 @@ self.addEventListener(
 
 
                 /*
-                 CACHE STATIC FILES
-
-                 Individual fetch use kar rahe hain
-                 taaki ek missing file se
-                 poora installation fail na ho.
+                 STATIC FILES CACHE
                 */
 
                 for (
@@ -89,13 +87,12 @@ self.addEventListener(
                                 path,
                                 {
                                     cache:
-                                        "no-store"
+                                        "reload"
                                 }
                             );
 
 
                         if (
-                            response &&
                             response.ok
                         ) {
 
@@ -128,7 +125,9 @@ self.addEventListener(
         );
 
     }
+
 );
+
 
 
 /* =========================================================
@@ -136,7 +135,9 @@ self.addEventListener(
    ========================================================= */
 
 self.addEventListener(
+
     "activate",
+
     event => {
 
         event.waitUntil(
@@ -156,9 +157,7 @@ self.addEventListener(
                         )
                         .map(
                             key =>
-                                caches.delete(
-                                    key
-                                )
+                                caches.delete(key)
                         )
 
                 );
@@ -171,7 +170,9 @@ self.addEventListener(
         );
 
     }
+
 );
+
 
 
 /* =========================================================
@@ -180,6 +181,7 @@ self.addEventListener(
 
 async function cacheAppPages() {
 
+
     const cache =
         await caches.open(
             CACHE_NAME
@@ -187,67 +189,32 @@ async function cacheAppPages() {
 
 
     for (
-        const path of APP_PAGES
+        const path of APP_ROUTES
     ) {
 
         try {
+
+            console.log(
+                "Caching page:",
+                path
+            );
+
 
             const response =
                 await fetch(
                     path,
                     {
-                        method:
-                            "GET",
-
                         credentials:
-                            "same-origin",
+                            "include",
 
                         cache:
-                            "no-store",
-
-                        redirect:
-                            "follow"
+                            "reload"
                     }
                 );
 
 
             /*
-             Redirected login page ko
-             galti se protected page ke naam
-             par cache nahi karna.
-            */
-
-            if (
-                !response ||
-                !response.ok
-            ) {
-
-                continue;
-
-            }
-
-
-            const contentType =
-                response.headers.get(
-                    "content-type"
-                ) || "";
-
-
-            if (
-                !contentType.includes(
-                    "text/html"
-                )
-            ) {
-
-                continue;
-
-            }
-
-
-            /*
-             Final URL check.
-             Agar login par redirect hua
-             to usko cache nahi karenge.
+             LOGIN REDIRECT KO CACHE NAHI KARNA
             */
 
             const finalUrl =
@@ -257,43 +224,55 @@ async function cacheAppPages() {
 
 
             if (
+
+                response.ok &&
+
+                response.type ===
+                    "basic" &&
+
                 finalUrl.pathname ===
-                "/login"
+                    path
+
             ) {
 
-                console.warn(
-                    "Not logged in, skipped:",
+                await cache.put(
+                    path,
+                    response.clone()
+                );
+
+
+                console.log(
+                    "Cached:",
                     path
                 );
 
-                continue;
-
             }
 
+            else {
 
-            /*
-             EXACT PATH CACHE
-            */
+                console.warn(
+                    "Page not cached:",
+                    path,
 
-            await cache.put(
-                path,
-                response.clone()
-            );
+                    "Final URL:",
 
+                    finalUrl.pathname
+                );
 
-            console.log(
-                "Cached page:",
-                path
-            );
+            }
 
         }
 
         catch (error) {
 
             console.warn(
+
                 "Could not cache:",
+
                 path,
+
                 error
+
             );
 
         }
@@ -303,47 +282,112 @@ async function cacheAppPages() {
 }
 
 
+
 /* =========================================================
-   MESSAGE
+   MESSAGE FROM APP
    ========================================================= */
 
 self.addEventListener(
+
     "message",
+
     event => {
+
 
         if (
 
-            event.data &&
-            event.data.type ===
+            event.data?.type ===
             "CACHE_APP_PAGES"
 
         ) {
 
             event.waitUntil(
+
                 cacheAppPages()
+
             );
 
         }
 
 
         /*
-         FORCE SKIP WAITING
+         SINGLE PAGE CACHE
         */
 
         if (
 
-            event.data &&
-            event.data.type ===
-            "SKIP_WAITING"
+            event.data?.type ===
+            "CACHE_CURRENT_PAGE"
 
         ) {
 
-            self.skipWaiting();
+            event.waitUntil(
+
+                (async () => {
+
+                    try {
+
+                        const path =
+                            event.data.path;
+
+
+                        if (!path) {
+
+                            return;
+
+                        }
+
+
+                        const cache =
+                            await caches.open(
+                                CACHE_NAME
+                            );
+
+
+                        const response =
+                            await fetch(
+                                path,
+                                {
+                                    credentials:
+                                        "include",
+
+                                    cache:
+                                        "reload"
+                                }
+                            );
+
+
+                        if (
+                            response.ok
+                        ) {
+
+                            await cache.put(
+                                path,
+                                response.clone()
+                            );
+
+                        }
+
+                    }
+
+                    catch (error) {
+
+                        console.warn(
+                            error
+                        );
+
+                    }
+
+                })()
+
+            );
 
         }
 
     }
+
 );
+
 
 
 /* =========================================================
@@ -351,8 +395,11 @@ self.addEventListener(
    ========================================================= */
 
 self.addEventListener(
+
     "fetch",
+
     event => {
+
 
         const request =
             event.request;
@@ -378,29 +425,20 @@ self.addEventListener(
 
 
         /*
-         ONLY SAME ORIGIN
+         API REQUESTS
+
+         API ko service worker cache nahi karega.
+
+         Offline API functionality
+         JavaScript + IndexedDB se handle hogi.
         */
 
         if (
 
-            url.origin !==
-            self.location.origin
-
-        ) {
-
-            return;
-
-        }
-
-
-        /*
-         API NEVER CACHE
-        */
-
-        if (
             url.pathname.startsWith(
                 "/api/"
             )
+
         ) {
 
             return;
@@ -409,12 +447,14 @@ self.addEventListener(
 
 
         /*
-         LOGOUT NEVER CACHE
+         LOGOUT OFFLINE CACHE NAHI
         */
 
         if (
+
             url.pathname ===
             "/logout"
+
         ) {
 
             return;
@@ -423,25 +463,44 @@ self.addEventListener(
 
 
         /* =================================================
-           NAVIGATION / HTML PAGE
-           NETWORK FIRST
-           CACHE FALLBACK
+           STATIC FILES
+           CACHE FIRST
            ================================================= */
 
         if (
-            request.mode ===
-            "navigate"
+
+            url.pathname.startsWith(
+                "/static/"
+            )
+
+            ||
+
+            url.pathname ===
+            "/manifest.json"
+
         ) {
+
 
             event.respondWith(
 
                 (async () => {
 
-                    try {
+                    const cached =
+                        await caches.match(
+                            request
+                        );
 
-                        /*
-                         ONLINE REQUEST
-                        */
+
+                    if (
+                        cached
+                    ) {
+
+                        return cached;
+
+                    }
+
+
+                    try {
 
                         const response =
                             await fetch(
@@ -449,43 +508,20 @@ self.addEventListener(
                             );
 
 
-                        /*
-                         SUCCESSFUL HTML CACHE UPDATE
-                        */
-
                         if (
-
-                            response &&
                             response.ok
-
                         ) {
 
-                            const contentType =
-                                response.headers.get(
-                                    "content-type"
-                                ) || "";
-
-
-                            if (
-
-                                contentType.includes(
-                                    "text/html"
-                                )
-
-                            ) {
-
-                                const cache =
-                                    await caches.open(
-                                        CACHE_NAME
-                                    );
-
-
-                                await cache.put(
-                                    url.pathname,
-                                    response.clone()
+                            const cache =
+                                await caches.open(
+                                    CACHE_NAME
                                 );
 
-                            }
+
+                            await cache.put(
+                                request,
+                                response.clone()
+                            );
 
                         }
 
@@ -496,8 +532,108 @@ self.addEventListener(
 
                     catch (error) {
 
+
+                        return new Response(
+                            "",
+                            {
+                                status: 503
+                            }
+                        );
+
+                    }
+
+                })()
+
+            );
+
+
+            return;
+
+        }
+
+
+        /* =================================================
+           HTML / APP PAGES
+           NETWORK FIRST
+           OFFLINE = CACHE
+           ================================================= */
+
+        if (
+
+            request.mode ===
+                "navigate"
+
+            ||
+
+            request.headers
+                .get("accept")
+                ?.includes(
+                    "text/html"
+                )
+
+        ) {
+
+
+            event.respondWith(
+
+                (async () => {
+
+
+                    /*
+                     ONLINE TRY
+                    */
+
+                    try {
+
+                        const response =
+                            await fetch(
+                                request
+                            );
+
+
+                        if (
+
+                            response.ok
+
+                            &&
+
+                            response.type ===
+                                "basic"
+
+                        ) {
+
+                            const cache =
+                                await caches.open(
+                                    CACHE_NAME
+                                );
+
+
+                            /*
+                             EXACT PATH CACHE
+                            */
+
+                            await cache.put(
+
+                                url.pathname,
+
+                                response.clone()
+
+                            );
+
+                        }
+
+
+                        return response;
+
+                    }
+
+
+                    catch (error) {
+
+
                         /*
-                         OFFLINE
+                         OFFLINE:
+                         EXACT PATH SEARCH
                         */
 
                         const cache =
@@ -506,17 +642,32 @@ self.addEventListener(
                             );
 
 
-                        /*
-                         FIRST:
-                         EXACT PAGE
-                        */
-
                         let cached =
                             await cache.match(
                                 url.pathname
                             );
 
 
+                        /*
+                         REQUEST MATCH
+                        */
+
+                        if (
+                            !cached
+                        ) {
+
+                            cached =
+                                await caches.match(
+                                    request,
+                                    {
+                                        ignoreSearch:
+                                            true
+                                    }
+                                );
+
+                        }
+
+
                         if (
                             cached
                         ) {
@@ -527,92 +678,86 @@ self.addEventListener(
 
 
                         /*
-                         SECOND:
-                         ROOT
+                         DASHBOARD FALLBACK
                         */
 
-                        cached =
+                        const dashboard =
                             await cache.match(
-                                "/"
+                                "/dashboard"
                             );
 
 
                         if (
-                            cached
+                            dashboard
                         ) {
 
-                            return cached;
+                            return dashboard;
 
                         }
 
 
                         /*
-                         FINAL OFFLINE PAGE
+                         LAST FALLBACK
                         */
 
                         return new Response(
 
                             `
-<!doctype html>
+                            <!doctype html>
 
-<html lang="en">
+                            <html>
 
-<head>
+                            <head>
 
-<meta charset="utf-8">
+                                <meta charset="utf-8">
 
-<meta
-name="viewport"
-content="width=device-width,initial-scale=1"
->
+                                <meta
+                                    name="viewport"
+                                    content="
+                                        width=device-width,
+                                        initial-scale=1
+                                    "
+                                >
 
-<title>
-Sawariya Offline
-</title>
+                                <title>
+                                    Sawariya Offline
+                                </title>
 
-<style>
+                            </head>
 
-body {
 
-    margin: 0;
+                            <body
+                                style="
+                                    font-family:Arial;
+                                    padding:30px;
+                                "
+                            >
 
-    padding: 30px;
+                                <h2>
+                                    Sawariya Billing
+                                </h2>
 
-    font-family:
-        Arial,
-        sans-serif;
 
-}
+                                <p>
+                                    Offline mode is active.
+                                </p>
 
-h1 {
 
-    color:
-        #7b3f18;
+                                <p>
+                                    This page has not been
+                                    cached yet.
+                                </p>
 
-}
 
-</style>
+                                <p>
+                                    Connect to the internet,
+                                    login once, and reload
+                                    the application.
+                                </p>
 
-</head>
+                            </body>
 
-<body>
-
-<h1>
-Sawariya Billing
-</h1>
-
-<p>
-Offline mode is active.
-</p>
-
-<p>
-This page is not available
-in the offline cache yet.
-</p>
-
-</body>
-
-</html>
+                            </html>
                             `,
 
                             {
@@ -643,96 +788,6 @@ in the offline cache yet.
         }
 
 
-        /* =================================================
-           STATIC FILES
-           CACHE FIRST
-           ================================================= */
-
-        if (
-
-            url.pathname.startsWith(
-                "/static/"
-            )
-
-            ||
-
-            url.pathname ===
-            "/manifest.json"
-
-        ) {
-
-            event.respondWith(
-
-                (async () => {
-
-                    const cached =
-                        await caches.match(
-                            request
-                        );
-
-
-                    if (
-                        cached
-                    ) {
-
-                        return cached;
-
-                    }
-
-
-                    try {
-
-                        const response =
-                            await fetch(
-                                request
-                            );
-
-
-                        if (
-
-                            response &&
-                            response.ok
-
-                        ) {
-
-                            const cache =
-                                await caches.open(
-                                    CACHE_NAME
-                                );
-
-
-                            await cache.put(
-                                request,
-                                response.clone()
-                            );
-
-                        }
-
-
-                        return response;
-
-                    }
-
-                    catch (error) {
-
-                        return new Response(
-                            "",
-                            {
-                                status:
-                                    503
-                            }
-                        );
-
-                    }
-
-                })()
-
-            );
-
-
-            return;
-
-        }
-
     }
+
 );
