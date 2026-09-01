@@ -458,10 +458,26 @@ def manifest():
 def service_worker():
 
     return FileResponse(
-        os.path.join(BASE_DIR, "static", "service-worker.js"),
-        media_type="application/javascript"
-    )
+        os.path.join(
+            BASE_DIR,
+            "static",
+            "service-worker.js"
+        ),
+        media_type="application/javascript",
+        headers={
+            "Cache-Control":
+                "no-cache, no-store, must-revalidate",
 
+            "Pragma":
+                "no-cache",
+
+            "Expires":
+                "0",
+
+            "Service-Worker-Allowed":
+                "/"
+        }
+    )
 
 # =========================================================
 # TEMPLATES
