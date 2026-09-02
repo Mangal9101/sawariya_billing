@@ -2,1021 +2,880 @@
 
 {% block content %}
 
-<main class="print-page">
-    <section class="panel invoice-print" id="invoicePrintArea">
-
-```
-    <div class="invoice-print-head">
-        <div>
-            <h1>SAWARIYA CONFECTIONARY</h1>
-            <p>Invoice / Bill</p>
-        </div>
-
-        <div class="invoice-meta">
-            <b>{{ invoice.invoice_no }}</b><br>
-            {{ invoice.created_at|ist_time_text }}
-        </div>
-    </div>
-
-    <div class="invoice-customer">
-        <b>Customer:</b>
-        {{ invoice.customer.name if invoice.customer and invoice.customer.name else 'Walk-in Customer' }}
-
-        {% if invoice.customer and invoice.customer.phone %}
-            &nbsp; | &nbsp;
-            <b>Mobile:</b> {{ invoice.customer.phone }}
-        {% endif %}
-
-        {% if invoice.customer and invoice.customer.address %}
-            &nbsp; | &nbsp;
-            <b>Address:</b> {{ invoice.customer.address }}
-        {% endif %}
-    </div>
-
-    <table id="invoiceTable">
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th>Qty</th>
-                <th>Price</th>
-                <th>Amount</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {% for item in invoice.items %}
-            <tr>
-                <td>{{ item.product_name }}</td>
-                <td>{{ item.quantity }}</td>
-                <td>₹{{ '%.2f'|format(item.price|float) }}</td>
-                <td>₹{{ '%.2f'|format(item.amount|float) }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <div class="invoice-totals">
-
-        <div>
-            Subtotal:
-            <b>₹{{ '%.2f'|format(invoice.subtotal|float) }}</b>
-        </div>
-
-        <div>
-            Discount:
-            <b>₹{{ '%.2f'|format(invoice.discount|float) }}</b>
-        </div>
-
-        <div class="invoice-grand">
-            Total:
-            <b>₹{{ '%.2f'|format(invoice.total|float) }}</b>
-        </div>
-
-        <div>
-            Paid:
-            <b>₹{{ '%.2f'|format(invoice.paid|float) }}</b>
-        </div>
-
-        <div>
-            Due:
-            <b>₹{{ '%.2f'|format(invoice.due|float) }}</b>
-        </div>
-
-        <div>
-            Payment:
-            <b>{{ invoice.payment_mode }}</b>
-        </div>
-
-    </div>
-
-    <p class="invoice-thanks">
-        Thank you! 🙏
-    </p>
-
-    <!-- ACTION BUTTONS -->
-    <div class="no-print invoice-actions">
-
-        <button
-            type="button"
-            class="btn"
-            onclick="window.print()">
-            🖨️ Print Bill
-        </button>
-
-        <button
-            type="button"
-            class="btn whatsapp-btn"
-            id="whatsappShareBtn"
-            onclick="shareInvoiceOnWhatsApp()">
-            📱 WhatsApp PDF
-        </button>
-
-        <a
-            class="btn secondary"
-            href="/billing">
-            New Bill
-        </a>
-
-        <a
-            class="btn secondary"
-            href="/reports">
-            Reports
-        </a>
-
-    </div>
-
-    <!-- WhatsApp status -->
-    <div
-        id="whatsappStatus"
-        class="no-print whatsapp-status">
-    </div>
-
+<main class="print-page">  
+    <section class="panel invoice-print" id="invoicePrintArea">  <div class="invoice-print-head">  
+        <div>  
+            <h1>SAWARIYA CONFECTIONARY</h1>  
+            <p>Invoice / Bill</p>  
+        </div>  
+  
+        <div class="invoice-meta">  
+            <b>{{ invoice.invoice_no }}</b><br>  
+            {{ invoice.created_at|ist_time_text }}  
+        </div>  
+    </div>  
+  
+    <div class="invoice-customer">  
+        <b>Customer:</b>  
+        {{ invoice.customer.name if invoice.customer and invoice.customer.name else 'Walk-in Customer' }}  
+  
+        {% if invoice.customer and invoice.customer.phone %}  
+            &nbsp; | &nbsp;  
+            <b>Mobile:</b> {{ invoice.customer.phone }}  
+        {% endif %}  
+  
+        {% if invoice.customer and invoice.customer.address %}  
+            &nbsp; | &nbsp;  
+            <b>Address:</b> {{ invoice.customer.address }}  
+        {% endif %}  
+    </div>  
+  
+    <table id="invoiceTable">  
+        <thead>  
+            <tr>  
+                <th>Product</th>  
+                <th>Qty</th>  
+                <th>Price</th>  
+                <th>Amount</th>  
+            </tr>  
+        </thead>  
+  
+        <tbody>  
+            {% for item in invoice.items %}  
+            <tr>  
+                <td>{{ item.product_name }}</td>  
+                <td>{{ item.quantity }}</td>  
+                <td>₹{{ '%.2f'|format(item.price|float) }}</td>  
+                <td>₹{{ '%.2f'|format(item.amount|float) }}</td>  
+            </tr>  
+            {% endfor %}  
+        </tbody>  
+    </table>  
+  
+    <div class="invoice-totals">  
+  
+        <div>  
+            Subtotal:  
+            <b>₹{{ '%.2f'|format(invoice.subtotal|float) }}</b>  
+        </div>  
+  
+        <div>  
+            Discount:  
+            <b>₹{{ '%.2f'|format(invoice.discount|float) }}</b>  
+        </div>  
+  
+        <div class="invoice-grand">  
+            Total:  
+            <b>₹{{ '%.2f'|format(invoice.total|float) }}</b>  
+        </div>  
+  
+        <div>  
+            Paid:  
+            <b>₹{{ '%.2f'|format(invoice.paid|float) }}</b>  
+        </div>  
+  
+        <div>  
+            Due:  
+            <b>₹{{ '%.2f'|format(invoice.due|float) }}</b>  
+        </div>  
+  
+        <div>  
+            Payment:  
+            <b>{{ invoice.payment_mode }}</b>  
+        </div>  
+  
+    </div>  
+  
+    <p class="invoice-thanks">  
+        Thank you! 🙏  
+    </p>  
+  
+    <!-- ACTION BUTTONS -->  
+    <div class="no-print invoice-actions">  
+  
+        <button  
+            type="button"  
+            class="btn"  
+            onclick="window.print()">  
+            🖨️ Print Bill  
+        </button>  
+  
+        <button  
+            type="button"  
+            class="btn whatsapp-btn"  
+            id="whatsappShareBtn"  
+            onclick="shareInvoiceOnWhatsApp()">  
+            📱 WhatsApp PDF  
+        </button>  
+  
+        <a  
+            class="btn secondary"  
+            href="/billing">  
+            New Bill  
+        </a>  
+  
+        <a  
+            class="btn secondary"  
+            href="/reports">  
+            Reports  
+        </a>  
+  
+    </div>  
+  
+    <!-- WhatsApp status -->  
+    <div  
+        id="whatsappStatus"  
+        class="no-print whatsapp-status">  
+    </div>  
+  
 </section>
-```
 
-</main>
-
-<style>
-
-/* =========================================================
-   INVOICE PRINT PAGE
-   ========================================================= */
-
-.invoice-print {
-    max-width: 900px;
-    margin: 20px auto;
-}
-
-.invoice-print-head {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-    border-bottom: 2px solid #222;
-    padding-bottom: 14px;
-}
-
-.invoice-print-head h1 {
-    margin: 0;
-}
-
-.invoice-meta {
-    text-align: right;
-}
-
-.invoice-customer {
-    padding: 14px 0;
-}
-
-.invoice-print table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.invoice-print th,
-.invoice-print td {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-    text-align: left;
-}
-
-.invoice-print th:nth-child(n+2),
-.invoice-print td:nth-child(n+2) {
-    text-align: right;
-}
-
-.invoice-totals {
-    margin: 18px 0 0 auto;
-    max-width: 320px;
-    display: grid;
-    gap: 7px;
-    text-align: right;
-}
-
-.invoice-grand {
-    font-size: 20px;
-    border-top: 2px solid #222;
-    padding-top: 8px;
-}
-
-.invoice-thanks {
-    text-align: center;
-    margin-top: 28px;
-    font-weight: 700;
-}
-
-
-/* =========================================================
-   ACTION BUTTONS
-   ========================================================= */
-
-.invoice-actions {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 20px;
-}
-
-.whatsapp-btn {
-    background: #25D366 !important;
-    color: #fff !important;
-    border: none !important;
-    cursor: pointer;
-}
-
-.whatsapp-btn:hover {
-    opacity: 0.9;
-}
-
-.whatsapp-btn:disabled {
-    opacity: 0.6;
-    cursor: wait;
-}
-
-
-/* =========================================================
-   WHATSAPP STATUS
-   ========================================================= */
-
-.whatsapp-status {
-    margin-top: 12px;
-    text-align: center;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
-@media (max-width: 600px) {
-
-    .invoice-print {
-        margin: 10px auto;
-        width: 100%;
-    }
-
-    .invoice-print-head {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .invoice-meta {
-        text-align: left;
-    }
-
-    .invoice-print table {
-        font-size: 13px;
-    }
-
-    .invoice-print th,
-    .invoice-print td {
-        padding: 7px 5px;
-    }
-
-    .invoice-actions {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-    }
-
-    .invoice-actions .btn {
-        width: 100%;
-        text-align: center;
-    }
-
-    .whatsapp-btn {
-        grid-column: span 2;
-    }
-
-}
-
-
-/* =========================================================
-   PRINT
-   ========================================================= */
-
-@media print {
-
-    nav,
-    .no-print {
-        display: none !important;
-    }
-
-    body {
-        background: #fff !important;
-    }
-
-    .panel {
-        box-shadow: none !important;
-        border: 0 !important;
-    }
-
-    .print-page {
-        margin: 0 !important;
-    }
-
-    .invoice-print {
-        max-width: none !important;
-        margin: 0 !important;
-    }
-
-}
-
-</style>
-
-<!-- =========================================================
-     PDF LIBRARY
-     ========================================================= -->
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-<script>
-
-/* =========================================================
-   SAWARIYA BILLING
-   WHATSAPP PDF SHARE
-   ========================================================= */
-
-async function shareInvoiceOnWhatsApp() {
-
-    const button = document.getElementById("whatsappShareBtn");
-    const status = document.getElementById("whatsappStatus");
-
-    if (!button) {
-        return;
-    }
-
-    button.disabled = true;
-    button.innerHTML = "⏳ PDF बन रही है...";
-
-    if (status) {
-        status.innerText = "";
-    }
-
-
-    try {
-
-        /* -------------------------------------------------
-           GET CUSTOMER INFORMATION
-           ------------------------------------------------- */
-
-        const customerName =
-            {{ (invoice.customer.name if invoice.customer and invoice.customer.name else 'Walk-in Customer')|tojson }};
-
-        const customerPhone =
-            {{ (invoice.customer.phone if invoice.customer and invoice.customer.phone else '')|tojson }};
-
-        const invoiceNo =
-            {{ invoice.invoice_no|tojson }};
-
-        const invoiceDate =
-            {{ (invoice.created_at|ist_time_text)|tojson }};
-
-        const subtotal =
-            {{ invoice.subtotal|float }};
-
-        const discount =
-            {{ invoice.discount|float }};
-
-        const total =
-            {{ invoice.total|float }};
-
-        const paid =
-            {{ invoice.paid|float }};
-
-        const due =
-            {{ invoice.due|float }};
-
-        const paymentMode =
-            {{ invoice.payment_mode|tojson }};
-
-
-        /* -------------------------------------------------
-           CHECK PDF LIBRARY
-           ------------------------------------------------- */
-
-        if (!window.jspdf || !window.jspdf.jsPDF) {
-
-            throw new Error(
-                "PDF library load नहीं हुई। Internet connection check करें।"
-            );
-
-        }
-
-
-        const { jsPDF } = window.jspdf;
-
-        const doc = new jsPDF({
-            orientation: "portrait",
-            unit: "mm",
-            format: "a4"
-        });
-
-
-        /* -------------------------------------------------
-           PDF HEADER
-           ------------------------------------------------- */
-
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(18);
-
-        doc.text(
-            "SAWARIYA CONFECTIONARY",
-            105,
-            18,
-            { align: "center" }
-        );
-
-
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(11);
-
-        doc.text(
-            "Invoice / Bill",
-            105,
-            25,
-            { align: "center" }
-        );
-
-
-        doc.setLineWidth(0.5);
-
-        doc.line(
-            15,
-            29,
-            195,
-            29
-        );
-
-
-        /* -------------------------------------------------
-           INVOICE INFORMATION
-           ------------------------------------------------- */
-
-        doc.setFontSize(10);
-
-        doc.text(
-            "Invoice No: " + invoiceNo,
-            15,
-            38
-        );
-
-        doc.text(
-            "Date: " + invoiceDate,
-            15,
-            45
-        );
-
-        doc.text(
-            "Customer: " + customerName,
-            15,
-            52
-        );
-
-        if (customerPhone) {
-
-            doc.text(
-                "Mobile: " + customerPhone,
-                15,
-                59
-            );
-
-        }
-
-
-        /* -------------------------------------------------
-           TABLE
-           ------------------------------------------------- */
-
-        let y = customerPhone ? 68 : 61;
-
-        doc.setFont("helvetica", "bold");
-
-        doc.text("Product", 15, y);
-        doc.text("Qty", 120, y);
-        doc.text("Price", 145, y);
-        doc.text("Amount", 175, y);
-
-        doc.line(
-            15,
-            y + 2,
-            195,
-            y + 2
-        );
-
-        y += 9;
-
-        doc.setFont("helvetica", "normal");
-
-
-        {% for item in invoice.items %}
-
-        doc.text(
-            {{ item.product_name|tojson }},
-            15,
-            y
-        );
-
-        doc.text(
-            String({{ item.quantity }}),
-            125,
-            y,
-            { align: "right" }
-        );
-
-        doc.text(
-            "Rs. " + Number({{ item.price|float }}).toFixed(2),
-            165,
-            y,
-            { align: "right" }
-        );
-
-        doc.text(
-            "Rs. " + Number({{ item.amount|float }}).toFixed(2),
-            195,
-            y,
-            { align: "right" }
-        );
-
-        y += 8;
-
-
-        /* New page if many products */
-
-        if (y > 270) {
-
-            doc.addPage();
-
-            y = 20;
-
-        }
-
-        {% endfor %}
-
-
-        /* -------------------------------------------------
-           TOTALS
-           ------------------------------------------------- */
-
-        y += 5;
-
-        doc.line(
-            120,
-            y,
-            195,
-            y
-        );
-
-        y += 8;
-
-        doc.text(
-            "Subtotal:",
-            150,
-            y,
-            { align: "right" }
-        );
-
-        doc.text(
-            "Rs. " + Number(subtotal).toFixed(2),
-            195,
-            y,
-            { align: "right" }
-        );
-
-        y += 7;
-
-        doc.text(
-            "Discount:",
-            150,
-            y,
-            { align: "right" }
-        );
-
-        doc.text(
-            "Rs. " + Number(discount).toFixed(2),
-            195,
-            y,
-            { align: "right" }
-        );
-
-        y += 9;
-
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(13);
-
-        doc.text(
-            "TOTAL:",
-            150,
-            y,
-            { align: "right" }
-        );
-
-        doc.text(
-            "Rs. " + Number(total).toFixed(2),
-            195,
-            y,
-            { align: "right" }
-        );
-
-        y += 9;
-
-        doc.setFontSize(10);
-
-        doc.text(
-            "Paid:",
-            150,
-            y,
-            { align: "right" }
-        );
-
-        doc.text(
-            "Rs. " + Number(paid).toFixed(2),
-            195,
-            y,
-            { align: "right" }
-        );
-
-        y += 7;
-
-        doc.text(
-            "Due:",
-            150,
-            y,
-            { align: "right" }
-        );
-
-        doc.text(
-            "Rs. " + Number(due).toFixed(2),
-            195,
-            y,
-            { align: "right" }
-        );
-
-        y += 7;
-
-        doc.text(
-            "Payment:",
-            150,
-            y,
-            { align: "right" }
-        );
-
-        doc.text(
-            paymentMode,
-            195,
-            y,
-            { align: "right" }
-        );
-
-
-        /* -------------------------------------------------
-           THANK YOU
-           ------------------------------------------------- */
-
-        y += 18;
-
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(12);
-
-        doc.text(
-            "Thank you!",
-            105,
-            y,
-            { align: "center" }
-        );
-
-
-        /* -------------------------------------------------
-           CREATE PDF FILE
-           ------------------------------------------------- */
-
-        const pdfBlob =
-            doc.output("blob");
-
-        const fileName =
-            "Sawariya_Bill_" +
-            invoiceNo.replace(/[^a-zA-Z0-9_-]/g, "_") +
-            ".pdf";
-
-        const pdfFile =
-            new File(
-                [pdfBlob],
-                fileName,
-                {
-                    type: "application/pdf"
-                }
-            );
-
-
-        /* -------------------------------------------------
-           MOBILE SHARE
-           ------------------------------------------------- */
-/* -------------------------------------------------
-   OPEN CUSTOMER WHATSAPP CHAT DIRECTLY
-   ------------------------------------------------- */
-
-if (!customerPhone) {
-
-    throw new Error(
-        "Customer mobile number उपलब्ध नहीं है।"
-    );
-
-}
-
-
-let phone =
-    String(customerPhone)
-    .replace(/\D/g, "");
-
-
-/* Indian mobile number */
-
-if (
-    phone.length === 10 &&
-    (
-        phone.startsWith("6") ||
-        phone.startsWith("7") ||
-        phone.startsWith("8") ||
-        phone.startsWith("9")
-    )
-) {
-
-    phone = "91" + phone;
-
-}
-
-
-/* -------------------------------------------------
-   WHATSAPP MESSAGE
-   ------------------------------------------------- */
-
-const message =
-    "Namaste " +
-    customerName +
-    ",\n\n" +
-    "SAWARIYA CONFECTIONARY का आपका Bill तैयार है.\n\n" +
-    "Invoice: " +
-    invoiceNo +
-    "\n" +
-    "Total: Rs. " +
-    Number(total).toFixed(2) +
-    "\n" +
-    "Paid: Rs. " +
-    Number(paid).toFixed(2) +
-    "\n" +
-    "Due: Rs. " +
-    Number(due).toFixed(2) +
-    "\n\n" +
-    "धन्यवाद 🙏";
-
-
-/* -------------------------------------------------
-   DIRECT CUSTOMER CHAT
-   ------------------------------------------------- */
-
-const whatsappUrl =
-    "https://wa.me/" +
-    phone +
-    "?text=" +
-    encodeURIComponent(message);
-
-
-/*
-   पहले customer का WhatsApp chat खोलो
-*/
-
-window.open(
-    whatsappUrl,
-    "_blank"
-);
-
-
-/* -------------------------------------------------
-   SHARE PDF
-   ------------------------------------------------- */
-
-if (
-    navigator.share &&
-    navigator.canShare &&
-    navigator.canShare({
-        files: [pdfFile]
-    })
-) {
-
-    try {
-
-        await navigator.share({
-
-            title:
-                "Sawariya Bill - " +
-                invoiceNo,
-
-            text:
-                "Invoice PDF - " +
-                invoiceNo,
-
-            files:
-                [pdfFile]
-
-        });
-
-    }
-
-    catch (shareError) {
-
-        console.log(
-            "PDF share cancelled/error:",
-            shareError
-        );
-
-    }
-
-}
-
-
-/* -------------------------------------------------
-   FALLBACK DOWNLOAD
-   ------------------------------------------------- */
-
-else {
-
-    const downloadUrl =
-        URL.createObjectURL(pdfBlob);
-
-    const a =
-        document.createElement("a");
-
-    a.href =
-        downloadUrl;
-
-    a.download =
-        fileName;
-
-    document.body.appendChild(a);
-
-    a.click();
-
-    a.remove();
-
-    setTimeout(() => {
-
-        URL.revokeObjectURL(downloadUrl);
-
-    }, 1000);
-
-}
-
-
-/* -------------------------------------------------
-   STATUS
-   ------------------------------------------------- */
-
-if (status) {
-
-    status.innerText =
-        "✅ Customer का WhatsApp chat खुल गया। PDF को WhatsApp में attach करके भेजें।";
-
-}
-        
-      
-
-*/ -------------------------------------------------
-               DESKTOP / UNSUPPORTED BROWSER
-               DOWNLOAD PDF
-               ------------------------------------------------- */
-
-            const downloadUrl =
-                URL.createObjectURL(pdfBlob);
-
-            const a =
-                document.createElement("a");
-
-            a.href =
-                downloadUrl;
-
-            a.download =
-                fileName;
-
-            document.body.appendChild(a);
-
-            a.click();
-
-            a.remove();
-
-            URL.revokeObjectURL(downloadUrl);
-
-
-            /* WhatsApp customer number */
-
-            if (customerPhone) {
-
-                let phone =
-                    String(customerPhone)
-                    .replace(/\D/g, "");
-
-                /*
-                   Indian number:
-                   9876543210
-                   -> 919876543210
-                */
-
-                if (
-                    phone.length === 10 &&
-                    phone.startsWith("6") ||
-                    phone.startsWith("7") ||
-                    phone.startsWith("8") ||
-                    phone.startsWith("9")
-                ) {
-
-                    phone =
-                        "91" + phone;
-
-                }
-
-
-                const message =
-                    "Namaste " +
-                    customerName +
-                    ",\n\n" +
-                    "SAWARIYA CONFECTIONARY का आपका Bill " +
-                    invoiceNo +
-                    " तैयार है.\n\n" +
-                    "Total: Rs. " +
-                    Number(total).toFixed(2) +
-                    "\n" +
-                    "Paid: Rs. " +
-                    Number(paid).toFixed(2) +
-                    "\n" +
-                    "Due: Rs. " +
-                    Number(due).toFixed(2) +
-                    "\n\n" +
-                    "PDF अभी download हो गई है। WhatsApp में इसे attach करके भेज दें।";
-
-
-                const whatsappUrl =
-                    "https://wa.me/" +
-                    phone +
-                    "?text=" +
-                    encodeURIComponent(message);
-
-
-                window.open(
-                    whatsappUrl,
-                    "_blank"
-                );
-
-
-                if (status) {
-
-                    status.innerText =
-                        "✅ PDF download हो गई और WhatsApp customer chat खुल गई। PDF attach करके Send करें।";
-
-                }
-
-            }
-
-            else {
-
-                if (status) {
-
-                    status.innerText =
-                        "✅ PDF download हो गई। Customer mobile number उपलब्ध नहीं है।";
-
-                }
-
-            }
-
-        }
-
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "WhatsApp PDF Error:",
-            error
-        );
-
-        if (status) {
-
-            status.innerText =
-                "❌ PDF share नहीं हो पाई। " +
-                (error.message || "");
-
-        }
-
-    }
-
-
-    button.disabled = false;
-
-    button.innerHTML =
-        "📱 WhatsApp PDF";
-
-}
-
-</script>
-
-{% endblock %}
+</main>  <style>  
+  
+/* =========================================================  
+   INVOICE PRINT PAGE  
+   ========================================================= */  
+  
+.invoice-print {  
+    max-width: 900px;  
+    margin: 20px auto;  
+}  
+  
+.invoice-print-head {  
+    display: flex;  
+    justify-content: space-between;  
+    gap: 20px;  
+    border-bottom: 2px solid #222;  
+    padding-bottom: 14px;  
+}  
+  
+.invoice-print-head h1 {  
+    margin: 0;  
+}  
+  
+.invoice-meta {  
+    text-align: right;  
+}  
+  
+.invoice-customer {  
+    padding: 14px 0;  
+}  
+  
+.invoice-print table {  
+    width: 100%;  
+    border-collapse: collapse;  
+}  
+  
+.invoice-print th,  
+.invoice-print td {  
+    padding: 10px;  
+    border-bottom: 1px solid #ddd;  
+    text-align: left;  
+}  
+  
+.invoice-print th:nth-child(n+2),  
+.invoice-print td:nth-child(n+2) {  
+    text-align: right;  
+}  
+  
+.invoice-totals {  
+    margin: 18px 0 0 auto;  
+    max-width: 320px;  
+    display: grid;  
+    gap: 7px;  
+    text-align: right;  
+}  
+  
+.invoice-grand {  
+    font-size: 20px;  
+    border-top: 2px solid #222;  
+    padding-top: 8px;  
+}  
+  
+.invoice-thanks {  
+    text-align: center;  
+    margin-top: 28px;  
+    font-weight: 700;  
+}  
+  
+  
+/* =========================================================  
+   ACTION BUTTONS  
+   ========================================================= */  
+  
+.invoice-actions {  
+    display: flex;  
+    gap: 10px;  
+    flex-wrap: wrap;  
+    margin-top: 20px;  
+}  
+  
+.whatsapp-btn {  
+    background: #25D366 !important;  
+    color: #fff !important;  
+    border: none !important;  
+    cursor: pointer;  
+}  
+  
+.whatsapp-btn:hover {  
+    opacity: 0.9;  
+}  
+  
+.whatsapp-btn:disabled {  
+    opacity: 0.6;  
+    cursor: wait;  
+}  
+  
+  
+/* =========================================================  
+   WHATSAPP STATUS  
+   ========================================================= */  
+  
+.whatsapp-status {  
+    margin-top: 12px;  
+    text-align: center;  
+    font-size: 14px;  
+    font-weight: 600;  
+}  
+  
+  
+/* =========================================================  
+   MOBILE  
+   ========================================================= */  
+  
+@media (max-width: 600px) {  
+  
+    .invoice-print {  
+        margin: 10px auto;  
+        width: 100%;  
+    }  
+  
+    .invoice-print-head {  
+        flex-direction: column;  
+        gap: 10px;  
+    }  
+  
+    .invoice-meta {  
+        text-align: left;  
+    }  
+  
+    .invoice-print table {  
+        font-size: 13px;  
+    }  
+  
+    .invoice-print th,  
+    .invoice-print td {  
+        padding: 7px 5px;  
+    }  
+  
+    .invoice-actions {  
+        display: grid;  
+        grid-template-columns: 1fr 1fr;  
+        gap: 8px;  
+    }  
+  
+    .invoice-actions .btn {  
+        width: 100%;  
+        text-align: center;  
+    }  
+  
+    .whatsapp-btn {  
+        grid-column: span 2;  
+    }  
+  
+}  
+  
+  
+/* =========================================================  
+   PRINT  
+   ========================================================= */  
+  
+@media print {  
+  
+    nav,  
+    .no-print {  
+        display: none !important;  
+    }  
+  
+    body {  
+        background: #fff !important;  
+    }  
+  
+    .panel {  
+        box-shadow: none !important;  
+        border: 0 !important;  
+    }  
+  
+    .print-page {  
+        margin: 0 !important;  
+    }  
+  
+    .invoice-print {  
+        max-width: none !important;  
+        margin: 0 !important;  
+    }  
+  
+}  
+  
+</style>  <!-- =========================================================  
+     PDF LIBRARY  
+     ========================================================= -->  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>  <script>  
+  
+/* =========================================================  
+   SAWARIYA BILLING  
+   WHATSAPP PDF SHARE  
+   ========================================================= */  
+  
+async function shareInvoiceOnWhatsApp() {  
+  
+    const button = document.getElementById("whatsappShareBtn");  
+    const status = document.getElementById("whatsappStatus");  
+  
+    if (!button) {  
+        return;  
+    }  
+  
+    button.disabled = true;  
+    button.innerHTML = "⏳ PDF बन रही है...";  
+  
+    if (status) {  
+        status.innerText = "";  
+    }  
+  
+  
+    try {  
+  
+        /* -------------------------------------------------  
+           GET CUSTOMER INFORMATION  
+           ------------------------------------------------- */  
+  
+        const customerName =  
+            {{ (invoice.customer.name if invoice.customer and invoice.customer.name else 'Walk-in Customer')|tojson }};  
+  
+        const customerPhone =  
+            {{ (invoice.customer.phone if invoice.customer and invoice.customer.phone else '')|tojson }};  
+  
+        const invoiceNo =  
+            {{ invoice.invoice_no|tojson }};  
+  
+        const invoiceDate =  
+            {{ (invoice.created_at|ist_time_text)|tojson }};  
+  
+        const subtotal =  
+            {{ invoice.subtotal|float }};  
+  
+        const discount =  
+            {{ invoice.discount|float }};  
+  
+        const total =  
+            {{ invoice.total|float }};  
+  
+        const paid =  
+            {{ invoice.paid|float }};  
+  
+        const due =  
+            {{ invoice.due|float }};  
+  
+        const paymentMode =  
+            {{ invoice.payment_mode|tojson }};  
+  
+  
+        /* -------------------------------------------------  
+           CHECK PDF LIBRARY  
+           ------------------------------------------------- */  
+  
+        if (!window.jspdf || !window.jspdf.jsPDF) {  
+  
+            throw new Error(  
+                "PDF library load नहीं हुई। Internet connection check करें।"  
+            );  
+  
+        }  
+  
+  
+        const { jsPDF } = window.jspdf;  
+  
+        const doc = new jsPDF({  
+            orientation: "portrait",  
+            unit: "mm",  
+            format: "a4"  
+        });  
+  
+  
+        /* -------------------------------------------------  
+           PDF HEADER  
+           ------------------------------------------------- */  
+  
+        doc.setFont("helvetica", "bold");  
+        doc.setFontSize(18);  
+  
+        doc.text(  
+            "SAWARIYA CONFECTIONARY",  
+            105,  
+            18,  
+            { align: "center" }  
+        );  
+  
+  
+        doc.setFont("helvetica", "normal");  
+        doc.setFontSize(11);  
+  
+        doc.text(  
+            "Invoice / Bill",  
+            105,  
+            25,  
+            { align: "center" }  
+        );  
+  
+  
+        doc.setLineWidth(0.5);  
+  
+        doc.line(  
+            15,  
+            29,  
+            195,  
+            29  
+        );  
+  
+  
+        /* -------------------------------------------------  
+           INVOICE INFORMATION  
+           ------------------------------------------------- */  
+  
+        doc.setFontSize(10);  
+  
+        doc.text(  
+            "Invoice No: " + invoiceNo,  
+            15,  
+            38  
+        );  
+  
+        doc.text(  
+            "Date: " + invoiceDate,  
+            15,  
+            45  
+        );  
+  
+        doc.text(  
+            "Customer: " + customerName,  
+            15,  
+            52  
+        );  
+  
+        if (customerPhone) {  
+  
+            doc.text(  
+                "Mobile: " + customerPhone,  
+                15,  
+                59  
+            );  
+  
+        }  
+  
+  
+        /* -------------------------------------------------  
+           TABLE  
+           ------------------------------------------------- */  
+  
+        let y = customerPhone ? 68 : 61;  
+  
+        doc.setFont("helvetica", "bold");  
+  
+        doc.text("Product", 15, y);  
+        doc.text("Qty", 120, y);  
+        doc.text("Price", 145, y);  
+        doc.text("Amount", 175, y);  
+  
+        doc.line(  
+            15,  
+            y + 2,  
+            195,  
+            y + 2  
+        );  
+  
+        y += 9;  
+  
+        doc.setFont("helvetica", "normal");  
+  
+  
+        {% for item in invoice.items %}  
+  
+        doc.text(  
+            {{ item.product_name|tojson }},  
+            15,  
+            y  
+        );  
+  
+        doc.text(  
+            String({{ item.quantity }}),  
+            125,  
+            y,  
+            { align: "right" }  
+        );  
+  
+        doc.text(  
+            "Rs. " + Number({{ item.price|float }}).toFixed(2),  
+            165,  
+            y,  
+            { align: "right" }  
+        );  
+  
+        doc.text(  
+            "Rs. " + Number({{ item.amount|float }}).toFixed(2),  
+            195,  
+            y,  
+            { align: "right" }  
+        );  
+  
+        y += 8;  
+  
+  
+        /* New page if many products */  
+  
+        if (y > 270) {  
+  
+            doc.addPage();  
+  
+            y = 20;  
+  
+        }  
+  
+        {% endfor %}  
+  
+  
+        /* -------------------------------------------------  
+           TOTALS  
+           ------------------------------------------------- */  
+  
+        y += 5;  
+  
+        doc.line(  
+            120,  
+            y,  
+            195,  
+            y  
+        );  
+  
+        y += 8;  
+  
+        doc.text(  
+            "Subtotal:",  
+            150,  
+            y,  
+            { align: "right" }  
+        );  
+  
+        doc.text(  
+            "Rs. " + Number(subtotal).toFixed(2),  
+            195,  
+            y,  
+            { align: "right" }  
+        );  
+  
+        y += 7;  
+  
+        doc.text(  
+            "Discount:",  
+            150,  
+            y,  
+            { align: "right" }  
+        );  
+  
+        doc.text(  
+            "Rs. " + Number(discount).toFixed(2),  
+            195,  
+            y,  
+            { align: "right" }  
+        );  
+  
+        y += 9;  
+  
+        doc.setFont("helvetica", "bold");  
+        doc.setFontSize(13);  
+  
+        doc.text(  
+            "TOTAL:",  
+            150,  
+            y,  
+            { align: "right" }  
+        );  
+  
+        doc.text(  
+            "Rs. " + Number(total).toFixed(2),  
+            195,  
+            y,  
+            { align: "right" }  
+        );  
+  
+        y += 9;  
+  
+        doc.setFontSize(10);  
+  
+        doc.text(  
+            "Paid:",  
+            150,  
+            y,  
+            { align: "right" }  
+        );  
+  
+        doc.text(  
+            "Rs. " + Number(paid).toFixed(2),  
+            195,  
+            y,  
+            { align: "right" }  
+        );  
+  
+        y += 7;  
+  
+        doc.text(  
+            "Due:",  
+            150,  
+            y,  
+            { align: "right" }  
+        );  
+  
+        doc.text(  
+            "Rs. " + Number(due).toFixed(2),  
+            195,  
+            y,  
+            { align: "right" }  
+        );  
+  
+        y += 7;  
+  
+        doc.text(  
+            "Payment:",  
+            150,  
+            y,  
+            { align: "right" }  
+        );  
+  
+        doc.text(  
+            paymentMode,  
+            195,  
+            y,  
+            { align: "right" }  
+        );  
+  
+  
+        /* -------------------------------------------------  
+           THANK YOU  
+           ------------------------------------------------- */  
+  
+        y += 18;  
+  
+        doc.setFont("helvetica", "bold");  
+        doc.setFontSize(12);  
+  
+        doc.text(  
+            "Thank you!",  
+            105,  
+            y,  
+            { align: "center" }  
+        );  
+  
+  
+        /* -------------------------------------------------  
+           CREATE PDF FILE  
+           ------------------------------------------------- */  
+  
+        const pdfBlob =  
+            doc.output("blob");  
+  
+        const fileName =  
+            "Sawariya_Bill_" +  
+            invoiceNo.replace(/[^a-zA-Z0-9_-]/g, "_") +  
+            ".pdf";  
+  
+        const pdfFile =  
+            new File(  
+                [pdfBlob],  
+                fileName,  
+                {  
+                    type: "application/pdf"  
+                }  
+            );  
+  
+  
+        /* -------------------------------------------------  
+           MOBILE SHARE  
+           ------------------------------------------------- */  
+  
+        if (  
+            navigator.share &&  
+            navigator.canShare &&  
+            navigator.canShare({  
+                files: [pdfFile]  
+            })  
+        ) {  
+  
+            const shareText =  
+                "SAWARIYA CONFECTIONARY\n" +  
+                "Invoice: " + invoiceNo + "\n" +  
+                "Total: Rs. " + Number(total).toFixed(2) + "\n" +  
+                "Due: Rs. " + Number(due).toFixed(2);  
+  
+            await navigator.share({  
+  
+                title:  
+                    "Sawariya Bill - " + invoiceNo,  
+  
+                text:  
+                    shareText,  
+  
+                files:  
+                    [pdfFile]  
+  
+            });  
+  
+  
+            if (status) {  
+  
+                status.innerText =  
+                    "✅ PDF Share हो गई।";  
+  
+            }  
+  
+        }  
+  
+        else {  
+  
+            /* -------------------------------------------------  
+               DESKTOP / UNSUPPORTED BROWSER  
+               DOWNLOAD PDF  
+               ------------------------------------------------- */  
+  
+            const downloadUrl =  
+                URL.createObjectURL(pdfBlob);  
+  
+            const a =  
+                document.createElement("a");  
+  
+            a.href =  
+                downloadUrl;  
+  
+            a.download =  
+                fileName;  
+  
+            document.body.appendChild(a);  
+  
+            a.click();  
+  
+            a.remove();  
+  
+            URL.revokeObjectURL(downloadUrl);  
+  
+  
+            /* WhatsApp customer number */  
+  
+            if (customerPhone) {  
+  
+                let phone =  
+                    String(customerPhone)  
+                    .replace(/\D/g, "");  
+  
+                /*  
+                   Indian number:  
+                   9876543210  
+                   -> 919876543210  
+                */  
+  
+                if (  
+                    phone.length === 10 &&  
+                    phone.startsWith("6") ||  
+                    phone.startsWith("7") ||  
+                    phone.startsWith("8") ||  
+                    phone.startsWith("9")  
+                ) {  
+  
+                    phone =  
+                        "91" + phone;  
+  
+                }  
+  
+  
+                const message =  
+                    "Namaste " +  
+                    customerName +  
+                    ",\n\n" +  
+                    "SAWARIYA CONFECTIONARY का आपका Bill " +  
+                    invoiceNo +  
+                    " तैयार है.\n\n" +  
+                    "Total: Rs. " +  
+                    Number(total).toFixed(2) +  
+                    "\n" +  
+                    "Paid: Rs. " +  
+                    Number(paid).toFixed(2) +  
+                    "\n" +  
+                    "Due: Rs. " +  
+                    Number(due).toFixed(2) +  
+                    "\n\n" +  
+                    "PDF अभी download हो गई है। WhatsApp में इसे attach करके भेज दें।";  
+  
+  
+                const whatsappUrl =  
+                    "https://wa.me/" +  
+                    phone +  
+                    "?text=" +  
+                    encodeURIComponent(message);  
+  
+  
+                window.open(  
+                    whatsappUrl,  
+                    "_blank"  
+                );  
+  
+  
+                if (status) {  
+  
+                    status.innerText =  
+                        "✅ PDF download हो गई और WhatsApp customer chat खुल गई। PDF attach करके Send करें।";  
+  
+                }  
+  
+            }  
+  
+            else {  
+  
+                if (status) {  
+  
+                    status.innerText =  
+                        "✅ PDF download हो गई। Customer mobile number उपलब्ध नहीं है।";  
+  
+                }  
+  
+            }  
+  
+        }  
+  
+  
+    }  
+  
+    catch (error) {  
+  
+        console.error(  
+            "WhatsApp PDF Error:",  
+            error  
+        );  
+  
+        if (status) {  
+  
+            status.innerText =  
+                "❌ PDF share नहीं हो पाई। " +  
+                (error.message || "");  
+  
+        }  
+  
+    }  
+  
+  
+    button.disabled = false;  
+  
+    button.innerHTML =  
+        "📱 WhatsApp PDF";  
+  
+}  
+  
+</script>  {% endblock %}
+
+Inv me share pdf ye direct customer ki chatbox me open hona chahiye
