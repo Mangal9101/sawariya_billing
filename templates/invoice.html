@@ -712,47 +712,176 @@ async function shareInvoiceOnWhatsApp() {
         /* -------------------------------------------------
            MOBILE SHARE
            ------------------------------------------------- */
+/* -------------------------------------------------
+   OPEN CUSTOMER WHATSAPP CHAT DIRECTLY
+   ------------------------------------------------- */
 
-        if (
-            navigator.share &&
-            navigator.canShare &&
-            navigator.canShare({
-                files: [pdfFile]
-            })
-        ) {
+if (!customerPhone) {
 
-            const shareText =
-                "SAWARIYA CONFECTIONARY\n" +
-                "Invoice: " + invoiceNo + "\n" +
-                "Total: Rs. " + Number(total).toFixed(2) + "\n" +
-                "Due: Rs. " + Number(due).toFixed(2);
+    throw new Error(
+        "Customer mobile number उपलब्ध नहीं है।"
+    );
 
-            await navigator.share({
-
-                title:
-                    "Sawariya Bill - " + invoiceNo,
-
-                text:
-                    shareText,
-
-                files:
-                    [pdfFile]
-
-            });
+}
 
 
-            if (status) {
+let phone =
+    String(customerPhone)
+    .replace(/\D/g, "");
 
-                status.innerText =
-                    "✅ PDF Share हो गई।";
 
-            }
+/* Indian mobile number */
 
-        }
+if (
+    phone.length === 10 &&
+    (
+        phone.startsWith("6") ||
+        phone.startsWith("7") ||
+        phone.startsWith("8") ||
+        phone.startsWith("9")
+    )
+) {
 
-        else {
+    phone = "91" + phone;
 
-            /* -------------------------------------------------
+}
+
+
+/* -------------------------------------------------
+   WHATSAPP MESSAGE
+   ------------------------------------------------- */
+
+const message =
+    "Namaste " +
+    customerName +
+    ",\n\n" +
+    "SAWARIYA CONFECTIONARY का आपका Bill तैयार है.\n\n" +
+    "Invoice: " +
+    invoiceNo +
+    "\n" +
+    "Total: Rs. " +
+    Number(total).toFixed(2) +
+    "\n" +
+    "Paid: Rs. " +
+    Number(paid).toFixed(2) +
+    "\n" +
+    "Due: Rs. " +
+    Number(due).toFixed(2) +
+    "\n\n" +
+    "धन्यवाद 🙏";
+
+
+/* -------------------------------------------------
+   DIRECT CUSTOMER CHAT
+   ------------------------------------------------- */
+
+const whatsappUrl =
+    "https://wa.me/" +
+    phone +
+    "?text=" +
+    encodeURIComponent(message);
+
+
+/*
+   पहले customer का WhatsApp chat खोलो
+*/
+
+window.open(
+    whatsappUrl,
+    "_blank"
+);
+
+
+/* -------------------------------------------------
+   SHARE PDF
+   ------------------------------------------------- */
+
+if (
+    navigator.share &&
+    navigator.canShare &&
+    navigator.canShare({
+        files: [pdfFile]
+    })
+) {
+
+    try {
+
+        await navigator.share({
+
+            title:
+                "Sawariya Bill - " +
+                invoiceNo,
+
+            text:
+                "Invoice PDF - " +
+                invoiceNo,
+
+            files:
+                [pdfFile]
+
+        });
+
+    }
+
+    catch (shareError) {
+
+        console.log(
+            "PDF share cancelled/error:",
+            shareError
+        );
+
+    }
+
+}
+
+
+/* -------------------------------------------------
+   FALLBACK DOWNLOAD
+   ------------------------------------------------- */
+
+else {
+
+    const downloadUrl =
+        URL.createObjectURL(pdfBlob);
+
+    const a =
+        document.createElement("a");
+
+    a.href =
+        downloadUrl;
+
+    a.download =
+        fileName;
+
+    document.body.appendChild(a);
+
+    a.click();
+
+    a.remove();
+
+    setTimeout(() => {
+
+        URL.revokeObjectURL(downloadUrl);
+
+    }, 1000);
+
+}
+
+
+/* -------------------------------------------------
+   STATUS
+   ------------------------------------------------- */
+
+if (status) {
+
+    status.innerText =
+        "✅ Customer का WhatsApp chat खुल गया। PDF को WhatsApp में attach करके भेजें।";
+
+}
+        
+      
+
+*/ -------------------------------------------------
                DESKTOP / UNSUPPORTED BROWSER
                DOWNLOAD PDF
                ------------------------------------------------- */
