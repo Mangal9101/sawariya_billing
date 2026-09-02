@@ -1,144 +1,117 @@
-// ============================================================
-// SAWARIYA SERVICE WORKER
-// PWA - Offline support
-// ============================================================
-
-const CACHE_NAME = 'sawariya-v3';
-const ASSETS = [
-    '/',
-    '/static/css/style.css',
-    '/static/js/offline-db.js',
-    '/static/js/sync-manager.js',
-    '/static/js/billing.js',
-    '/static/manifest.json',
-    '/static/icons/icon-192.png',
-    '/static/icons/icon-512.png'
+/* Sawariya PWA - offline-first shell */
+const CACHE_NAME = "sawariya-pwa-v4";
+const OFFLINE_URL = "/login";
+const APP_SHELL = [
+    "/login",
+    "/billing",
+    "/dashboard",
+    "/products",
+    "/stock",
+    "/customers",
+    "/reports",
+    "/static/css/style.css",
+    "/static/js/billing.js",
+    "/manifest.json",
+    "/static/icons/icon-192.png",
+    "/static/icons/icon-512.png"
 ];
 
-// ============================================================
-// INSTALL
-// ============================================================
-
-self.addEventListener('install', event => {
-    console.log('📦 Service Worker installing...');
+self.addEventListener("install", event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then(cache => {
-                console.log('📦 Caching assets...');
-                return cache.addAll(ASSETS);
-            })
-            .then(() => {
-                console.log('✅ Assets cached');
-                return self.skipWaiting();
-            })
+            .then(cache => cache.addAll([
+                "/login",
+                "/static/css/style.css",
+                "/static/js/billing.js",
+                "/manifest.json",
+                "/static/icons/icon-192.png",
+                "/static/icons/icon-512.png"
+            ]))
+            .then(() => self.skipWaiting())
     );
 });
 
-// ============================================================
-// ACTIVATE
-// ============================================================
-
-self.addEventListener('activate', event => {
-    console.log('⚡ Service Worker activating...');
+self.addEventListener("activate", event => {
     event.waitUntil(
-        caches.keys().then(keys => {
-            return Promise.all(
-                keys.filter(key => key !== CACHE_NAME)
-                    .map(key => {
-                        console.log('🗑️ Deleting old cache:', key);
-                        return caches.delete(key);
-                    })
-            );
-        }).then(() => {
-            console.log('✅ Service Worker activated');
-            return self.clients.claim();
-        })
+        caches.keys()
+            .then(keys => Promise.all(
+                keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+            ))
+            .then(() => self.clients.claim())
     );
 });
 
-// ============================================================
-// FETCH
-// ============================================================
+async function cacheResponse(request, response) {
+    if (response && response.ok && response.type === "basic") {
+        const cache = await caches.open(CACHE_NAME);
+        await cache.put(request, response.clone());
+    }
+    return response;
+}
 
-self.addEventListener('fetch', event => {
-    const url = new URL(event.request.url);
-    
-    // ========== API Calls - Network Only ==========
-    if (url.pathname.startsWith('/api/')) {
-        event.respondWith(
-            fetch(event.request).catch(() => {
-                // Return offline error
-                return new Response(JSON.stringify({
-                    error: 'Offline',
-                    message: 'You are offline. Please connect to the internet.'
-                }), {
-                    status: 503,
-                    headers: { 'Content-Type': 'application/json' }
-                });
-            })
-        );
+self.addEventListener("fetch", event => {
+    const request = event.request;
+    if (request.method !== "GET") return;
+
+    const url = new URL(request.url);
+    if (url.origin !== self.location.origin) return;
+
+    // Never cache API responses. Billing uses its embedded/local catalog when
+    // offline, while online API calls remain fresh.
+    if (url.pathname.startsWith("/api/")) return;
+
+    // Static assets: cache first, then update from network.
+    if (url.pathname.startsWith("/static/")) {
+        event.respondWith((async () => {
+            const cached = await caches.match(request);
+            try {
+                const fresh = await fetch(request);
+                if (fresh.ok) await cacheResponse(request, fresh);
+                return fresh;
+            } catch (_) {
+                return cached || new Response("Offline", {status: 503});
+            }
+        })());
         return;
     }
-    
-    // ========== Static Assets - Cache First ==========
-    event.respondWith(
-        caches.match(event.request)
-            .then(response => {
-                if (response) {
-                    return response;
+
+    // Navigation: network first. Every successful page visited while online
+    // is cached, so the installed PWA can reopen it without a network.
+    if (request.mode === "navigate") {
+        event.respondWith((async () => {
+            try {
+                const response = await fetch(request);
+                await cacheResponse(request, response);
+                return response;
+            } catch (_) {
+                const cached = await caches.match(request);
+                if (cached) return cached;
+
+                // / is commonly the PWA start_url. Prefer the last cached
+                // dashboard, then billing, then login.
+                if (url.pathname === "/") {
+                    return (await caches.match("/dashboard")) ||
+                           (await caches.match("/billing")) ||
+                           (await caches.match(OFFLINE_URL));
                 }
-                // Not in cache - fetch from network
-                return fetch(event.request).catch(() => {
-                    // Fallback for offline
-                    if (event.request.mode === 'navigate') {
-                        return caches.match('/');
-                    }
-                    return new Response('Offline', { status: 503 });
-                });
-            })
-    );
-});
-
-// ============================================================
-// BACKGROUND SYNC
-// ============================================================
-
-self.addEventListener('sync', event => {
-    console.log('🔄 Background sync triggered:', event.tag);
-    
-    if (event.tag === 'sync-sawariya') {
-        event.waitUntil(handleBackgroundSync());
+                return (await caches.match(OFFLINE_URL)) ||
+                       new Response("<h2>Sawariya is offline</h2><p>Open the app once while online to prepare offline pages.</p>", {
+                           headers: {"Content-Type": "text/html; charset=utf-8"}
+                       });
+            }
+        })());
+        return;
     }
-});
 
-async function handleBackgroundSync() {
-    try {
-        console.log('📤 Background sync started...');
-        
-        // Get clients
-        const clients = await self.clients.matchAll();
-        
-        for (const client of clients) {
-            client.postMessage({
-                type: 'BACKGROUND_SYNC',
-                action: 'syncAll'
-            });
+    // Other GET requests: network first with cache fallback.
+    event.respondWith((async () => {
+        try {
+            const response = await fetch(request);
+            await cacheResponse(request, response);
+            return response;
+        } catch (_) {
+            return (await caches.match(request)) || caches.match(OFFLINE_URL);
         }
-        
-        console.log('✅ Background sync completed');
-    } catch (error) {
-        console.error('❌ Background sync failed:', error);
-    }
+    })());
 });
 
-// ============================================================
-// MESSAGE HANDLING
-// ============================================================
-
-self.addEventListener('message', event => {
-    console.log('📨 Service Worker received message:', event.data);
-    
-    if (event.data && event.data.type === 'SKIP_WAITING') {
-        self.skipWaiting();
-    }
-});
