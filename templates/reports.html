@@ -8,7 +8,7 @@
          PAGE HEADER
          ===================================================== -->
 
-    <div class="top report-screen-only">
+    <div class="top">
 
         <div>
 
@@ -28,7 +28,7 @@
          DATE FILTER + SUMMARY
          ===================================================== -->
 
-    <section class="panel report-filter-panel report-screen-only">
+    <section class="panel report-filter-panel">
 
         <form
             class="dateform"
@@ -62,10 +62,12 @@
 
 
         <!-- =================================================
-             SUMMARY
+             REPORT SUMMARY
              ================================================= -->
 
         <div class="report-summary">
+
+            <!-- TOTAL BILLS -->
 
             <div>
 
@@ -78,6 +80,8 @@
             </div>
 
 
+            <!-- TOTAL SALES -->
+
             <div>
 
                 <span>Total Sales</span>
@@ -89,6 +93,8 @@
             </div>
 
 
+            <!-- NET PROFIT -->
+
             <div>
 
                 <span>Net Profit</span>
@@ -99,6 +105,8 @@
 
             </div>
 
+
+            <!-- PAID -->
 
             <div>
 
@@ -116,7 +124,7 @@
 
 
     <!-- =====================================================
-         INVOICES
+         INDIVIDUAL INVOICES
          ===================================================== -->
 
     {% for i in invoices %}
@@ -163,7 +171,7 @@
 
 
         <!-- =================================================
-             CUSTOMER
+             CUSTOMER DETAILS
              ================================================= -->
 
         <div class="customer-report">
@@ -276,7 +284,7 @@
 
 
         <!-- =================================================
-             PAYMENT
+             PAYMENT DETAILS
              ================================================= -->
 
         <div class="report-payment">
@@ -292,7 +300,9 @@
              ACTION BUTTONS
              ================================================= -->
 
-        <div class="invoice-actions report-screen-only">
+        <div class="invoice-actions">
+
+            <!-- WHATSAPP -->
 
             <a
                 href="/invoice/{{ i.id }}/whatsapp"
@@ -301,6 +311,8 @@
                 📲 Share Invoice on WhatsApp
             </a>
 
+
+            <!-- PRINT / PDF -->
 
             <button
                 type="button"
@@ -321,7 +333,7 @@
          NO SALES
          ===================================================== -->
 
-    <section class="panel report-screen-only">
+    <section class="panel">
 
         <p>
 
@@ -339,29 +351,25 @@
 
 
     <!-- =====================================================
-         DEDICATED PRINT AREA
+         SINGLE INVOICE PRINT AREA
          
-         IMPORTANT:
-         Ye normal screen par hidden rahega.
-         Print ke time isi ke andar invoice jayega.
+         Screen पर hidden.
+         Print के समय सिर्फ selected invoice इसमें आएगा.
          ===================================================== -->
 
-    <div
-        id="invoicePrintContainer"
-        aria-hidden="true"
-    ></div>
+    <div id="singleInvoicePrintArea"></div>
 
 </main>
 
 
 <!-- =======================================================
-     CSS
+     PAGE CSS
      ======================================================= -->
 
 <style>
 
 /* =========================================================
-   DATE FILTER
+   DATE FORM
    ========================================================= */
 
 .dateform {
@@ -470,7 +478,7 @@
 
 
 /* =========================================================
-   WHATSAPP
+   WHATSAPP BUTTON
    ========================================================= */
 
 .whatsapp-btn {
@@ -518,6 +526,8 @@
 
     color: #ffffff !important;
 
+    transform: translateY(-1px);
+
 }
 
 
@@ -529,7 +539,7 @@
 
 
 /* =========================================================
-   PRINT BUTTON
+   PRINT / PDF BUTTON
    ========================================================= */
 
 .print-pdf-btn {
@@ -562,6 +572,11 @@
 
     cursor: pointer;
 
+    transition:
+        transform 0.18s ease,
+        background 0.18s ease,
+        box-shadow 0.18s ease;
+
     box-shadow:
         0 3px 10px rgba(0, 0, 0, 0.15);
 
@@ -572,14 +587,23 @@
 
     background: #222222;
 
+    transform: translateY(-1px);
+
+}
+
+
+.print-pdf-btn:active {
+
+    transform: translateY(0);
+
 }
 
 
 /* =========================================================
-   PRINT CONTAINER
+   PRINT AREA
    ========================================================= */
 
-#invoicePrintContainer {
+#singleInvoicePrintArea {
 
     display: none;
 
@@ -689,10 +713,9 @@
 
 @media print {
 
-    /*
-       Browser print engine को सिर्फ print container
-       दिखेगा.
-    */
+    /* -----------------------------------------
+       Page basic
+       ----------------------------------------- */
 
     html,
     body {
@@ -707,27 +730,38 @@
 
         background: #ffffff !important;
 
+        color: #000000 !important;
+
     }
 
 
-    /*
-       Normal application पूरी तरह hide
-    */
+    body {
 
-    body.printing-invoice
-    #reportsPage > *:not(#invoicePrintContainer) {
+        -webkit-print-color-adjust: exact !important;
+
+        print-color-adjust: exact !important;
+
+    }
+
+
+    /* -----------------------------------------
+       Normal reports page hide
+       ----------------------------------------- */
+
+    body.single-invoice-printing
+    #reportsPage {
 
         display: none !important;
 
     }
 
 
-    /*
-       Dedicated print container
-    */
+    /* -----------------------------------------
+       ONLY selected invoice print area
+       ----------------------------------------- */
 
-    body.printing-invoice
-    #invoicePrintContainer {
+    body.single-invoice-printing
+    #singleInvoicePrintArea {
 
         display: block !important;
 
@@ -737,7 +771,7 @@
 
         min-width: 0 !important;
 
-        max-width: none !important;
+        max-width: 100% !important;
 
         margin: 0 !important;
 
@@ -752,23 +786,21 @@
     }
 
 
-    /*
-       Printed invoice
-    */
+    /* -----------------------------------------
+       Single invoice
+       ----------------------------------------- */
 
-    body.printing-invoice
-    #invoicePrintContainer
-    .invoice-print-copy {
+    body.single-invoice-printing
+    #singleInvoicePrintArea
+    .single-invoice {
 
         display: block !important;
-
-        position: relative !important;
 
         width: 100% !important;
 
         min-width: 0 !important;
 
-        max-width: none !important;
+        max-width: 100% !important;
 
         margin: 0 !important;
 
@@ -789,13 +821,13 @@
     }
 
 
-    /*
-       सभी child elements visible
-    */
+    /* -----------------------------------------
+       Everything visible inside invoice
+       ----------------------------------------- */
 
-    body.printing-invoice
-    #invoicePrintContainer
-    .invoice-print-copy * {
+    body.single-invoice-printing
+    #singleInvoicePrintArea
+    .single-invoice * {
 
         visibility: visible !important;
 
@@ -806,12 +838,12 @@
     }
 
 
-    /*
-       Buttons कभी print नहीं होंगे
-    */
+    /* -----------------------------------------
+       Actions hidden
+       ----------------------------------------- */
 
-    body.printing-invoice
-    #invoicePrintContainer
+    body.single-invoice-printing
+    #singleInvoicePrintArea
     .invoice-actions {
 
         display: none !important;
@@ -819,12 +851,12 @@
     }
 
 
-    /*
+    /* -----------------------------------------
        Table wrapper
-    */
+       ----------------------------------------- */
 
-    body.printing-invoice
-    #invoicePrintContainer
+    body.single-invoice-printing
+    #singleInvoicePrintArea
     .report-table-wrapper {
 
         display: block !important;
@@ -836,13 +868,15 @@
     }
 
 
-    /*
+    /* -----------------------------------------
        Table
-    */
+       ----------------------------------------- */
 
-    body.printing-invoice
-    #invoicePrintContainer
+    body.single-invoice-printing
+    #singleInvoicePrintArea
     table {
+
+        display: table !important;
 
         width: 100% !important;
 
@@ -857,41 +891,65 @@
     }
 
 
-    body.printing-invoice
-    #invoicePrintContainer
+    body.single-invoice-printing
+    #singleInvoicePrintArea
+    thead {
+
+        display: table-header-group !important;
+
+    }
+
+
+    body.single-invoice-printing
+    #singleInvoicePrintArea
+    tbody {
+
+        display: table-row-group !important;
+
+    }
+
+
+    body.single-invoice-printing
+    #singleInvoicePrintArea
+    tr {
+
+        display: table-row !important;
+
+        page-break-inside: avoid !important;
+
+        break-inside: avoid !important;
+
+    }
+
+
+    body.single-invoice-printing
+    #singleInvoicePrintArea
     th,
-    body.printing-invoice
-    #invoicePrintContainer
+    body.single-invoice-printing
+    #singleInvoicePrintArea
     td {
 
+        display: table-cell !important;
+
         border: 1px solid #000000 !important;
+
+        padding: 7px !important;
 
         color: #000000 !important;
 
         background: #ffffff !important;
-
-        padding: 7px !important;
 
         vertical-align: middle !important;
 
     }
 
 
-    body.printing-invoice
-    #invoicePrintContainer
-    th {
+    /* -----------------------------------------
+       Invoice header
+       ----------------------------------------- */
 
-        font-weight: 700 !important;
-
-    }
-
-
-    /*
-       Header
-    */
-
-    body.printing-invoice
-    #invoicePrintContainer
+    body.single-invoice-printing
+    #singleInvoicePrintArea
     .invoice-title {
 
         display: flex !important;
@@ -913,12 +971,12 @@
     }
 
 
-    /*
-       Customer
-    */
+    /* -----------------------------------------
+       Customer details
+       ----------------------------------------- */
 
-    body.printing-invoice
-    #invoicePrintContainer
+    body.single-invoice-printing
+    #singleInvoicePrintArea
     .customer-report {
 
         display: block !important;
@@ -936,12 +994,12 @@
     }
 
 
-    /*
+    /* -----------------------------------------
        Payment
-    */
+       ----------------------------------------- */
 
-    body.printing-invoice
-    #invoicePrintContainer
+    body.single-invoice-printing
+    #singleInvoicePrintArea
     .report-payment {
 
         display: block !important;
@@ -959,37 +1017,18 @@
     }
 
 
-    /*
-       Page breaks
-    */
+    /* -----------------------------------------
+       Remove screen overflow
+       ----------------------------------------- */
 
-    body.printing-invoice
-    #invoicePrintContainer
-    tr {
+    body.single-invoice-printing
+    #singleInvoicePrintArea
+    * {
 
-        page-break-inside: avoid !important;
-
-        break-inside: avoid !important;
+        max-width: 100%;
 
     }
 
-
-    /*
-       Print colors
-    */
-
-    body.printing-invoice {
-
-        -webkit-print-color-adjust: exact !important;
-
-        print-color-adjust: exact !important;
-
-    }
-
-
-    /*
-       A4
-    */
 
     @page {
 
@@ -1052,20 +1091,16 @@ document.addEventListener(
 
 
 /* =========================================================
-   PRINT INVOICE
+   PRINT SINGLE INVOICE
    =========================================================
 
    IMPORTANT:
 
-   - कोई नया window नहीं
-   - कोई popup नहीं
-   - कोई iframe नहीं
-   - current document में ही print area बनेगा
-   - Android Save as PDF इसी content को देखेगा
+   जिस invoice पर click होगा,
+   केवल उसी invoice की clone print area में जाएगी.
+
+   बाकी invoices print area में जाएंगे ही नहीं.
    ========================================================= */
-
-let currentlyPrintingInvoice = null;
-
 
 function printInvoice(invoiceId) {
 
@@ -1075,11 +1110,15 @@ function printInvoice(invoiceId) {
         );
 
 
-    const printContainer =
+    const printArea =
         document.getElementById(
-            "invoicePrintContainer"
+            "singleInvoicePrintArea"
         );
 
+
+    /* -----------------------------------------
+       Check invoice
+       ----------------------------------------- */
 
     if (!sourceInvoice) {
 
@@ -1090,52 +1129,56 @@ function printInvoice(invoiceId) {
     }
 
 
-    if (!printContainer) {
+    /* -----------------------------------------
+       Check print area
+       ----------------------------------------- */
 
-        alert("Print container not found.");
+    if (!printArea) {
+
+        alert("Print area not found.");
 
         return;
 
     }
 
 
-    /*
-       पहले पुराना print content साफ करो.
-    */
+    /* -----------------------------------------
+       पुराने print content को हटाओ
+       ----------------------------------------- */
 
-    printContainer.innerHTML = "";
+    printArea.innerHTML = "";
 
 
-    /*
-       Invoice की copy बनाओ.
-    */
+    /* -----------------------------------------
+       सिर्फ selected invoice clone करो
+       ----------------------------------------- */
 
-    const invoiceCopy =
+    const invoiceClone =
         sourceInvoice.cloneNode(true);
 
 
-    /*
-       Print class.
-    */
+    /* -----------------------------------------
+       नया print class
+       ----------------------------------------- */
 
-    invoiceCopy.classList.add(
-        "invoice-print-copy"
+    invoiceClone.classList.add(
+        "single-invoice"
     );
 
 
-    /*
-       ID हटाओ ताकि duplicate ID problem न हो.
-    */
+    /* -----------------------------------------
+       Duplicate ID remove
+       ----------------------------------------- */
 
-    invoiceCopy.removeAttribute("id");
+    invoiceClone.removeAttribute("id");
 
 
-    /*
-       Action buttons remove.
-    */
+    /* -----------------------------------------
+       Action buttons remove
+       ----------------------------------------- */
 
     const actions =
-        invoiceCopy.querySelector(
+        invoiceClone.querySelector(
             ".invoice-actions"
         );
 
@@ -1147,13 +1190,14 @@ function printInvoice(invoiceId) {
     }
 
 
-    /*
-       Screen-only elements अगर invoice के अंदर
-       मौजूद हों तो remove.
-    */
+    /* -----------------------------------------
+       Screen-only elements remove
+       ----------------------------------------- */
 
-    invoiceCopy
-        .querySelectorAll(".report-screen-only")
+    invoiceClone
+        .querySelectorAll(
+            ".report-screen-only"
+        )
         .forEach(
             function (element) {
 
@@ -1163,32 +1207,32 @@ function printInvoice(invoiceId) {
         );
 
 
-    /*
-       Table wrapper की scrolling हटाओ.
-    */
+    /* -----------------------------------------
+       Table wrapper scrolling remove
+       ----------------------------------------- */
 
-    invoiceCopy
+    invoiceClone
         .querySelectorAll(
             ".report-table-wrapper"
         )
         .forEach(
-            function (element) {
+            function (wrapper) {
 
-                element.style.overflow =
-                    "visible";
-
-                element.style.width =
+                wrapper.style.width =
                     "100%";
+
+                wrapper.style.overflow =
+                    "visible";
 
             }
         );
 
 
-    /*
-       Table width fix.
-    */
+    /* -----------------------------------------
+       Table width fix
+       ----------------------------------------- */
 
-    invoiceCopy
+    invoiceClone
         .querySelectorAll("table")
         .forEach(
             function (table) {
@@ -1199,6 +1243,9 @@ function printInvoice(invoiceId) {
                 table.style.minWidth =
                     "0";
 
+                table.style.maxWidth =
+                    "100%";
+
                 table.style.borderCollapse =
                     "collapse";
 
@@ -1206,47 +1253,35 @@ function printInvoice(invoiceId) {
         );
 
 
-    /*
-       Print container में डालो.
-    */
+    /* -----------------------------------------
+       Selected invoice print area में डालो
+       ----------------------------------------- */
 
-    printContainer.appendChild(
-        invoiceCopy
+    printArea.appendChild(
+        invoiceClone
     );
 
 
-    /*
-       Current invoice remember.
-    */
-
-    currentlyPrintingInvoice =
-        invoiceId;
-
-
-    /*
-       Body को print mode दो.
-    */
+    /* -----------------------------------------
+       Print mode enable
+       ----------------------------------------- */
 
     document.body.classList.add(
-        "printing-invoice"
+        "single-invoice-printing"
     );
 
 
-    /*
-       HTML render होने का थोड़ा समय.
-    */
+    /* -----------------------------------------
+       Browser rendering का wait
+       ----------------------------------------- */
 
     setTimeout(
         function () {
 
-            /*
-               Browser को print command.
-            */
-
             window.print();
 
         },
-        400
+        500
     );
 
 }
@@ -1260,25 +1295,26 @@ window.addEventListener(
     "afterprint",
     function () {
 
+        /* Print mode remove */
+
         document.body.classList.remove(
-            "printing-invoice"
+            "single-invoice-printing"
         );
 
 
-        const printContainer =
+        /* Print area clean */
+
+        const printArea =
             document.getElementById(
-                "invoicePrintContainer"
+                "singleInvoicePrintArea"
             );
 
 
-        if (printContainer) {
+        if (printArea) {
 
-            printContainer.innerHTML = "";
+            printArea.innerHTML = "";
 
         }
-
-
-        currentlyPrintingInvoice = null;
 
     }
 );
