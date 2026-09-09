@@ -2,342 +2,357 @@
 
 {% block content %}
 
-<main>  <!-- =====================================================
-       PAGE HEADER
-       ===================================================== -->  <div class="top"><div>
+<main>
 
-  <h1>Daily Sales Report</h1>
+    <!-- =====================================================
+         PAGE HEADER
+         ===================================================== -->
 
-  <p>
-    हर दिन किस customer ने क्या-क्या लिया,
-    quantity और amount के साथ.
-  </p>
+    <div class="top">
 
-</div>
+        <div>
 
-  </div>  <!-- =====================================================
-       DATE FILTER + SUMMARY
-       ===================================================== -->  <section class="panel"><form
-  class="dateform"
-  method="get"
-  action="/reports"
-  id="reportDateForm"
->
+            <h1>Daily Sales Report</h1>
 
-  <label>
+            <p>
+                हर दिन किस customer ने क्या-क्या लिया,
+                quantity और amount के साथ.
+            </p>
 
-    <b>Select Date</b>
+        </div>
 
-    <input
-      type="date"
-      name="date"
-      value="{{ report_date }}"
-      id="reportDate"
+    </div>
+
+
+    <!-- =====================================================
+         DATE FILTER + SUMMARY
+         ===================================================== -->
+
+    <section class="panel">
+
+        <form
+            class="dateform"
+            method="get"
+            action="/reports"
+            id="reportDateForm"
+        >
+
+            <label>
+
+                <b>Select Date</b>
+
+                <input
+                    type="date"
+                    name="date"
+                    value="{{ report_date }}"
+                    id="reportDate"
+                >
+
+            </label>
+
+
+            <!-- Today Button -->
+
+            <a
+                class="btn secondary"
+                href="/reports"
+            >
+                Today
+            </a>
+
+        </form>
+
+
+        <!-- =================================================
+             REPORT SUMMARY
+             ================================================= -->
+
+        <div class="report-summary">
+
+            <!-- TOTAL BILLS -->
+
+            <div>
+
+                <span>Total Bills</span>
+
+                <b>
+                    {{ summary.bills }}
+                </b>
+
+            </div>
+
+
+            <!-- TOTAL SALES -->
+
+            <div>
+
+                <span>Total Sales</span>
+
+                <b>
+                    ₹{{ '%.2f'|format(summary.sales|float) }}
+                </b>
+
+            </div>
+
+
+            <!-- NET PROFIT -->
+
+            <div>
+
+                <span>Net Profit</span>
+
+                <b>
+                    ₹{{ '%.2f'|format(summary.net_profit|float) }}
+                </b>
+
+            </div>
+
+
+            <!-- PAID -->
+
+            <div>
+
+                <span>Paid</span>
+
+                <b>
+                    ₹{{ '%.2f'|format(summary.paid|float) }}
+                </b>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         INDIVIDUAL INVOICES
+         ===================================================== -->
+
+    {% for i in invoices %}
+
+    <section
+        class="panel invoice-report"
+        id="invoice-{{ i.id }}"
     >
 
-  </label>
+        <!-- =================================================
+             INVOICE HEADER
+             ================================================= -->
 
+        <div class="invoice-title">
 
-  <!--
-    View Report button intentionally removed.
+            <div>
 
-    Date select/change होते ही report automatically
-    load होगी.
-  -->
+                <b>
+                    {{ i.invoice_no }}
+                </b>
 
+                —
 
-  <a
-    class="btn secondary"
-    href="/reports"
-  >
-    Today
-  </a>
+                {{ i.created_at.strftime('%d-%m-%Y %H:%M') }}
 
-</form>
+            </div>
 
 
-<!-- ===================================================
-     REPORT SUMMARY
-     =================================================== -->
+            <div>
 
-<div class="report-summary">
+                <b>
 
+                    Total:
 
-  <!-- TOTAL BILLS -->
+                    ₹{{ '%.2f'|format(i.total|float) }}
 
-  <div>
+                </b>
 
-    <span>Total Bills</span>
+            </div>
 
-    <b>
-      {{ summary.bills }}
-    </b>
+        </div>
 
-  </div>
 
+        <!-- =================================================
+             CUSTOMER DETAILS
+             ================================================= -->
 
-  <!-- TOTAL SALES -->
+        <div class="customer-report">
 
-  <div>
+            <b>Customer:</b>
 
-    <span>Total Sales</span>
+            {% if i.customer and i.customer.name %}
 
-    <b>
-      ₹{{ '%.2f'|format(summary.sales|float) }}
-    </b>
+                {{ i.customer.name }}
 
-  </div>
+            {% else %}
 
+                Walk-in
 
-  <!-- NET PROFIT -->
+            {% endif %}
 
-  <div>
 
-    <span>Net Profit</span>
+            {% if i.customer and i.customer.phone %}
 
-    <b>
-      ₹{{ '%.2f'|format(summary.net_profit|float) }}
-    </b>
+                &nbsp; | &nbsp;
 
-  </div>
+                <b>Mobile:</b>
 
+                {{ i.customer.phone }}
 
-  <!-- PAID -->
+            {% endif %}
 
-  <div>
 
-    <span>Paid</span>
+            {% if i.customer and i.customer.address %}
 
-    <b>
-      ₹{{ '%.2f'|format(summary.paid|float) }}
-    </b>
+                &nbsp; | &nbsp;
 
-  </div>
+                <b>Address:</b>
 
+                {{ i.customer.address }}
 
-</div>
+            {% endif %}
 
-  </section>  <!-- =====================================================
-       INDIVIDUAL INVOICES
-       ===================================================== -->{% for i in invoices %}
+        </div>
 
-  <section
-    class="panel invoice-report"
-    id="invoice-{{ i.id }}"
-  ><!-- ===================================================
-     INVOICE HEADER
-     =================================================== -->
 
-<div class="invoice-title">
+        <!-- =================================================
+             PRODUCTS
+             ================================================= -->
 
-  <div>
+        <div class="report-table-wrapper">
 
-    <b>
-      {{ i.invoice_no }}
-    </b>
+            <table>
 
-    —
+                <thead>
 
-    {{ i.created_at.strftime('%d-%m-%Y %H:%M') }}
+                    <tr>
 
-  </div>
+                        <th>
+                            Product
+                        </th>
 
+                        <th>
+                            Qty
+                        </th>
 
-  <div>
+                        <th>
+                            Wholesale Price
+                        </th>
 
-    <b>
+                        <th>
+                            Amount
+                        </th>
 
-      Total:
+                    </tr>
 
-      ₹{{ '%.2f'|format(i.total|float) }}
+                </thead>
 
-    </b>
 
-  </div>
+                <tbody>
 
-</div>
+                    {% for item in i.items %}
 
+                    <tr>
 
+                        <td>
+                            {{ item.product_name }}
+                        </td>
 
-<!-- ===================================================
-     CUSTOMER DETAILS
-     =================================================== -->
+                        <td>
+                            {{ item.quantity }}
+                        </td>
 
-<div class="customer-report">
+                        <td>
+                            ₹{{ '%.2f'|format(item.price|float) }}
+                        </td>
 
-  <b>Customer:</b>
+                        <td>
+                            ₹{{ '%.2f'|format(item.amount|float) }}
+                        </td>
 
+                    </tr>
 
-  {% if i.customer and i.customer.name %}
+                    {% endfor %}
 
-    {{ i.customer.name }}
+                </tbody>
 
-  {% else %}
+            </table>
 
-    Walk-in
+        </div>
 
-  {% endif %}
 
+        <!-- =================================================
+             PAYMENT DETAILS
+             ================================================= -->
 
+        <div class="report-payment">
 
-  {% if i.customer and i.customer.phone %}
+            <b>Payment:</b>
 
-    &nbsp; | &nbsp;
+            {{ i.payment_mode }}
 
-    <b>Mobile:</b>
+        </div>
 
-    {{ i.customer.phone }}
 
-  {% endif %}
+        <!-- =================================================
+             ACTION BUTTONS
+             ================================================= -->
 
+        <div class="invoice-actions">
 
+            <!-- WHATSAPP -->
 
-  {% if i.customer and i.customer.address %}
+            <a
+                href="/invoice/{{ i.id }}/whatsapp"
+                class="whatsapp-btn"
+            >
+                📲 Share Invoice on WhatsApp
+            </a>
 
-    &nbsp; | &nbsp;
 
-    <b>Address:</b>
+            <!-- PRINT / PDF -->
 
-    {{ i.customer.address }}
+            <button
+                type="button"
+                class="print-pdf-btn"
+                onclick="printInvoice({{ i.id }})"
+            >
+                🖨️ Print / PDF
+            </button>
 
-  {% endif %}
+        </div>
 
-</div>
+    </section>
 
 
+    {% else %}
 
-<!-- ===================================================
-     PRODUCTS
-     =================================================== -->
+    <!-- =====================================================
+         NO SALES
+         ===================================================== -->
 
-<div class="report-table-wrapper">
+    <section class="panel">
 
-  <table>
+        <p>
 
-    <thead>
+            No sales found for
 
-      <tr>
+            <b>
+                {{ report_date }}
+            </b>.
 
-        <th>
-          Product
-        </th>
+        </p>
 
-        <th>
-          Qty
-        </th>
+    </section>
 
-        <th>
-          Wholesale Price
-        </th>
+    {% endfor %}
 
-        <th>
-          Amount
-        </th>
+</main>
 
-      </tr>
 
-    </thead>
-
-
-    <tbody>
-
-      {% for item in i.items %}
-
-      <tr>
-
-        <td>
-          {{ item.product_name }}
-        </td>
-
-        <td>
-          {{ item.quantity }}
-        </td>
-
-        <td>
-          ₹{{ '%.2f'|format(item.price|float) }}
-        </td>
-
-        <td>
-          ₹{{ '%.2f'|format(item.amount|float) }}
-        </td>
-
-      </tr>
-
-      {% endfor %}
-
-    </tbody>
-
-  </table>
-
-</div>
-
-
-
-<!-- ===================================================
-     PAYMENT DETAILS
-     =================================================== -->
-
-<div class="report-payment">
-
-  <b>Payment:</b>
-
-  {{ i.payment_mode }}
-
-</div>
-
-
-
-<!-- ===================================================
-     ACTION BUTTONS
-     =================================================== -->
-
-<div class="invoice-actions">
-
-
-  <!-- WHATSAPP -->
-
-  <a
-    href="/invoice/{{ i.id }}/whatsapp"
-    class="whatsapp-btn"
-  >
-    📲 Share Invoice on WhatsApp
-  </a>
-
-
-
-  <!-- PRINT / PDF -->
-
-  <button
-    type="button"
-    class="print-pdf-btn"
-    onclick="printInvoice({{ i.id }})"
-  >
-    🖨️ Print / PDF
-  </button>
-
-
-</div>
-
-  </section>{% else %}
-
-  <!-- =====================================================
-       NO SALES
-       ===================================================== -->  <section class="panel"><p>
-
-  No sales found for
-
-  <b>
-    {{ report_date }}
-  </b>.
-
-</p>
-
-  </section>{% endfor %}
-
-</main><!-- =======================================================
+<!-- =======================================================
      PAGE CSS
-     ======================================================= --><style>
+     ======================================================= -->
 
+<style>
 
 /* =========================================================
    DATE FILTER
@@ -383,8 +398,9 @@
 
     cursor: pointer;
 
-}
+    box-sizing: border-box;
 
+}
 
 
 /* =========================================================
@@ -411,6 +427,22 @@
 }
 
 
+.report-table-wrapper th,
+.report-table-wrapper td {
+
+    padding: 10px;
+
+    text-align: left;
+
+}
+
+
+.report-table-wrapper th {
+
+    font-weight: 700;
+
+}
+
 
 /* =========================================================
    INVOICE ACTIONS
@@ -429,7 +461,6 @@
     margin-top: 16px;
 
 }
-
 
 
 /* =========================================================
@@ -496,7 +527,6 @@
 }
 
 
-
 /* =========================================================
    PRINT / PDF BUTTON
    ========================================================= */
@@ -561,13 +591,11 @@
 }
 
 
-
 /* =========================================================
    MOBILE
    ========================================================= */
 
 @media (max-width: 600px) {
-
 
     .dateform {
 
@@ -610,6 +638,8 @@
 
         justify-content: center;
 
+        box-sizing: border-box;
+
     }
 
 
@@ -637,10 +667,25 @@
 
         border-radius: 10px;
 
+        box-sizing: border-box;
+
+    }
+
+
+    .report-table-wrapper {
+
+        overflow-x: auto;
+
+    }
+
+
+    .report-table-wrapper table {
+
+        min-width: 520px;
+
     }
 
 }
-
 
 
 /* =========================================================
@@ -649,58 +694,127 @@
 
 @media print {
 
-
     /*
-       पूरा page hide
+       Page को white रखो
     */
 
-    body * {
+    html,
+    body {
 
-        visibility: hidden;
-
-    }
-
-
-    /*
-       सिर्फ selected invoice दिखेगा
-    */
-
-    .invoice-report.printing-invoice,
-    .invoice-report.printing-invoice * {
-
-        visibility: visible;
-
-    }
-
-
-    .invoice-report.printing-invoice {
-
-        position: absolute;
-
-        left: 0;
-
-        top: 0;
-
-        width: 100%;
+        width: 100% !important;
 
         margin: 0 !important;
 
-        padding: 20px !important;
-
-        box-shadow: none !important;
-
-        border: none !important;
+        padding: 0 !important;
 
         background: #ffffff !important;
 
     }
 
 
+    body {
+
+        -webkit-print-color-adjust: exact !important;
+
+        print-color-adjust: exact !important;
+
+    }
+
+
     /*
-       WhatsApp और Print buttons
-       PDF/print में नहीं आएंगे.
+       Header और summary hide
     */
 
+    .top,
+    .panel:not(.invoice-report) {
+
+        display: none !important;
+
+    }
+
+
+    /*
+       Main visible
+    */
+
+    main {
+
+        display: block !important;
+
+        width: 100% !important;
+
+        margin: 0 !important;
+
+        padding: 0 !important;
+
+    }
+
+
+    /*
+       सभी invoices hide
+    */
+
+    .invoice-report {
+
+        display: none !important;
+
+    }
+
+
+    /*
+       सिर्फ selected invoice show
+    */
+
+    .invoice-report.printing-invoice {
+
+        display: block !important;
+
+        position: relative !important;
+
+        width: 100% !important;
+
+        max-width: none !important;
+
+        margin: 0 !important;
+
+        padding: 10mm !important;
+
+        box-sizing: border-box !important;
+
+        background: #ffffff !important;
+
+        color: #000000 !important;
+
+        border: none !important;
+
+        border-radius: 0 !important;
+
+        box-shadow: none !important;
+
+        overflow: visible !important;
+
+    }
+
+
+    /*
+       Selected invoice के अंदर
+       सब content visible
+    */
+
+    .invoice-report.printing-invoice * {
+
+        visibility: visible !important;
+
+        color: #000000 !important;
+
+    }
+
+
+    /*
+       Buttons hide
+    */
+
+    .invoice-report.printing-invoice
     .invoice-actions {
 
         display: none !important;
@@ -709,19 +823,77 @@
 
 
     /*
-       Horizontal scrolling हटाना
+       Table wrapper
     */
 
+    .invoice-report.printing-invoice
     .report-table-wrapper {
+
+        width: 100% !important;
 
         overflow: visible !important;
 
     }
 
 
-    .report-table-wrapper table {
+    /*
+       Table
+    */
+
+    .invoice-report.printing-invoice
+    table {
 
         width: 100% !important;
+
+        min-width: 0 !important;
+
+        border-collapse: collapse !important;
+
+    }
+
+
+    .invoice-report.printing-invoice
+    th,
+    .invoice-report.printing-invoice
+    td {
+
+        color: #000000 !important;
+
+        border: 1px solid #000000 !important;
+
+        padding: 6px !important;
+
+        background: #ffffff !important;
+
+    }
+
+
+    /*
+       Text wrapping
+    */
+
+    .invoice-report.printing-invoice
+    td,
+    .invoice-report.printing-invoice
+    th {
+
+        word-break: normal !important;
+
+        overflow-wrap: break-word !important;
+
+    }
+
+
+    /*
+       Page break avoid
+    */
+
+    .invoice-report.printing-invoice
+    tr {
+
+        page-break-inside: avoid !important;
+
+        break-inside: avoid !important;
 
     }
 
@@ -730,95 +902,79 @@
 
         size: A4;
 
-        margin: 12mm;
+        margin: 10mm;
 
     }
 
 }
 
+</style>
 
-</style><!-- =======================================================
+
+<!-- =======================================================
      JAVASCRIPT
-     ======================================================= --><script>
+     ======================================================= -->
 
+<script>
 
 /* =========================================================
    AUTO DATE REPORT
    =========================================================
 
    Date select करते ही form automatically submit होगा.
-
-   इसलिए:
-   Date चुनो
-   ↓
-   तुरंत report load
-   ↓
-   View Report button की जरूरत नहीं
    ========================================================= */
 
 document.addEventListener(
-  "DOMContentLoaded",
-  function () {
+    "DOMContentLoaded",
+    function () {
+
+        const dateInput =
+            document.getElementById("reportDate");
+
+        const form =
+            document.getElementById("reportDateForm");
 
 
-    const dateInput =
-      document.getElementById("reportDate");
-
-
-    const form =
-      document.getElementById("reportDateForm");
-
-
-    if (!dateInput || !form) {
-
-        return;
-
-    }
-
-
-    dateInput.addEventListener(
-      "change",
-      function () {
-
-
-        if (!this.value) {
+        if (!dateInput || !form) {
 
             return;
 
         }
 
 
-        form.submit();
+        dateInput.addEventListener(
+            "change",
+            function () {
 
+                if (!this.value) {
 
-      }
-    );
+                    return;
 
+                }
 
-  }
+                form.submit();
+
+            }
+        );
+
+    }
 );
-
 
 
 /* =========================================================
    PRINT / PDF INVOICE
    =========================================================
 
-   जिस invoice के button पर click होगा,
-   सिर्फ वही invoice print होगा.
-
-   Browser print dialog में:
-       Save as PDF
-   select करके PDF save कर सकते हो.
+   जिस invoice पर click होगा,
+   केवल वही invoice print होगा.
    ========================================================= */
 
 function printInvoice(invoiceId) {
 
-
     const invoice =
-      document.getElementById(
-        "invoice-" + invoiceId
-      );
+        document.getElementById(
+            "invoice-" + invoiceId
+        );
 
 
     if (!invoice) {
@@ -831,25 +987,25 @@ function printInvoice(invoiceId) {
 
 
     /*
-       अगर कोई दूसरा invoice पहले से
-       print mode में है तो उसे remove करो.
+       पहले सभी invoices से
+       printing class remove करो.
     */
 
     document
-      .querySelectorAll(".printing-invoice")
-      .forEach(
-        function (element) {
+        .querySelectorAll(".printing-invoice")
+        .forEach(
+            function (element) {
 
-            element.classList.remove(
-                "printing-invoice"
-            );
+                element.classList.remove(
+                    "printing-invoice"
+                );
 
-        }
-      );
+            }
+        );
 
 
     /*
-       Selected invoice को print mode में डालो.
+       Selected invoice को print class दो.
     */
 
     invoice.classList.add(
@@ -858,35 +1014,45 @@ function printInvoice(invoiceId) {
 
 
     /*
-       थोड़ी delay ताकि browser DOM update
-       properly कर सके.
+       Browser को DOM update करने का
+       थोड़ा समय दो.
     */
 
     setTimeout(
-      function () {
+        function () {
 
-        window.print();
+            window.print();
 
-      },
-      100
+        },
+        300
     );
-
-
-    /*
-       Print dialog बंद होने के बाद
-       print class remove.
-    */
-
-    window.onafterprint =
-      function () {
-
-        invoice.classList.remove(
-            "printing-invoice"
-        );
-
-      };
 
 }
 
 
-</script>{% endblock %}
+/* =========================================================
+   AFTER PRINT
+   ========================================================= */
+
+window.addEventListener(
+    "afterprint",
+    function () {
+
+        document
+            .querySelectorAll(".printing-invoice")
+            .forEach(
+                function (element) {
+
+                    element.classList.remove(
+                        "printing-invoice"
+                    );
+
+                }
+            );
+
+    }
+);
+
+</script>
+
+{% endblock %}
