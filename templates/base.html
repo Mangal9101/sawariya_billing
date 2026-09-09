@@ -2,36 +2,664 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="theme-color" content="#7b3f18">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    >
+
+    <meta name="theme-color" content="#0759a8">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
+
     <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="/static/css/style.css">
-    <title>{{ title or 'Sawariya Confectionary' }}</title>
+
+    <title>{{ title or 'Billing App' }}</title>
+
+    <style>
+        /* =====================================================
+           SAWARIYA BILLING
+           KHATABOOK STYLE MOBILE SHELL
+           ===================================================== */
+
+        :root {
+            --app-blue: #0759a8;
+            --app-blue-dark: #064c91;
+            --app-bg: #f5f7fa;
+            --app-text: #202124;
+            --app-muted: #6f7782;
+            --app-border: #e5e7eb;
+            --app-green: #168c45;
+            --app-red: #b3263e;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-width: 0;
+            background: var(--app-bg);
+        }
+
+        body {
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Arial,
+                sans-serif;
+
+            color: var(--app-text);
+
+            padding-bottom: 74px !important;
+        }
+
+        /* =====================================================
+           TOP APP HEADER
+           ===================================================== */
+
+        .app-header {
+            width: 100%;
+            background: var(--app-blue);
+            color: #fff;
+
+            min-height: 116px;
+
+            padding:
+                max(14px, env(safe-area-inset-top))
+                16px
+                12px;
+
+            position: relative;
+            z-index: 100;
+        }
+
+        .app-header-top {
+            min-height: 58px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 12px;
+        }
+
+        .business-section {
+            min-width: 0;
+
+            display: flex;
+            align-items: center;
+
+            gap: 11px;
+        }
+
+        .business-icon {
+            width: 35px;
+            height: 35px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 24px;
+
+            flex-shrink: 0;
+        }
+
+        .business-info {
+            min-width: 0;
+        }
+
+        .business-name {
+            font-size: 17px;
+            font-weight: 700;
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            max-width: 235px;
+
+            line-height: 1.2;
+        }
+
+        .business-owner {
+            font-size: 11px;
+            opacity: .78;
+
+            margin-top: 3px;
+        }
+
+        .business-arrow {
+            font-size: 19px;
+            margin-left: 2px;
+        }
+
+        /* =====================================================
+           PROFILE / COIN BUTTON
+           ===================================================== */
+
+        .header-account {
+            width: 52px;
+            height: 40px;
+
+            border: 1px solid rgba(255,255,255,.55);
+            border-radius: 22px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: #fff;
+
+            text-decoration: none;
+
+            font-size: 14px;
+
+            flex-shrink: 0;
+
+            background: rgba(255,255,255,.08);
+        }
+
+        .header-account span {
+            margin-left: 4px;
+        }
+
+        /* =====================================================
+           TOP QUICK NAV
+           ===================================================== */
+
+        .app-tabs {
+            display: flex;
+            align-items: center;
+
+            gap: 30px;
+
+            height: 48px;
+
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .app-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .app-tab {
+            position: relative;
+
+            height: 48px;
+
+            display: flex;
+            align-items: center;
+
+            color: rgba(255,255,255,.78);
+
+            text-decoration: none;
+
+            font-size: 14px;
+            font-weight: 700;
+
+            white-space: nowrap;
+        }
+
+        .app-tab.active {
+            color: #fff;
+        }
+
+        .app-tab.active::after {
+            content: "";
+
+            position: absolute;
+
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+            height: 4px;
+
+            border-radius: 5px 5px 0 0;
+
+            background: #ffd447;
+        }
+
+        /* =====================================================
+           MAIN CONTENT
+           ===================================================== */
+
+        main,
+        .page-container,
+        .content,
+        .container {
+            max-width: 100% !important;
+        }
+
+        /* =====================================================
+           FIXED BOTTOM NAVIGATION
+           ===================================================== */
+
+        .bottom-nav {
+            position: fixed;
+
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+            height: 70px;
+
+            background: #fff;
+
+            border-top: 1px solid #e2e5e9;
+
+            box-shadow:
+                0 -3px 14px rgba(0,0,0,.08);
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(5, 1fr);
+
+            z-index: 9999;
+
+            padding-bottom:
+                env(safe-area-inset-bottom);
+        }
+
+        .bottom-nav-item {
+            min-width: 0;
+
+            display: flex;
+            flex-direction: column;
+
+            align-items: center;
+            justify-content: center;
+
+            gap: 4px;
+
+            color: #69717c;
+
+            text-decoration: none;
+
+            font-size: 10px;
+            font-weight: 600;
+
+            position: relative;
+        }
+
+        .bottom-nav-icon {
+            width: 25px;
+            height: 25px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 20px;
+        }
+
+        .bottom-nav-label {
+            line-height: 1;
+        }
+
+        .bottom-nav-item.active {
+            color: var(--app-blue);
+        }
+
+        .bottom-nav-item.active .bottom-nav-icon {
+            font-size: 21px;
+        }
+
+        .bottom-nav-item.active::before {
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+
+            width: 34px;
+            height: 3px;
+
+            border-radius: 0 0 5px 5px;
+
+            background: #ffd447;
+        }
+
+        /* =====================================================
+           BILLING QUICK BUTTON
+           ===================================================== */
+
+        .bottom-billing {
+            position: relative;
+        }
+
+        .bottom-billing .billing-circle {
+            width: 43px;
+            height: 43px;
+
+            margin-top: -17px;
+
+            border-radius: 50%;
+
+            background: var(--app-blue);
+
+            color: #fff;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 22px;
+
+            border: 4px solid #fff;
+
+            box-shadow:
+                0 2px 8px rgba(0,0,0,.18);
+        }
+
+        .bottom-billing .bottom-nav-label {
+            margin-top: 1px;
+        }
+
+        /* =====================================================
+           MOBILE ONLY
+           ===================================================== */
+
+        @media (max-width: 700px) {
+
+            body {
+                overflow-x: hidden;
+            }
+
+            nav:not(.bottom-nav) {
+                display: none !important;
+            }
+
+            .desktop-nav,
+            .desktop-menu {
+                display: none !important;
+            }
+
+            .app-header {
+                display: block;
+            }
+
+            .bottom-nav {
+                display: grid;
+            }
+        }
+
+        /* =====================================================
+           DESKTOP
+           ===================================================== */
+
+        @media (min-width: 701px) {
+
+            .app-header {
+                display: none;
+            }
+
+            .bottom-nav {
+                display: none;
+            }
+
+            body {
+                padding-bottom: 0 !important;
+            }
+        }
+
+        /* =====================================================
+           SAFE AREA
+           ===================================================== */
+
+        @supports (padding: max(0px)) {
+
+            .bottom-nav {
+                height:
+                    calc(70px + env(safe-area-inset-bottom));
+            }
+        }
+
+        /* =====================================================
+           SMALL PHONES
+           ===================================================== */
+
+        @media (max-width: 380px) {
+
+            .app-tabs {
+                gap: 22px;
+            }
+
+            .business-name {
+                max-width: 185px;
+                font-size: 16px;
+            }
+
+            .bottom-nav-label {
+                font-size: 9px;
+            }
+        }
+    </style>
 </head>
+
 <body>
-<nav>
-    <div class="logo">🍬 SAWARIYA</div>
-    <div class="links">
-        <a href="/dashboard">Dashboard</a>
-        <a href="/billing">Billing</a>
-        <a href="/products">Products</a>
-        <a href="/stock">Stock</a>
-        <a href="/customers">Customers</a>
-        <a href="/reports">Reports</a>
-        <a href="/logout">Logout</a>
-    </div>
-</nav>
 
-{% block content %}{% endblock %}
+    <!-- =====================================================
+         MOBILE TOP HEADER
+         ===================================================== -->
 
-<script>
-if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/service-worker.js").catch(console.warn);
-    });
-}
-</script>
+    <header class="app-header">
+
+        <div class="app-header-top">
+
+            <div class="business-section">
+
+                <div class="business-icon">
+                    🏪
+                </div>
+
+                <div class="business-info">
+
+                    <div class="business-name">
+                        {{ business_name or 'My Business' }}
+                        <span class="business-arrow">⌄</span>
+                    </div>
+
+                    <div class="business-owner">
+                        {{ username or 'Business Owner' }}
+                    </div>
+
+                </div>
+
+            </div>
+
+            <a
+                href="/logout"
+                class="header-account"
+                aria-label="Account"
+            >
+                👤
+            </a>
+
+        </div>
+
+
+        <!-- =================================================
+             TOP MODULE TABS
+             ================================================= -->
+
+        <div class="app-tabs">
+
+            <a
+                href="/dashboard"
+                class="app-tab {% if request.url.path == '/dashboard' %}active{% endif %}"
+            >
+                DASHBOARD
+            </a>
+
+            <a
+                href="/customers"
+                class="app-tab {% if request.url.path == '/customers' %}active{% endif %}"
+            >
+                CUSTOMERS
+            </a>
+
+            <a
+                href="/products"
+                class="app-tab {% if request.url.path == '/products' %}active{% endif %}"
+            >
+                PRODUCTS
+            </a>
+
+            <a
+                href="/stock"
+                class="app-tab {% if request.url.path == '/stock' %}active{% endif %}"
+            >
+                STOCK
+            </a>
+
+            <a
+                href="/reports"
+                class="app-tab {% if request.url.path == '/reports' %}active{% endif %}"
+            >
+                REPORTS
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         PAGE CONTENT
+         ===================================================== -->
+
+    <main>
+
+        {% block content %}{% endblock %}
+
+    </main>
+
+
+    <!-- =====================================================
+         FIXED BOTTOM NAVIGATION
+         ===================================================== -->
+
+    <nav class="bottom-nav">
+
+        <a
+            href="/dashboard"
+            class="bottom-nav-item
+            {% if request.url.path == '/dashboard' %}active{% endif %}"
+        >
+
+            <div class="bottom-nav-icon">
+                🏠
+            </div>
+
+            <div class="bottom-nav-label">
+                Dashboard
+            </div>
+
+        </a>
+
+
+        <a
+            href="/customers"
+            class="bottom-nav-item
+            {% if request.url.path == '/customers' %}active{% endif %}"
+        >
+
+            <div class="bottom-nav-icon">
+                👥
+            </div>
+
+            <div class="bottom-nav-label">
+                Parties
+            </div>
+
+        </a>
+
+
+        <a
+            href="/billing"
+            class="bottom-nav-item bottom-billing
+            {% if request.url.path == '/billing' %}active{% endif %}"
+        >
+
+            <div class="billing-circle">
+                ＋
+            </div>
+
+            <div class="bottom-nav-label">
+                Billing
+            </div>
+
+        </a>
+
+
+        <a
+            href="/products"
+            class="bottom-nav-item
+            {% if request.url.path == '/products' %}active{% endif %}"
+        >
+
+            <div class="bottom-nav-icon">
+                📦
+            </div>
+
+            <div class="bottom-nav-label">
+                Inventory
+            </div>
+
+        </a>
+
+
+        <a
+            href="/reports"
+            class="bottom-nav-item
+            {% if request.url.path == '/reports' %}active{% endif %}"
+        >
+
+            <div class="bottom-nav-icon">
+                ⋯
+            </div>
+
+            <div class="bottom-nav-label">
+                More
+            </div>
+
+        </a>
+
+    </nav>
+
+
+    <!-- =====================================================
+         SERVICE WORKER
+         ===================================================== -->
+
+    <script>
+
+        if ("serviceWorker" in navigator) {
+
+            window.addEventListener("load", () => {
+
+                navigator.serviceWorker
+                    .register("/service-worker.js")
+                    .catch(console.warn);
+
+            });
+
+        }
+
+    </script>
+
 </body>
 </html>
