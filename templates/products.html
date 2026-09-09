@@ -2,299 +2,469 @@
 
 {% block content %}
 
-<main>
+<main><!-- =========================
+     PAGE HEADER
+     ========================= -->
 
-    <!-- =========================
-         PAGE HEADER
-         ========================= -->
+<div class="top">
 
-    <div class="top">
+    <div>
+
+        <h1>Products</h1>
+
+        <p>Manage prices and stock.</p>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     PRODUCT MESSAGES
+     ========================= -->
+
+{% if request.query_params.get('error') == 'product_exists' %}
+
+    <div class="product-message product-error">
+        ⚠️ This product already exists.
+    </div>
+
+{% elif request.query_params.get('error') == 'sku_exists' %}
+
+    <div class="product-message product-error">
+        ⚠️ This SKU already exists.
+    </div>
+
+{% elif request.query_params.get('error') == 'duplicate' %}
+
+    <div class="product-message product-error">
+        ⚠️ Product already exists.
+    </div>
+
+{% elif request.query_params.get('error') == 'empty' %}
+
+    <div class="product-message product-error">
+        ⚠️ Product name cannot be empty.
+    </div>
+
+{% elif request.query_params.get('error') == 'server' %}
+
+    <div class="product-message product-error">
+        ⚠️ Something went wrong. Please try again.
+    </div>
+
+{% elif request.query_params.get('success') == 'added' %}
+
+    <div class="product-message product-success">
+        ✅ Product added successfully.
+    </div>
+
+{% endif %}
+
+
+<!-- =========================
+     ADD PRODUCT BUTTON
+     ========================= -->
+
+<section class="panel add-product-header">
+
+    <button
+        type="button"
+        class="btn add-product-btn"
+        id="showAddProductBtn"
+    >
+        ➕ Add Product
+    </button>
+
+</section>
+
+
+<!-- =========================
+     ADD PRODUCT FORM
+     HIDDEN BY DEFAULT
+     ========================= -->
+
+<section
+    class="panel add-product-panel"
+    id="addProductPanel"
+    style="display: none;"
+>
+
+    <div class="add-product-title">
 
         <div>
 
-            <h1>Products</h1>
+            <h2>Add Product</h2>
 
-            <p>Manage prices and stock.</p>
+            <p>
+                Enter product details and opening stock.
+            </p>
 
         </div>
+
+        <button
+            type="button"
+            class="cancel-product-btn"
+            id="cancelAddProductBtn"
+        >
+            ✕ Cancel
+        </button>
 
     </div>
 
 
-    <!-- =========================
-         PRODUCT MESSAGES
-         ========================= -->
+    <form
+        class="formgrid"
+        method="post"
+        action="/products/add"
+    >
 
-    {% if request.query_params.get('error') == 'product_exists' %}
-
-        <div class="product-message product-error">
-            ⚠️ This product already exists.
-        </div>
-
-    {% elif request.query_params.get('error') == 'sku_exists' %}
-
-        <div class="product-message product-error">
-            ⚠️ This SKU already exists.
-        </div>
-
-    {% elif request.query_params.get('error') == 'duplicate' %}
-
-        <div class="product-message product-error">
-            ⚠️ Product already exists.
-        </div>
-
-    {% elif request.query_params.get('error') == 'empty' %}
-
-        <div class="product-message product-error">
-            ⚠️ Product name cannot be empty.
-        </div>
-
-    {% elif request.query_params.get('error') == 'server' %}
-
-        <div class="product-message product-error">
-            ⚠️ Something went wrong. Please try again.
-        </div>
-
-    {% elif request.query_params.get('success') == 'added' %}
-
-        <div class="product-message product-success">
-            ✅ Product added successfully.
-        </div>
-
-    {% endif %}
-
-
-    <!-- =========================
-         ADD PRODUCT FORM
-         ========================= -->
-
-    <section class="panel">
-
-        <form
-            class="formgrid"
-            method="post"
-            action="/products/add"
-        >
-
-            <input
-                name="name"
-                placeholder="Product name"
-                required
-            >
-
-            <input
-                name="sku"
-                placeholder="SKU"
-            >
-
-            <input
-                name="quantity"
-                type="number"
-                min="0"
-                value="0"
-                placeholder="Opening stock"
-            >
-
-            <input
-                name="min_stock"
-                type="number"
-                min="0"
-                value="5"
-                placeholder="Min stock"
-            >
-
-            <input
-                name="purchase_price"
-                type="number"
-                min="0"
-                step="0.01"
-                value="0"
-                placeholder="Purchase price"
-            >
-
-            <input
-                name="wholesale_price"
-                type="number"
-                min="0"
-                step="0.01"
-                value="0"
-                placeholder="Wholesale price"
-            >
-
-            <input
-                name="retailer_price"
-                type="number"
-                min="0"
-                step="0.01"
-                value="0"
-                placeholder="Retail price"
-            >
-
-            <button
-                type="submit"
-                class="btn"
-            >
-                Add Product
-            </button>
-
-        </form>
-
-    </section>
-
-
-    <!-- =========================
-         PRODUCT LIST
-         ========================= -->
-
-    <section class="panel">
-
-
-        <!-- SEARCH -->
+        <!-- PRODUCT NAME -->
 
         <input
-            id="search"
-            class="search"
-            type="search"
-            placeholder="🔍 Type to search product..."
-            autocomplete="off"
+            name="name"
+            placeholder="Product name"
+            required
         >
 
 
-        <!-- PRODUCT TABLE -->
+        <!-- SKU -->
 
-        <table class="product-table">
-
-            <thead>
-
-                <tr>
-
-                    <th>Name</th>
-
-                    <th>Stock</th>
-
-                    <th>Purchase</th>
-
-                    <th>Wholesale</th>
-
-                    <th>Retail</th>
-
-                </tr>
-
-            </thead>
+        <input
+            name="sku"
+            placeholder="SKU"
+        >
 
 
-            <tbody>
+        <!-- OPENING STOCK -->
 
-                {% for p in products %}
-
-                <tr
-                    class="productrow"
-                    data-product-name="{{ p.name|lower }}"
-                    data-product-sku="{{ (p.sku or '')|lower }}"
-                >
-
-                    <!-- NAME -->
-
-                    <td>
-
-                        <a
-                            class="product-link"
-                            href="/products/{{ p.id }}/edit"
-                        >
-                            {{ p.name }}
-                        </a>
-
-                    </td>
+        <input
+            name="quantity"
+            type="number"
+            min="0"
+            value="0"
+            placeholder="Opening stock"
+        >
 
 
-                    <!-- STOCK -->
+        <!-- MIN STOCK -->
 
-                    <td>
-
-                        {{ p.quantity or 0 }}
-
-                    </td>
-
-
-                    <!-- PURCHASE -->
-
-                    <td>
-
-                        ₹{{ '%.2f'|format(p.purchase_price or 0) }}
-
-                    </td>
+        <input
+            name="min_stock"
+            type="number"
+            min="0"
+            value="5"
+            placeholder="Min stock"
+        >
 
 
-                    <!-- WHOLESALE -->
+        <!-- PURCHASE PRICE -->
 
-                    <td>
+        <input
+            name="purchase_price"
+            type="number"
+            min="0"
+            step="0.01"
+            value="0"
+            placeholder="Purchase price"
+        >
 
-                        ₹{{ '%.2f'|format(p.wholesale_price or 0) }}
 
-                    </td>
+        <!-- WHOLESALE PRICE -->
+
+        <input
+            name="wholesale_price"
+            type="number"
+            min="0"
+            step="0.01"
+            value="0"
+            placeholder="Wholesale price"
+        >
 
 
-                    <!-- RETAIL -->
+        <!-- RETAIL PRICE -->
 
-                    <td>
+        <input
+            name="retailer_price"
+            type="number"
+            min="0"
+            step="0.01"
+            value="0"
+            placeholder="Retail price"
+        >
 
-                        ₹{{ '%.2f'|format(p.retailer_price or 0) }}
 
-                    </td>
+        <!-- SAVE -->
 
-                </tr>
+        <button
+            type="submit"
+            class="btn save-product-btn"
+        >
+            ✅ Save Product
+        </button>
 
-                {% else %}
+    </form>
 
-                <tr id="emptyProducts">
+</section>
 
-                    <td
-                        colspan="5"
-                        style="
-                            text-align:center;
-                            padding:20px;
-                        "
+
+<!-- =========================
+     PRODUCT LIST
+     ========================= -->
+
+<section class="panel">
+
+
+    <!-- SEARCH -->
+
+    <input
+        id="search"
+        class="search"
+        type="search"
+        placeholder="🔍 Type to search product..."
+        autocomplete="off"
+    >
+
+
+    <!-- PRODUCT TABLE -->
+
+    <table class="product-table">
+
+        <thead>
+
+            <tr>
+
+                <th>Name</th>
+
+                <th>Stock</th>
+
+                <th>Purchase</th>
+
+                <th>Wholesale</th>
+
+                <th>Retail</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for p in products %}
+
+            <tr
+                class="productrow"
+                data-product-name="{{ p.name|lower }}"
+                data-product-sku="{{ (p.sku or '')|lower }}"
+            >
+
+                <!-- NAME -->
+
+                <td>
+
+                    <a
+                        class="product-link"
+                        href="/products/{{ p.id }}/edit"
                     >
-                        No products added yet.
-                    </td>
+                        {{ p.name }}
+                    </a>
 
-                </tr>
-
-                {% endfor %}
-
-            </tbody>
-
-        </table>
+                </td>
 
 
-        <!-- NO RESULT MESSAGE -->
+                <!-- STOCK -->
 
-        <p
-            id="noResults"
-            style="
-                display:none;
-                text-align:center;
-                padding:15px;
-                font-weight:600;
-            "
-        >
-            No product found.
-        </p>
-
-    </section>
-
-</main>
+                <td>
+                    {{ p.quantity or 0 }}
+                </td>
 
 
-<!-- =========================================
-     PRODUCT SEARCH SCRIPT
-     ========================================= -->
+                <!-- PURCHASE -->
 
-<script>
+                <td>
+                    ₹{{ '%.2f'|format(p.purchase_price or 0) }}
+                </td>
+
+
+                <!-- WHOLESALE -->
+
+                <td>
+                    ₹{{ '%.2f'|format(p.wholesale_price or 0) }}
+                </td>
+
+
+                <!-- RETAIL -->
+
+                <td>
+                    ₹{{ '%.2f'|format(p.retailer_price or 0) }}
+                </td>
+
+            </tr>
+
+            {% else %}
+
+            <tr id="emptyProducts">
+
+                <td
+                    colspan="5"
+                    style="
+                        text-align:center;
+                        padding:20px;
+                    "
+                >
+                    No products added yet.
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+    <!-- NO RESULT MESSAGE -->
+
+    <p
+        id="noResults"
+        style="
+            display:none;
+            text-align:center;
+            padding:15px;
+            font-weight:600;
+        "
+    >
+        No product found.
+    </p>
+
+</section>
+
+</main><!-- =========================================
+     JAVASCRIPT
+     ========================================= --><script>
 
 document.addEventListener(
     "DOMContentLoaded",
     function () {
+
+
+        /* =================================================
+           ADD PRODUCT OPEN / CLOSE
+           ================================================= */
+
+        const showAddProductBtn =
+            document.getElementById(
+                "showAddProductBtn"
+            );
+
+
+        const cancelAddProductBtn =
+            document.getElementById(
+                "cancelAddProductBtn"
+            );
+
+
+        const addProductPanel =
+            document.getElementById(
+                "addProductPanel"
+            );
+
+
+        /*
+         * ADD PRODUCT BUTTON
+         */
+
+        if (
+            showAddProductBtn
+            &&
+            addProductPanel
+        ) {
+
+            showAddProductBtn.addEventListener(
+                "click",
+                function () {
+
+                    addProductPanel.style.display =
+                        "block";
+
+
+                    showAddProductBtn
+                        .closest(".add-product-header")
+                        .style.display = "none";
+
+
+                    /*
+                     * Form ke first input par focus
+                     */
+
+                    const firstInput =
+                        addProductPanel.querySelector(
+                            'input[name="name"]'
+                        );
+
+
+                    if (firstInput) {
+
+                        setTimeout(
+                            function () {
+
+                                firstInput.focus();
+
+                            },
+                            100
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /*
+         * CANCEL BUTTON
+         */
+
+        if (
+            cancelAddProductBtn
+            &&
+            addProductPanel
+        ) {
+
+            cancelAddProductBtn.addEventListener(
+                "click",
+                function () {
+
+                    addProductPanel.style.display =
+                        "none";
+
+
+                    const addHeader =
+                        document.querySelector(
+                            ".add-product-header"
+                        );
+
+
+                    if (addHeader) {
+
+                        addHeader.style.display =
+                            "block";
+
+                    }
+
+                }
+            );
+
+        }
+
+
+
+        /* =================================================
+           PRODUCT SEARCH
+           ================================================= */
 
         const searchInput =
             document.getElementById(
@@ -323,6 +493,7 @@ document.addEventListener(
 
         function filterProducts() {
 
+
             const query =
                 searchInput.value
                 .toLowerCase()
@@ -334,6 +505,7 @@ document.addEventListener(
 
             productRows.forEach(
                 function (row) {
+
 
                     const productName =
                         (
@@ -365,7 +537,8 @@ document.addEventListener(
 
                         visibleCount++;
 
-                    } else {
+                    }
+                    else {
 
                         row.classList.add(
                             "search-hidden"
@@ -386,7 +559,8 @@ document.addEventListener(
                 noResults.style.display =
                     "block";
 
-            } else {
+            }
+            else {
 
                 noResults.style.display =
                     "none";
@@ -410,15 +584,168 @@ document.addEventListener(
     }
 );
 
-</script>
-
-
-
-<!-- =========================================
+</script><!-- =========================================
      PRODUCT PAGE CSS
-     ========================================= -->
+     ========================================= --><style>
 
-<style>
+
+/* =========================================
+   ADD PRODUCT HEADER
+   ========================================= */
+
+.add-product-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-start;
+
+    margin-bottom: 15px;
+
+}
+
+
+/* =========================================
+   ADD PRODUCT BUTTON
+   ========================================= */
+
+.add-product-btn {
+
+    min-height: 46px;
+
+    padding: 11px 20px;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+}
+
+
+/* =========================================
+   ADD PRODUCT PANEL
+   ========================================= */
+
+.add-product-panel {
+
+    margin-bottom: 20px;
+
+    animation:
+        addProductOpen 0.2s ease;
+
+}
+
+
+@keyframes addProductOpen {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(-8px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0);
+
+    }
+
+}
+
+
+/* =========================================
+   ADD PRODUCT TITLE
+   ========================================= */
+
+.add-product-title {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 18px;
+
+}
+
+
+.add-product-title h2 {
+
+    margin: 0 0 4px;
+
+    font-size: 20px;
+
+}
+
+
+.add-product-title p {
+
+    margin: 0;
+
+    opacity: 0.7;
+
+    font-size: 14px;
+
+}
+
+
+/* =========================================
+   CANCEL BUTTON
+   ========================================= */
+
+.cancel-product-btn {
+
+    min-height: 42px;
+
+    padding: 9px 15px;
+
+    border: 1px solid #dddddd;
+
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    color: #555555;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+}
+
+
+.cancel-product-btn:hover {
+
+    background: #f5f5f5;
+
+}
+
+
+/* =========================================
+   SAVE PRODUCT
+   ========================================= */
+
+.save-product-btn {
+
+    min-height: 46px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+}
 
 
 /* =========================================
@@ -499,6 +826,53 @@ tr.productrow.search-hidden {
    ========================================= */
 
 @media (max-width: 600px) {
+
+
+    .add-product-header {
+
+        width: 100%;
+
+    }
+
+
+    .add-product-btn {
+
+        width: 100%;
+
+        min-height: 50px;
+
+        font-size: 16px;
+
+    }
+
+
+    .add-product-title {
+
+        align-items: stretch;
+
+        flex-direction: column;
+
+    }
+
+
+    .cancel-product-btn {
+
+        width: 100%;
+
+        min-height: 46px;
+
+    }
+
+
+    .save-product-btn {
+
+        width: 100%;
+
+        min-height: 50px;
+
+        font-size: 16px;
+
+    }
 
 
     table.product-table {
@@ -732,7 +1106,7 @@ tr.productrow.search-hidden {
     }
 
 
-    /* WHOLESALE HIGHLIGHT */
+    /* WHOLESALE */
 
     table.product-table
     tbody
@@ -746,7 +1120,7 @@ tr.productrow.search-hidden {
     }
 
 
-    /* RETAIL HIGHLIGHT */
+    /* RETAIL */
 
     table.product-table
     tbody
@@ -758,7 +1132,6 @@ tr.productrow.search-hidden {
         font-weight: 700 !important;
 
     }
-
 
 }
 
@@ -779,7 +1152,4 @@ tr.productrow.search-hidden {
 
 }
 
-</style>
-
-
-{% endblock %}
+</style>{% endblock %}
