@@ -4,777 +4,995 @@
 
 <style>
 
-    /* =====================================================
-       CUSTOMERS — KHATABOOK STYLE
-       ===================================================== */
+/* =====================================================
+   CUSTOMERS PAGE
+   STOCK MANAGEMENT STYLE
+   ===================================================== */
+
+.customers-page {
+
+    width: 100%;
+
+    min-height: calc(100vh - 116px);
+
+    background: #f5f7fa;
+
+    padding: 0 16px 110px;
+
+    box-sizing: border-box;
+
+}
+
+
+/* =====================================================
+   PAGE HEADER
+   ===================================================== */
+
+.customers-header {
+
+    padding: 28px 0 22px;
+
+}
+
+
+.customers-header h1 {
+
+    margin: 0;
+
+    font-size: 34px;
+
+    line-height: 1.15;
+
+    color: #202124;
+
+}
+
+
+.customers-header p {
+
+    margin: 7px 0 0;
+
+    color: #6b7075;
+
+    font-size: 14px;
+
+}
+
+
+/* =====================================================
+   SEARCH
+   ===================================================== */
+
+.customer-search-box {
+
+    width: 100%;
+
+    margin-bottom: 18px;
+
+}
+
+
+.customer-search {
+
+    width: 100%;
+
+    height: 50px;
+
+    box-sizing: border-box;
+
+    padding: 0 16px;
+
+    border: 1px solid #d9dcdf;
+
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    outline: none;
+
+    font-size: 15px;
+
+    color: #333;
+
+}
+
+
+.customer-search:focus {
+
+    border-color: #0759a8;
+
+    box-shadow:
+        0 0 0 2px rgba(7,89,168,.08);
+
+}
+
+
+.customer-search::placeholder {
+
+    color: #858a90;
+
+}
+
+
+/* =====================================================
+   CUSTOMER LIST CONTAINER
+   ===================================================== */
+
+.customer-list {
+
+    width: 100%;
+
+}
+
+
+/* =====================================================
+   CUSTOMER CARD
+   ===================================================== */
+
+.customer-card {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    margin-bottom: 22px;
+
+    background: #ffffff;
+
+    border: 1px solid #dddddd;
+
+    border-radius: 17px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 2px 8px rgba(0,0,0,.04);
+
+}
+
+
+/* =====================================================
+   CUSTOMER CARD HEADER
+   ===================================================== */
+
+.customer-card-header {
+
+    min-height: 70px;
+
+    padding: 0 20px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    background: #f8f4f1;
+
+    border-bottom: 1px solid #e5e1de;
+
+    box-sizing: border-box;
+
+}
+
+
+.customer-card-label {
+
+    font-size: 19px;
+
+    font-weight: 700;
+
+    color: #625952;
+
+    flex-shrink: 0;
+
+}
+
+
+.customer-card-name {
+
+    font-size: 21px;
+
+    font-weight: 700;
+
+    color: #242424;
+
+    text-align: right;
+
+    overflow-wrap: anywhere;
+
+    word-break: break-word;
+
+}
+
+
+/* =====================================================
+   CUSTOMER DETAIL ROW
+   ===================================================== */
+
+.customer-detail-row {
+
+    min-height: 62px;
+
+    padding: 0 20px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    box-sizing: border-box;
+
+    border-bottom: 1px solid #eeeeee;
+
+}
+
+
+.customer-detail-row:last-child {
+
+    border-bottom: none;
+
+}
+
+
+/* =====================================================
+   DETAIL LABEL
+   ===================================================== */
+
+.customer-detail-label {
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    color: #625952;
+
+    flex-shrink: 0;
+
+}
+
+
+/* =====================================================
+   DETAIL VALUE
+   ===================================================== */
+
+.customer-detail-value {
+
+    font-size: 15px;
+
+    color: #292929;
+
+    text-align: right;
+
+    overflow-wrap: anywhere;
+
+    word-break: break-word;
+
+}
+
+
+.customer-detail-value.empty {
+
+    color: #888;
+
+}
+
+
+/* =====================================================
+   PHONE
+   ===================================================== */
+
+.customer-phone {
+
+    color: #0759a8;
+
+    text-decoration: none;
+
+    font-weight: 600;
+
+}
+
+
+.customer-phone:hover {
+
+    text-decoration: underline;
+
+}
+
+
+/* =====================================================
+   STATUS
+   ===================================================== */
+
+.customer-status {
+
+    color: #16804a;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+}
+
+
+/* =====================================================
+   EMPTY CUSTOMERS
+   ===================================================== */
+
+.empty-customers {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 50px 20px;
+
+    text-align: center;
+
+    background: #ffffff;
+
+    border: 1px solid #dddddd;
+
+    border-radius: 16px;
+
+}
+
+
+.empty-icon {
+
+    font-size: 45px;
+
+    margin-bottom: 10px;
+
+}
+
+
+.empty-customers strong {
+
+    display: block;
+
+    font-size: 18px;
+
+    color: #333;
+
+    margin-bottom: 6px;
+
+}
+
+
+.empty-customers p {
+
+    margin: 0;
+
+    color: #777;
+
+    font-size: 14px;
+
+}
+
+
+/* =====================================================
+   NO SEARCH RESULT
+   ===================================================== */
+
+.no-customer-result {
+
+    display: none;
+
+    padding: 35px 15px;
+
+    text-align: center;
+
+    color: #777;
+
+    font-weight: 600;
+
+    background: #ffffff;
+
+    border: 1px solid #ddd;
+
+    border-radius: 15px;
+
+}
+
+
+/* =====================================================
+   ADD CUSTOMER FLOATING BUTTON
+   ===================================================== */
+
+.add-customer-button {
+
+    position: fixed;
+
+    right: 18px;
+
+    bottom: 82px;
+
+    min-width: 225px;
+
+    height: 56px;
+
+    padding: 0 22px;
+
+    border: 0;
+
+    border-radius: 30px;
+
+    background: #b00055;
+
+    color: #ffffff;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 9px;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    box-shadow:
+        0 5px 16px rgba(0,0,0,.25);
+
+    z-index: 5000;
+
+    cursor: pointer;
+
+}
+
+
+.add-customer-button:active {
+
+    transform: scale(.97);
+
+}
+
+
+.add-customer-icon {
+
+    font-size: 27px;
+
+    line-height: 1;
+
+}
+
+
+/* =====================================================
+   ADD CUSTOMER MODAL
+   ===================================================== */
+
+.customer-modal {
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0,0,0,.48);
+
+    display: none;
+
+    align-items: flex-end;
+
+    justify-content: center;
+
+    z-index: 10000;
+
+}
+
+
+.customer-modal.show {
+
+    display: flex;
+
+}
+
+
+/* =====================================================
+   MODAL BOX
+   ===================================================== */
+
+.customer-modal-box {
+
+    width: 100%;
+
+    max-width: 600px;
+
+    background: #ffffff;
+
+    border-radius: 20px 20px 0 0;
+
+    padding: 18px 16px 25px;
+
+    box-sizing: border-box;
+
+    box-shadow:
+        0 -5px 25px rgba(0,0,0,.22);
+
+    animation:
+        customerModalUp .22s ease;
+
+}
+
+
+@keyframes customerModalUp {
+
+    from {
+
+        transform: translateY(100%);
+
+        opacity: .7;
+
+    }
+
+    to {
+
+        transform: translateY(0);
+
+        opacity: 1;
+
+    }
+
+}
+
+
+/* =====================================================
+   MODAL HANDLE
+   ===================================================== */
+
+.modal-handle {
+
+    width: 42px;
+
+    height: 4px;
+
+    border-radius: 5px;
+
+    background: #d1d4d7;
+
+    margin: 0 auto 17px;
+
+}
+
+
+/* =====================================================
+   MODAL HEADER
+   ===================================================== */
+
+.modal-title {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 17px;
+
+}
+
+
+.modal-title h2 {
+
+    margin: 0;
+
+    font-size: 21px;
+
+    color: #292929;
+
+}
+
+
+.modal-close {
+
+    width: 36px;
+
+    height: 36px;
+
+    border: 0;
+
+    border-radius: 50%;
+
+    background: #f0f1f2;
+
+    color: #555;
+
+    font-size: 22px;
+
+    cursor: pointer;
+
+}
+
+
+/* =====================================================
+   CUSTOMER FORM
+   ===================================================== */
+
+.customer-form {
+
+    width: 100%;
+
+}
+
+
+.customer-form input {
+
+    width: 100%;
+
+    height: 51px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #d8dcdf;
+
+    border-radius: 9px;
+
+    padding: 0 14px;
+
+    margin-bottom: 11px;
+
+    outline: none;
+
+    background: #ffffff;
+
+    font-size: 15px;
+
+    color: #333;
+
+}
+
+
+.customer-form input:focus {
+
+    border-color: #0759a8;
+
+    box-shadow:
+        0 0 0 2px rgba(7,89,168,.08);
+
+}
+
+
+.customer-form input::placeholder {
+
+    color: #858a90;
+
+}
+
+
+/* =====================================================
+   SAVE CUSTOMER
+   ===================================================== */
+
+.save-customer {
+
+    width: 100%;
+
+    height: 51px;
+
+    border: 0;
+
+    border-radius: 9px;
+
+    background: #0759a8;
+
+    color: #ffffff;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+}
+
+
+.save-customer:active {
+
+    transform: scale(.99);
+
+}
+
+
+/* =====================================================
+   DESKTOP
+   ===================================================== */
+
+@media (min-width: 701px) {
 
     .customers-page {
-        width: 100%;
-        min-height: calc(100vh - 116px);
-        background: #f5f7fa;
-        padding-bottom: 85px;
+
+        max-width: 1000px;
+
+        margin: 0 auto;
+
+        padding-left: 0;
+
+        padding-right: 0;
+
     }
 
-    /* =====================================================
-       MONEY SUMMARY
-       ===================================================== */
 
-    .customer-summary {
-        background: #fff;
-        border-radius: 0 0 14px 14px;
-        overflow: hidden;
-        box-shadow: 0 2px 7px rgba(0,0,0,.06);
-        margin-bottom: 10px;
+    .customers-header {
+
+        padding-top: 28px;
+
     }
 
-    .summary-money-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        text-align: center;
+
+    .customer-search-box {
+
+        max-width: 600px;
+
     }
 
-    .summary-money-box {
-        padding: 11px 5px 13px;
+
+    .customer-card {
+
+        max-width: 100%;
+
     }
 
-    .summary-money-box:first-child {
-        border-right: 1px solid #eeeeee;
-    }
-
-    .summary-money-box span {
-        display: block;
-        font-size: 13px;
-        color: #777f88;
-        margin-bottom: 5px;
-    }
-
-    .summary-money-box strong {
-        display: block;
-        font-size: 21px;
-    }
-
-    .give-money {
-        color: #b3263e;
-    }
-
-    .get-money {
-        color: #168c45;
-    }
-
-    .reports-strip {
-        height: 43px;
-        background: #e7f1fb;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        color: #0759a8;
-        font-size: 14px;
-        font-weight: 700;
-
-        text-decoration: none;
-    }
-
-    .reports-strip span {
-        font-size: 18px;
-        margin-right: 7px;
-    }
-
-    /* =====================================================
-       SEARCH AREA
-       ===================================================== */
-
-    .customer-tools {
-        display: flex;
-        align-items: center;
-
-        gap: 9px;
-
-        padding: 11px 10px 9px;
-    }
-
-    .search-box {
-        flex: 1;
-
-        height: 54px;
-
-        background: #fff;
-
-        border: 1px solid #dfe3e8;
-
-        border-radius: 11px;
-
-        display: flex;
-        align-items: center;
-
-        padding: 0 11px;
-
-        box-shadow: 0 1px 3px rgba(0,0,0,.03);
-    }
-
-    .search-icon {
-        font-size: 29px;
-        color: #0759a8;
-
-        line-height: 1;
-
-        margin-right: 10px;
-    }
-
-    .search-box input {
-        width: 100%;
-
-        border: 0;
-        outline: 0;
-
-        background: transparent;
-
-        font-size: 15px;
-
-        color: #333;
-    }
-
-    .search-box input::placeholder {
-        color: #747b84;
-    }
-
-    .filter-button {
-        width: 58px;
-        height: 54px;
-
-        border: 1px solid #dfe3e8;
-
-        border-radius: 11px;
-
-        background: #fff;
-
-        color: #0759a8;
-
-        display: flex;
-        flex-direction: column;
-
-        align-items: center;
-        justify-content: center;
-
-        font-size: 11px;
-
-        flex-shrink: 0;
-    }
-
-    .filter-icon {
-        font-size: 24px;
-        line-height: 22px;
-    }
-
-    .cashbook-button {
-        height: 54px;
-
-        padding: 0 10px;
-
-        border: 1px solid #0759a8;
-
-        border-radius: 11px;
-
-        background: #fff;
-
-        color: #0759a8;
-
-        font-size: 12px;
-
-        font-weight: 600;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        flex-shrink: 0;
-    }
-
-    .cashbook-icon {
-        font-size: 18px;
-        margin-right: 5px;
-    }
-
-    /* =====================================================
-       CUSTOMER LIST
-       ===================================================== */
-
-    .customer-list {
-        background: #fff;
-
-        border-top: 1px solid #e8eaed;
-        border-bottom: 1px solid #e8eaed;
-    }
-
-    .customer-row {
-        min-height: 69px;
-
-        display: flex;
-        align-items: center;
-
-        padding: 8px 13px 8px 20px;
-
-        border-bottom: 1px solid #eeeeee;
-
-        text-decoration: none;
-
-        color: inherit;
-
-        background: #fff;
-    }
-
-    .customer-row:last-child {
-        border-bottom: none;
-    }
-
-    .customer-row:active {
-        background: #f7f9fb;
-    }
-
-    /* =====================================================
-       CUSTOMER AVATAR
-       ===================================================== */
-
-    .customer-avatar {
-        width: 43px;
-        height: 43px;
-
-        border-radius: 50%;
-
-        background: #f3f4f5;
-
-        color: #626970;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        font-size: 15px;
-        font-weight: 700;
-
-        flex-shrink: 0;
-
-        position: relative;
-
-        margin-right: 11px;
-    }
-
-    .customer-avatar.has-alert::after {
-        content: "";
-
-        position: absolute;
-
-        width: 14px;
-        height: 14px;
-
-        border-radius: 50%;
-
-        background: #dc2448;
-
-        right: -1px;
-        top: -1px;
-
-        border: 2px solid #fff;
-    }
-
-    /* =====================================================
-       CUSTOMER INFO
-       ===================================================== */
-
-    .customer-info {
-        min-width: 0;
-        flex: 1;
-    }
-
-    .customer-name {
-        font-family:
-            Georgia,
-            "Times New Roman",
-            serif;
-
-        font-size: 17px;
-
-        color: #222;
-
-        white-space: nowrap;
-
-        overflow: hidden;
-
-        text-overflow: ellipsis;
-
-        line-height: 21px;
-    }
-
-    .customer-time {
-        color: #68717a;
-
-        font-size: 12px;
-
-        margin-top: 2px;
-    }
-
-    /* =====================================================
-       AMOUNT
-       ===================================================== */
-
-    .customer-money {
-        min-width: 105px;
-
-        text-align: right;
-
-        align-self: stretch;
-
-        display: flex;
-        flex-direction: column;
-
-        justify-content: center;
-        align-items: flex-end;
-
-        background: linear-gradient(
-            to right,
-            rgba(255,255,255,0),
-            #fff8f9
-        );
-
-        margin-left: 6px;
-    }
-
-    .amount {
-        font-size: 18px;
-
-        font-weight: 600;
-
-        color: #b3263e;
-
-        white-space: nowrap;
-    }
-
-    .amount.zero {
-        color: #555b61;
-    }
-
-    .remind {
-        color: #0759a8;
-
-        font-size: 12px;
-
-        margin-top: 4px;
-
-        font-weight: 600;
-    }
-
-    .arrow {
-        font-size: 15px;
-        margin-left: 2px;
-    }
-
-    /* =====================================================
-       EMPTY
-       ===================================================== */
-
-    .empty-customers {
-        padding: 50px 20px;
-
-        text-align: center;
-
-        color: #777f88;
-
-        background: #fff;
-    }
-
-    .empty-icon {
-        font-size: 45px;
-        margin-bottom: 8px;
-    }
-
-    .empty-customers strong {
-        display: block;
-
-        font-size: 16px;
-
-        color: #333;
-
-        margin-bottom: 5px;
-    }
-
-    .empty-customers p {
-        margin: 0;
-
-        font-size: 13px;
-    }
-
-    /* =====================================================
-       ADD CUSTOMER FLOATING BUTTON
-       ===================================================== */
 
     .add-customer-button {
-        position: fixed;
+
+        right: 30px;
+
+        bottom: 30px;
+
+    }
+
+
+    .customer-modal {
+
+        align-items: center;
+
+    }
+
+
+    .customer-modal-box {
+
+        margin: 20px;
+
+        border-radius: 17px;
+
+    }
+
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media (max-width: 600px) {
+
+    .customers-page {
+
+        padding-left: 16px;
+
+        padding-right: 16px;
+
+        padding-bottom: 120px;
+
+    }
+
+
+    .customers-header {
+
+        padding-top: 25px;
+
+        padding-bottom: 18px;
+
+    }
+
+
+    .customers-header h1 {
+
+        font-size: 32px;
+
+    }
+
+
+    .customer-search {
+
+        height: 49px;
+
+        font-size: 15px;
+
+    }
+
+
+    .customer-card {
+
+        margin-bottom: 20px;
+
+        border-radius: 16px;
+
+    }
+
+
+    .customer-card-header {
+
+        min-height: 70px;
+
+        padding: 0 18px;
+
+    }
+
+
+    .customer-card-label {
+
+        font-size: 18px;
+
+    }
+
+
+    .customer-card-name {
+
+        font-size: 19px;
+
+    }
+
+
+    .customer-detail-row {
+
+        min-height: 61px;
+
+        padding: 0 18px;
+
+    }
+
+
+    .customer-detail-label {
+
+        font-size: 14px;
+
+    }
+
+
+    .customer-detail-value {
+
+        font-size: 14px;
+
+        max-width: 58%;
+
+    }
+
+
+    .add-customer-button {
 
         right: 18px;
 
         bottom: 82px;
 
-        min-width: 190px;
+        min-width: 225px;
+
+        height: 56px;
+
+        font-size: 15px;
+
+    }
+
+}
+
+
+/* =====================================================
+   SMALL MOBILE
+   ===================================================== */
+
+@media (max-width: 380px) {
+
+    .customers-page {
+
+        padding-left: 12px;
+
+        padding-right: 12px;
+
+    }
+
+
+    .customers-header h1 {
+
+        font-size: 29px;
+
+    }
+
+
+    .customer-card-header {
+
+        padding-left: 15px;
+
+        padding-right: 15px;
+
+    }
+
+
+    .customer-card-label {
+
+        font-size: 17px;
+
+    }
+
+
+    .customer-card-name {
+
+        font-size: 18px;
+
+    }
+
+
+    .customer-detail-row {
+
+        padding-left: 15px;
+
+        padding-right: 15px;
+
+    }
+
+
+    .add-customer-button {
+
+        right: 12px;
+
+        bottom: 80px;
+
+        min-width: 205px;
+
         height: 54px;
 
-        padding: 0 20px;
-
-        border: 0;
-
-        border-radius: 28px;
-
-        background: #b00055;
-
-        color: #fff;
-
-        box-shadow:
-            0 5px 15px rgba(0,0,0,.22);
-
-        display: flex;
-
-        align-items: center;
-        justify-content: center;
-
-        gap: 9px;
-
-        font-size: 15px;
-
-        font-weight: 700;
-
-        z-index: 500;
-
-        cursor: pointer;
     }
 
-    .add-customer-button:active {
-        transform: scale(.97);
-    }
-
-    .add-customer-icon {
-        font-size: 24px;
-        line-height: 1;
-    }
-
-    /* =====================================================
-       ADD CUSTOMER MODAL
-       ===================================================== */
-
-    .customer-modal {
-        position: fixed;
-
-        inset: 0;
-
-        background: rgba(0,0,0,.45);
-
-        display: none;
-
-        align-items: flex-end;
-
-        justify-content: center;
-
-        z-index: 10000;
-    }
-
-    .customer-modal.show {
-        display: flex;
-    }
-
-    .customer-modal-box {
-        width: 100%;
-
-        max-width: 600px;
-
-        background: #fff;
-
-        border-radius: 20px 20px 0 0;
-
-        padding: 18px 16px 25px;
-
-        box-shadow: 0 -5px 25px rgba(0,0,0,.2);
-
-        animation: slideUp .22s ease;
-    }
-
-    @keyframes slideUp {
-
-        from {
-            transform: translateY(100%);
-        }
-
-        to {
-            transform: translateY(0);
-        }
-
-    }
-
-    .modal-handle {
-        width: 42px;
-        height: 4px;
-
-        border-radius: 5px;
-
-        background: #d4d7da;
-
-        margin: 0 auto 15px;
-    }
-
-    .modal-title {
-        display: flex;
-
-        align-items: center;
-        justify-content: space-between;
-
-        margin-bottom: 16px;
-    }
-
-    .modal-title h2 {
-        margin: 0;
-
-        font-size: 19px;
-    }
-
-    .modal-close {
-        width: 34px;
-        height: 34px;
-
-        border: 0;
-
-        border-radius: 50%;
-
-        background: #f1f2f3;
-
-        font-size: 20px;
-
-        color: #555;
-    }
-
-    .customer-form input {
-        width: 100%;
-
-        height: 50px;
-
-        border: 1px solid #d8dce0;
-
-        border-radius: 9px;
-
-        padding: 0 13px;
-
-        margin-bottom: 11px;
-
-        outline: none;
-
-        font-size: 15px;
-    }
-
-    .customer-form input:focus {
-        border-color: #0759a8;
-
-        box-shadow:
-            0 0 0 2px rgba(7,89,168,.08);
-    }
-
-    .save-customer {
-        width: 100%;
-
-        height: 50px;
-
-        border: 0;
-
-        border-radius: 9px;
-
-        background: #0759a8;
-
-        color: #fff;
-
-        font-size: 15px;
-
-        font-weight: 700;
-    }
-
-    /* =====================================================
-       DESKTOP
-       ===================================================== */
-
-    @media (min-width: 701px) {
-
-        .customers-page {
-            max-width: 1000px;
-            margin: auto;
-        }
-
-        .customer-list {
-            border-radius: 12px;
-            border: 1px solid #e4e6e8;
-            overflow: hidden;
-        }
-
-        .customer-tools {
-            padding-left: 0;
-            padding-right: 0;
-        }
-
-        .add-customer-button {
-            right: 30px;
-            bottom: 30px;
-        }
-
-        .customer-modal {
-            align-items: center;
-        }
-
-        .customer-modal-box {
-            border-radius: 16px;
-            margin: 20px;
-        }
-    }
-
-    /* =====================================================
-       SMALL MOBILE
-       ===================================================== */
-
-    @media (max-width: 380px) {
-
-        .customer-tools {
-            gap: 5px;
-            padding-left: 6px;
-            padding-right: 6px;
-        }
-
-        .cashbook-button {
-            padding: 0 7px;
-        }
-
-        .filter-button {
-            width: 49px;
-        }
-
-        .customer-money {
-            min-width: 88px;
-        }
-
-        .customer-name {
-            font-size: 16px;
-        }
-
-        .amount {
-            font-size: 16px;
-        }
-
-        .add-customer-button {
-            right: 12px;
-            bottom: 80px;
-
-            min-width: 175px;
-        }
-    }
+}
 
 </style>
 
 
+<!-- =====================================================
+     PAGE
+     ===================================================== -->
+
 <div class="customers-page">
 
+
     <!-- =================================================
-         SUMMARY
+         HEADER
          ================================================= -->
 
-    <section class="customer-summary">
+    <div class="customers-header">
 
-        <div class="summary-money-row">
+        <h1>
+            Customers
+        </h1>
 
-            <div class="summary-money-box">
+        <p>
+            Manage your customers and their details.
+        </p>
 
-                <span>
-                    You will give
-                </span>
-
-                <strong class="give-money">
-                    ₹ 0
-                </strong>
-
-            </div>
-
-
-            <div class="summary-money-box">
-
-                <span>
-                    You will get
-                </span>
-
-                <strong class="get-money">
-                    ₹ 0
-                </strong>
-
-            </div>
-
-        </div>
-
-
-        <a
-            href="/reports"
-            class="reports-strip"
-        >
-
-            <span>▣</span>
-
-            View Reports
-
-        </a>
-
-    </section>
+    </div>
 
 
     <!-- =================================================
-         SEARCH / FILTER / CASHBOOK
+         SEARCH
          ================================================= -->
 
-    <div class="customer-tools">
+    <div class="customer-search-box">
 
-        <div class="search-box">
-
-            <span class="search-icon">
-                ⌕
-            </span>
-
-            <input
-                type="search"
-                id="customerSearch"
-                placeholder="Search Customer"
-                autocomplete="off"
-            >
-
-        </div>
-
-
-        <button
-            type="button"
-            class="filter-button"
-            onclick="filterCustomers()"
+        <input
+            type="search"
+            id="customerSearch"
+            class="customer-search"
+            placeholder="🔍 Search customer..."
+            autocomplete="off"
         >
-
-            <span class="filter-icon">
-                ♢
-            </span>
-
-            <span>
-                Filters
-            </span>
-
-        </button>
-
-
-        <a
-            href="/reports"
-            class="cashbook-button"
-        >
-
-            <span class="cashbook-icon">
-                ▣
-            </span>
-
-            Cashbook
-
-        </a>
 
     </div>
 
@@ -783,58 +1001,71 @@
          CUSTOMER LIST
          ================================================= -->
 
-    <section
+    <div
         class="customer-list"
         id="customerList"
     >
 
+
         {% for c in customers %}
 
+
+        <!-- =============================================
+             CUSTOMER CARD
+             ============================================= -->
+
         <div
-            class="customer-row"
+            class="customer-card"
             data-name="{{ c.name|lower }}"
             data-phone="{{ c.phone or '' }}"
+            data-address="{{ c.address or '' }}"
         >
 
-            <!-- AVATAR -->
 
-            <div
-                class="customer-avatar
-                {% if c.phone %}has-alert{% endif %}"
-            >
+            <!-- =========================================
+                 CARD HEADER
+                 ========================================= -->
 
-                {% set parts = c.name.split() %}
+            <div class="customer-card-header">
 
-                {% if parts|length >= 2 %}
+                <div class="customer-card-label">
+                    Customer
+                </div>
 
-                    {{ parts[0][0]|upper }}{{ parts[1][0]|upper }}
-
-                {% else %}
-
-                    {{ c.name[:2]|upper }}
-
-                {% endif %}
+                <div class="customer-card-name">
+                    {{ c.name }}
+                </div>
 
             </div>
 
 
-            <!-- INFO -->
+            <!-- =========================================
+                 MOBILE
+                 ========================================= -->
 
-            <div class="customer-info">
+            <div class="customer-detail-row">
 
-                <div class="customer-name">
-                    {{ c.name }}
+                <div class="customer-detail-label">
+                    Mobile
                 </div>
 
-                <div class="customer-time">
+
+                <div class="customer-detail-value">
 
                     {% if c.phone %}
 
-                        {{ c.phone }}
+                        <a
+                            href="tel:{{ c.phone }}"
+                            class="customer-phone"
+                        >
+                            {{ c.phone }}
+                        </a>
 
                     {% else %}
 
-                        Customer
+                        <span class="empty">
+                            Not provided
+                        </span>
 
                     {% endif %}
 
@@ -843,32 +1074,66 @@
             </div>
 
 
-            <!-- MONEY -->
+            <!-- =========================================
+                 ADDRESS
+                 ========================================= -->
 
-            <div class="customer-money">
+            <div class="customer-detail-row">
 
-                <div class="amount zero">
-                    ₹ 0
+                <div class="customer-detail-label">
+                    Address
                 </div>
 
-                {% if c.phone %}
 
-                <a
-                    href="tel:{{ c.phone }}"
-                    class="remind"
-                    onclick="event.stopPropagation();"
+                <div
+                    class="
+                        customer-detail-value
+                        {% if not c.address %}empty{% endif %}
+                    "
                 >
-                    REMIND
-                    <span class="arrow">›</span>
-                </a>
 
-                {% endif %}
+                    {% if c.address %}
+
+                        {{ c.address }}
+
+                    {% else %}
+
+                        Not provided
+
+                    {% endif %}
+
+                </div>
 
             </div>
 
+
+            <!-- =========================================
+                 STATUS
+                 ========================================= -->
+
+            <div class="customer-detail-row">
+
+                <div class="customer-detail-label">
+                    Status
+                </div>
+
+
+                <div class="customer-status">
+                    Active
+                </div>
+
+            </div>
+
+
         </div>
 
+
         {% else %}
+
+
+        <!-- =============================================
+             NO CUSTOMER
+             ============================================= -->
 
         <div class="empty-customers">
 
@@ -881,35 +1146,53 @@
             </strong>
 
             <p>
-                Add your first customer to start keeping records.
+                Add your first customer using the button below.
             </p>
 
         </div>
 
+
         {% endfor %}
 
-    </section>
+
+        <!-- =================================================
+             NO SEARCH RESULT
+             ================================================= -->
+
+        <div
+            class="no-customer-result"
+            id="noCustomerResult"
+        >
+            No customer found.
+        </div>
+
+
+    </div>
 
 </div>
 
 
+
 <!-- =====================================================
-     ADD CUSTOMER BUTTON
+     ADD CUSTOMER FLOATING BUTTON
      ===================================================== -->
 
 <button
     type="button"
     class="add-customer-button"
-    onclick="openCustomerModal()"
+    id="addCustomerButton"
 >
 
     <span class="add-customer-icon">
         ＋
     </span>
 
-    ADD CUSTOMER
+    <span>
+        ADD CUSTOMER
+    </span>
 
 </button>
+
 
 
 <!-- =====================================================
@@ -919,16 +1202,21 @@
 <div
     class="customer-modal"
     id="customerModal"
-    onclick="closeCustomerModal(event)"
 >
+
 
     <div
         class="customer-modal-box"
         onclick="event.stopPropagation();"
     >
 
+
+        <!-- HANDLE -->
+
         <div class="modal-handle"></div>
 
+
+        <!-- TITLE -->
 
         <div class="modal-title">
 
@@ -936,10 +1224,11 @@
                 Add Customer
             </h2>
 
+
             <button
                 type="button"
                 class="modal-close"
-                onclick="closeCustomerModal()"
+                id="closeCustomerModal"
             >
                 ×
             </button>
@@ -947,11 +1236,16 @@
         </div>
 
 
+        <!-- FORM -->
+
         <form
             method="post"
             action="/customers/add"
             class="customer-form"
         >
+
+
+            <!-- NAME -->
 
             <input
                 type="text"
@@ -961,12 +1255,18 @@
                 autocomplete="name"
             >
 
+
+            <!-- PHONE -->
+
             <input
                 type="tel"
                 name="phone"
                 placeholder="Mobile Number"
                 autocomplete="tel"
             >
+
+
+            <!-- ADDRESS -->
 
             <input
                 type="text"
@@ -975,189 +1275,306 @@
                 autocomplete="street-address"
             >
 
+
+            <!-- SAVE -->
+
             <button
                 type="submit"
                 class="save-customer"
             >
-                Save Customer
+                ✅ Save Customer
             </button>
 
+
         </form>
+
 
     </div>
 
 </div>
 
 
+
 <script>
 
-    /* =====================================================
-       SEARCH CUSTOMER
-       ===================================================== */
+/* =====================================================
+   CUSTOMER SEARCH
+   ===================================================== */
 
-    const customerSearch =
-        document.getElementById("customerSearch");
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
-    if (customerSearch) {
 
-        customerSearch.addEventListener(
-            "input",
-            function () {
+        const searchInput =
+            document.getElementById(
+                "customerSearch"
+            );
 
-                const value =
-                    this.value
-                        .trim()
-                        .toLowerCase();
 
-                const rows =
-                    document.querySelectorAll(
-                        ".customer-row"
+        const customerCards =
+            document.querySelectorAll(
+                ".customer-card"
+            );
+
+
+        const noResult =
+            document.getElementById(
+                "noCustomerResult"
+            );
+
+
+        if (searchInput) {
+
+
+            searchInput.addEventListener(
+                "input",
+                function () {
+
+
+                    const query =
+                        this.value
+                            .trim()
+                            .toLowerCase();
+
+
+                    let visibleCount = 0;
+
+
+                    customerCards.forEach(
+                        function (card) {
+
+
+                            const name =
+                                (
+                                    card.dataset.name
+                                    || ""
+                                ).toLowerCase();
+
+
+                            const phone =
+                                (
+                                    card.dataset.phone
+                                    || ""
+                                ).toLowerCase();
+
+
+                            const address =
+                                (
+                                    card.dataset.address
+                                    || ""
+                                ).toLowerCase();
+
+
+                            const matched =
+                                name.includes(query)
+                                ||
+                                phone.includes(query)
+                                ||
+                                address.includes(query);
+
+
+                            if (matched) {
+
+                                card.style.display =
+                                    "block";
+
+                                visibleCount++;
+
+                            }
+                            else {
+
+                                card.style.display =
+                                    "none";
+
+                            }
+
+                        }
                     );
 
-                rows.forEach(function(row) {
-
-                    const name =
-                        row.dataset.name || "";
-
-                    const phone =
-                        row.dataset.phone || "";
 
                     if (
-                        name.includes(value) ||
-                        phone.includes(value)
+                        query !== ""
+                        &&
+                        visibleCount === 0
                     ) {
 
-                        row.style.display =
-                            "flex";
+                        if (noResult) {
 
-                    } else {
+                            noResult.style.display =
+                                "block";
 
-                        row.style.display =
-                            "none";
+                        }
+
+                    }
+                    else {
+
+                        if (noResult) {
+
+                            noResult.style.display =
+                                "none";
+
+                        }
 
                     }
 
-                });
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       FILTER
-       ===================================================== */
-
-    function filterCustomers() {
-
-        const rows =
-            document.querySelectorAll(
-                ".customer-row"
+                }
             );
 
-        let visible =
-            Array.from(rows)
-                .filter(
-                    row =>
-                    row.style.display !== "none"
-                );
+        }
 
-        visible.sort(function(a, b) {
 
-            return (
-                a.dataset.name
-                || ""
-            ).localeCompare(
-                b.dataset.name
-                || ""
-            );
 
-        });
+        /* =============================================
+           ADD CUSTOMER MODAL
+           ============================================= */
 
-        const list =
+        const addButton =
             document.getElementById(
-                "customerList"
+                "addCustomerButton"
             );
 
-        visible.forEach(function(row) {
-
-            list.appendChild(row);
-
-        });
-
-    }
-
-
-    /* =====================================================
-       MODAL
-       ===================================================== */
-
-    function openCustomerModal() {
 
         const modal =
             document.getElementById(
                 "customerModal"
             );
 
-        modal.classList.add("show");
 
-        document.body.style.overflow =
-            "hidden";
+        const closeButton =
+            document.getElementById(
+                "closeCustomerModal"
+            );
 
-        setTimeout(function() {
 
-            const input =
+        function openCustomerModal() {
+
+
+            if (!modal) {
+
+                return;
+
+            }
+
+
+            modal.classList.add("show");
+
+
+            document.body.style.overflow =
+                "hidden";
+
+
+            const firstInput =
                 modal.querySelector(
                     'input[name="name"]'
                 );
 
-            if (input) {
-                input.focus();
+
+            if (firstInput) {
+
+                setTimeout(
+                    function () {
+
+                        firstInput.focus();
+
+                    },
+                    150
+                );
+
             }
 
-        }, 150);
-
-    }
-
-
-    function closeCustomerModal(event) {
-
-        if (
-            event &&
-            event.target !== event.currentTarget
-        ) {
-            return;
         }
 
-        const modal =
-            document.getElementById(
-                "customerModal"
+
+        function closeCustomerModal() {
+
+
+            if (!modal) {
+
+                return;
+
+            }
+
+
+            modal.classList.remove(
+                "show"
             );
 
-        modal.classList.remove("show");
 
-        document.body.style.overflow =
-            "";
-
-    }
-
-
-    /* =====================================================
-       ESC KEY
-       ===================================================== */
-
-    document.addEventListener(
-        "keydown",
-        function(event) {
-
-            if (event.key === "Escape") {
-                closeCustomerModal();
-            }
+            document.body.style.overflow =
+                "";
 
         }
-    );
+
+
+        if (addButton) {
+
+            addButton.addEventListener(
+                "click",
+                openCustomerModal
+            );
+
+        }
+
+
+        if (closeButton) {
+
+            closeButton.addEventListener(
+                "click",
+                closeCustomerModal
+            );
+
+        }
+
+
+        /*
+         * Modal ke bahar click karne par close
+         */
+
+        if (modal) {
+
+            modal.addEventListener(
+                "click",
+                function (event) {
+
+                    if (
+                        event.target === modal
+                    ) {
+
+                        closeCustomerModal();
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /*
+         * Android back button / ESC
+         */
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key === "Escape"
+                ) {
+
+                    closeCustomerModal();
+
+                }
+
+            }
+        );
+
+
+    }
+);
 
 </script>
+
 
 {% endblock %}
