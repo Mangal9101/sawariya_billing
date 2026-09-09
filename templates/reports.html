@@ -2,256 +2,451 @@
 
 {% block content %}
 
-<main>
+<main>  <!-- =====================================================
+       PAGE HEADER
+       ===================================================== -->  <div class="top"><div>
 
-  <div class="top">
-    <div>
-      <h1>Daily Sales Report</h1>
-      <p>हर दिन किस customer ने क्या-क्या लिया, quantity और amount के साथ.</p>
-    </div>
+  <h1>Daily Sales Report</h1>
+
+  <p>
+    हर दिन किस customer ने क्या-क्या लिया,
+    quantity और amount के साथ.
+  </p>
+
+</div>
+
+  </div>  <!-- =====================================================
+       DATE FILTER + SUMMARY
+       ===================================================== -->  <section class="panel"><form
+  class="dateform"
+  method="get"
+  action="/reports"
+  id="reportDateForm"
+>
+
+  <label>
+
+    <b>Select Date</b>
+
+    <input
+      type="date"
+      name="date"
+      value="{{ report_date }}"
+      id="reportDate"
+    >
+
+  </label>
+
+
+  <!--
+    View Report button intentionally removed.
+
+    Date select/change होते ही report automatically
+    load होगी.
+  -->
+
+
+  <a
+    class="btn secondary"
+    href="/reports"
+  >
+    Today
+  </a>
+
+</form>
+
+
+<!-- ===================================================
+     REPORT SUMMARY
+     =================================================== -->
+
+<div class="report-summary">
+
+
+  <!-- TOTAL BILLS -->
+
+  <div>
+
+    <span>Total Bills</span>
+
+    <b>
+      {{ summary.bills }}
+    </b>
+
   </div>
 
-  <!-- DATE FILTER -->
-  <section class="panel">
 
-    <form class="dateform" method="get" action="/reports">
+  <!-- TOTAL SALES -->
 
-      <label>
-        <b>Select Date</b>
+  <div>
 
-        <input
-          type="date"
-          name="date"
-          value="{{ report_date }}"
-        >
-      </label>
+    <span>Total Sales</span>
 
-      <button class="btn" type="submit">
-        View Report
-      </button>
+    <b>
+      ₹{{ '%.2f'|format(summary.sales|float) }}
+    </b>
 
-      <a class="btn secondary" href="/reports">
-        Today
-      </a>
+  </div>
 
-    </form>
 
+  <!-- NET PROFIT -->
 
-    <!-- REPORT SUMMARY -->
-    <div class="report-summary">
+  <div>
 
-      <!-- TOTAL BILLS -->
-      <div>
-        <span>Total Bills</span>
-        <b>{{ summary.bills }}</b>
-      </div>
+    <span>Net Profit</span>
 
+    <b>
+      ₹{{ '%.2f'|format(summary.net_profit|float) }}
+    </b>
 
-      <!-- TOTAL SALES -->
-      <div>
-        <span>Total Sales</span>
-        <b>
-          ₹{{ '%.2f'|format(summary.sales|float) }}
-        </b>
-      </div>
+  </div>
 
 
-      <!-- NET PROFIT -->
-      <div>
-        <span>Net Profit</span>
-        <b>
-          ₹{{ '%.2f'|format(summary.net_profit|float) }}
-        </b>
-      </div>
+  <!-- PAID -->
 
+  <div>
 
-      <!-- PAID -->
-      <div>
-        <span>Paid</span>
-        <b>
-          ₹{{ '%.2f'|format(summary.paid|float) }}
-        </b>
-      </div>
+    <span>Paid</span>
 
+    <b>
+      ₹{{ '%.2f'|format(summary.paid|float) }}
+    </b>
 
-    </div>
+  </div>
 
-  </section>
 
+</div>
 
-  <!-- INDIVIDUAL BILLS -->
+  </section>  <!-- =====================================================
+       INDIVIDUAL INVOICES
+       ===================================================== -->{% for i in invoices %}
 
-  {% for i in invoices %}
+  <section
+    class="panel invoice-report"
+    id="invoice-{{ i.id }}"
+  ><!-- ===================================================
+     INVOICE HEADER
+     =================================================== -->
 
-  <section class="panel invoice-report">
+<div class="invoice-title">
 
-    <!-- INVOICE HEADER -->
+  <div>
 
-    <div class="invoice-title">
+    <b>
+      {{ i.invoice_no }}
+    </b>
 
-      <div>
-        <b>{{ i.invoice_no }}</b>
+    —
 
-        —
+    {{ i.created_at.strftime('%d-%m-%Y %H:%M') }}
 
-        {{ i.created_at.strftime('%d-%m-%Y %H:%M') }}
-       
-      </div>
+  </div>
 
-      <div>
-        <b>
-          Total:
-          ₹{{ '%.2f'|format(i.total|float) }}
-        </b>
-      </div>
 
-    </div>
+  <div>
 
+    <b>
 
-    <!-- CUSTOMER DETAILS -->
+      Total:
 
-    <div class="customer-report">
+      ₹{{ '%.2f'|format(i.total|float) }}
 
-      <b>Customer:</b>
+    </b>
 
-      {% if i.customer and i.customer.name %}
-        {{ i.customer.name }}
-      {% else %}
-        Walk-in
-      {% endif %}
+  </div>
 
+</div>
 
-      {% if i.customer and i.customer.phone %}
 
-        &nbsp; | &nbsp;
 
-        <b>Mobile:</b>
-        {{ i.customer.phone }}
+<!-- ===================================================
+     CUSTOMER DETAILS
+     =================================================== -->
 
-      {% endif %}
+<div class="customer-report">
 
+  <b>Customer:</b>
 
-      {% if i.customer and i.customer.address %}
 
-        &nbsp; | &nbsp;
+  {% if i.customer and i.customer.name %}
 
-        <b>Address:</b>
-        {{ i.customer.address }}
-
-      {% endif %}
-
-    </div>
-
-
-    <!-- PRODUCTS -->
-
-    <div style="overflow-x:auto;">
-
-      <table>
-
-        <thead>
-
-          <tr>
-
-            <th>Product</th>
-
-            <th>Qty</th>
-
-            <th>Wholesale Price</th>
-
-            <th>Amount</th>
-
-          </tr>
-
-        </thead>
-
-
-        <tbody>
-
-          {% for item in i.items %}
-
-          <tr>
-
-            <td>
-              {{ item.product_name }}
-            </td>
-
-            <td>
-              {{ item.quantity }}
-            </td>
-
-            <td>
-              ₹{{ '%.2f'|format(item.price|float) }}
-            </td>
-
-            <td>
-              ₹{{ '%.2f'|format(item.amount|float) }}
-            </td>
-
-          </tr>
-
-          {% endfor %}
-
-        </tbody>
-
-      </table>
-
-    </div>
-
-
-    <!-- PAYMENT DETAILS -->
-
-    <div class="report-payment">
-
-      <b>Payment:</b>
-      {{ i.payment_mode }}
-
-    </div>
-
-<!-- WHATSAPP SHARE -->
-
-<a
-  href="/invoice/{{ i.id }}/whatsapp"
-  class="whatsapp-btn"
->
-  📲 Share Invoice on WhatsApp
-</a>
-
-  </section>
-
+    {{ i.customer.name }}
 
   {% else %}
 
-  <!-- NO SALES -->
+    Walk-in
 
-  <section class="panel">
+  {% endif %}
 
-    <p>
-      No sales found for
-      <b>{{ report_date }}</b>.
-    </p>
 
-  </section>
 
-  {% endfor %}
+  {% if i.customer and i.customer.phone %}
 
-</main>
+    &nbsp; | &nbsp;
 
-<style>
+    <b>Mobile:</b>
+
+    {{ i.customer.phone }}
+
+  {% endif %}
+
+
+
+  {% if i.customer and i.customer.address %}
+
+    &nbsp; | &nbsp;
+
+    <b>Address:</b>
+
+    {{ i.customer.address }}
+
+  {% endif %}
+
+</div>
+
+
+
+<!-- ===================================================
+     PRODUCTS
+     =================================================== -->
+
+<div class="report-table-wrapper">
+
+  <table>
+
+    <thead>
+
+      <tr>
+
+        <th>
+          Product
+        </th>
+
+        <th>
+          Qty
+        </th>
+
+        <th>
+          Wholesale Price
+        </th>
+
+        <th>
+          Amount
+        </th>
+
+      </tr>
+
+    </thead>
+
+
+    <tbody>
+
+      {% for item in i.items %}
+
+      <tr>
+
+        <td>
+          {{ item.product_name }}
+        </td>
+
+        <td>
+          {{ item.quantity }}
+        </td>
+
+        <td>
+          ₹{{ '%.2f'|format(item.price|float) }}
+        </td>
+
+        <td>
+          ₹{{ '%.2f'|format(item.amount|float) }}
+        </td>
+
+      </tr>
+
+      {% endfor %}
+
+    </tbody>
+
+  </table>
+
+</div>
+
+
+
+<!-- ===================================================
+     PAYMENT DETAILS
+     =================================================== -->
+
+<div class="report-payment">
+
+  <b>Payment:</b>
+
+  {{ i.payment_mode }}
+
+</div>
+
+
+
+<!-- ===================================================
+     ACTION BUTTONS
+     =================================================== -->
+
+<div class="invoice-actions">
+
+
+  <!-- WHATSAPP -->
+
+  <a
+    href="/invoice/{{ i.id }}/whatsapp"
+    class="whatsapp-btn"
+  >
+    📲 Share Invoice on WhatsApp
+  </a>
+
+
+
+  <!-- PRINT / PDF -->
+
+  <button
+    type="button"
+    class="print-pdf-btn"
+    onclick="printInvoice({{ i.id }})"
+  >
+    🖨️ Print / PDF
+  </button>
+
+
+</div>
+
+  </section>{% else %}
+
+  <!-- =====================================================
+       NO SALES
+       ===================================================== -->  <section class="panel"><p>
+
+  No sales found for
+
+  <b>
+    {{ report_date }}
+  </b>.
+
+</p>
+
+  </section>{% endfor %}
+
+</main><!-- =======================================================
+     PAGE CSS
+     ======================================================= --><style>
+
 
 /* =========================================================
-   WHATSAPP SHARE BUTTON
+   DATE FILTER
    ========================================================= */
 
-.whatsapp-btn {
+.dateform {
+
     display: flex;
 
-    align-items: center;
-    justify-content: center;
+    align-items: flex-end;
+
+    gap: 12px;
+
+    flex-wrap: wrap;
+
+}
+
+
+.dateform label {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+
+}
+
+
+#reportDate {
+
+    min-height: 44px;
+
+    padding: 9px 12px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+
+    background: #ffffff;
+
+    cursor: pointer;
+
+}
+
+
+
+/* =========================================================
+   REPORT TABLE
+   ========================================================= */
+
+.report-table-wrapper {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+    -webkit-overflow-scrolling: touch;
+
+}
+
+
+.report-table-wrapper table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+}
+
+
+
+/* =========================================================
+   INVOICE ACTIONS
+   ========================================================= */
+
+.invoice-actions {
+
+    display: flex;
+
+    align-items: stretch;
+
+    gap: 10px;
 
     width: 100%;
 
     margin-top: 16px;
+
+}
+
+
+
+/* =========================================================
+   WHATSAPP BUTTON
+   ========================================================= */
+
+.whatsapp-btn {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex: 1;
+
+    min-height: 48px;
 
     padding: 13px 16px;
 
@@ -264,7 +459,10 @@
     border-radius: 10px;
 
     font-size: 15px;
+
     font-weight: 700;
+
+    text-align: center;
 
     transition:
         transform 0.18s ease,
@@ -273,9 +471,12 @@
 
     box-shadow:
         0 3px 10px rgba(37, 211, 102, 0.22);
+
 }
 
+
 .whatsapp-btn:hover {
+
     background: #1ebe5d;
 
     color: #ffffff !important;
@@ -284,11 +485,81 @@
 
     box-shadow:
         0 5px 14px rgba(37, 211, 102, 0.30);
+
 }
 
+
 .whatsapp-btn:active {
+
     transform: translateY(0);
+
 }
+
+
+
+/* =========================================================
+   PRINT / PDF BUTTON
+   ========================================================= */
+
+.print-pdf-btn {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex: 1;
+
+    min-height: 48px;
+
+    padding: 13px 16px;
+
+    background: #333333;
+
+    color: #ffffff;
+
+    border: none;
+
+    border-radius: 10px;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    text-align: center;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.18s ease,
+        background 0.18s ease,
+        box-shadow 0.18s ease;
+
+    box-shadow:
+        0 3px 10px rgba(0, 0, 0, 0.15);
+
+}
+
+
+.print-pdf-btn:hover {
+
+    background: #222222;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 5px 14px rgba(0, 0, 0, 0.22);
+
+}
+
+
+.print-pdf-btn:active {
+
+    transform: translateY(0);
+
+}
+
 
 
 /* =========================================================
@@ -297,8 +568,66 @@
 
 @media (max-width: 600px) {
 
-    .whatsapp-btn {
+
+    .dateform {
+
+        align-items: stretch;
+
+        flex-direction: column;
+
         width: 100%;
+
+    }
+
+
+    .dateform label {
+
+        width: 100%;
+
+    }
+
+
+    #reportDate {
+
+        width: 100%;
+
+        min-height: 48px;
+
+        font-size: 16px;
+
+    }
+
+
+    .dateform .secondary {
+
+        width: 100%;
+
+        min-height: 48px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+    }
+
+
+    .invoice-actions {
+
+        flex-direction: column;
+
+        gap: 9px;
+
+    }
+
+
+    .whatsapp-btn,
+    .print-pdf-btn {
+
+        width: 100%;
+
+        flex: none;
 
         min-height: 50px;
 
@@ -307,10 +636,257 @@
         font-size: 16px;
 
         border-radius: 10px;
+
     }
 
 }
 
-</style>
 
-{% endblock %}
+
+/* =========================================================
+   PRINT / PDF
+   ========================================================= */
+
+@media print {
+
+
+    /*
+       पूरा page hide
+    */
+
+    body * {
+
+        visibility: hidden;
+
+    }
+
+
+    /*
+       सिर्फ selected invoice दिखेगा
+    */
+
+    .invoice-report.printing-invoice,
+    .invoice-report.printing-invoice * {
+
+        visibility: visible;
+
+    }
+
+
+    .invoice-report.printing-invoice {
+
+        position: absolute;
+
+        left: 0;
+
+        top: 0;
+
+        width: 100%;
+
+        margin: 0 !important;
+
+        padding: 20px !important;
+
+        box-shadow: none !important;
+
+        border: none !important;
+
+        background: #ffffff !important;
+
+    }
+
+
+    /*
+       WhatsApp और Print buttons
+       PDF/print में नहीं आएंगे.
+    */
+
+    .invoice-actions {
+
+        display: none !important;
+
+    }
+
+
+    /*
+       Horizontal scrolling हटाना
+    */
+
+    .report-table-wrapper {
+
+        overflow: visible !important;
+
+    }
+
+
+    .report-table-wrapper table {
+
+        width: 100% !important;
+
+    }
+
+
+    @page {
+
+        size: A4;
+
+        margin: 12mm;
+
+    }
+
+}
+
+
+</style><!-- =======================================================
+     JAVASCRIPT
+     ======================================================= --><script>
+
+
+/* =========================================================
+   AUTO DATE REPORT
+   =========================================================
+
+   Date select करते ही form automatically submit होगा.
+
+   इसलिए:
+   Date चुनो
+   ↓
+   तुरंत report load
+   ↓
+   View Report button की जरूरत नहीं
+   ========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function () {
+
+
+    const dateInput =
+      document.getElementById("reportDate");
+
+
+    const form =
+      document.getElementById("reportDateForm");
+
+
+    if (!dateInput || !form) {
+
+        return;
+
+    }
+
+
+    dateInput.addEventListener(
+      "change",
+      function () {
+
+
+        if (!this.value) {
+
+            return;
+
+        }
+
+
+        form.submit();
+
+
+      }
+    );
+
+
+  }
+);
+
+
+
+/* =========================================================
+   PRINT / PDF INVOICE
+   =========================================================
+
+   जिस invoice के button पर click होगा,
+   सिर्फ वही invoice print होगा.
+
+   Browser print dialog में:
+       Save as PDF
+   select करके PDF save कर सकते हो.
+   ========================================================= */
+
+function printInvoice(invoiceId) {
+
+
+    const invoice =
+      document.getElementById(
+        "invoice-" + invoiceId
+      );
+
+
+    if (!invoice) {
+
+        alert("Invoice not found.");
+
+        return;
+
+    }
+
+
+    /*
+       अगर कोई दूसरा invoice पहले से
+       print mode में है तो उसे remove करो.
+    */
+
+    document
+      .querySelectorAll(".printing-invoice")
+      .forEach(
+        function (element) {
+
+            element.classList.remove(
+                "printing-invoice"
+            );
+
+        }
+      );
+
+
+    /*
+       Selected invoice को print mode में डालो.
+    */
+
+    invoice.classList.add(
+        "printing-invoice"
+    );
+
+
+    /*
+       थोड़ी delay ताकि browser DOM update
+       properly कर सके.
+    */
+
+    setTimeout(
+      function () {
+
+        window.print();
+
+      },
+      100
+    );
+
+
+    /*
+       Print dialog बंद होने के बाद
+       print class remove.
+    */
+
+    window.onafterprint =
+      function () {
+
+        invoice.classList.remove(
+            "printing-invoice"
+        );
+
+      };
+
+}
+
+
+</script>{% endblock %}
