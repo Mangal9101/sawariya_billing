@@ -2,372 +2,1162 @@
 
 {% block content %}
 
-<main>
+<style>
 
-    <!-- =========================
-         PAGE TITLE
-         ========================= -->
+    /* =====================================================
+       CUSTOMERS — KHATABOOK STYLE
+       ===================================================== */
 
-    <div class="top">
-        <div>
-            <h1>Customers</h1>
+    .customers-page {
+        width: 100%;
+        min-height: calc(100vh - 116px);
+        background: #f5f7fa;
+        padding-bottom: 85px;
+    }
+
+    /* =====================================================
+       MONEY SUMMARY
+       ===================================================== */
+
+    .customer-summary {
+        background: #fff;
+        border-radius: 0 0 14px 14px;
+        overflow: hidden;
+        box-shadow: 0 2px 7px rgba(0,0,0,.06);
+        margin-bottom: 10px;
+    }
+
+    .summary-money-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        text-align: center;
+    }
+
+    .summary-money-box {
+        padding: 11px 5px 13px;
+    }
+
+    .summary-money-box:first-child {
+        border-right: 1px solid #eeeeee;
+    }
+
+    .summary-money-box span {
+        display: block;
+        font-size: 13px;
+        color: #777f88;
+        margin-bottom: 5px;
+    }
+
+    .summary-money-box strong {
+        display: block;
+        font-size: 21px;
+    }
+
+    .give-money {
+        color: #b3263e;
+    }
+
+    .get-money {
+        color: #168c45;
+    }
+
+    .reports-strip {
+        height: 43px;
+        background: #e7f1fb;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        color: #0759a8;
+        font-size: 14px;
+        font-weight: 700;
+
+        text-decoration: none;
+    }
+
+    .reports-strip span {
+        font-size: 18px;
+        margin-right: 7px;
+    }
+
+    /* =====================================================
+       SEARCH AREA
+       ===================================================== */
+
+    .customer-tools {
+        display: flex;
+        align-items: center;
+
+        gap: 9px;
+
+        padding: 11px 10px 9px;
+    }
+
+    .search-box {
+        flex: 1;
+
+        height: 54px;
+
+        background: #fff;
+
+        border: 1px solid #dfe3e8;
+
+        border-radius: 11px;
+
+        display: flex;
+        align-items: center;
+
+        padding: 0 11px;
+
+        box-shadow: 0 1px 3px rgba(0,0,0,.03);
+    }
+
+    .search-icon {
+        font-size: 29px;
+        color: #0759a8;
+
+        line-height: 1;
+
+        margin-right: 10px;
+    }
+
+    .search-box input {
+        width: 100%;
+
+        border: 0;
+        outline: 0;
+
+        background: transparent;
+
+        font-size: 15px;
+
+        color: #333;
+    }
+
+    .search-box input::placeholder {
+        color: #747b84;
+    }
+
+    .filter-button {
+        width: 58px;
+        height: 54px;
+
+        border: 1px solid #dfe3e8;
+
+        border-radius: 11px;
+
+        background: #fff;
+
+        color: #0759a8;
+
+        display: flex;
+        flex-direction: column;
+
+        align-items: center;
+        justify-content: center;
+
+        font-size: 11px;
+
+        flex-shrink: 0;
+    }
+
+    .filter-icon {
+        font-size: 24px;
+        line-height: 22px;
+    }
+
+    .cashbook-button {
+        height: 54px;
+
+        padding: 0 10px;
+
+        border: 1px solid #0759a8;
+
+        border-radius: 11px;
+
+        background: #fff;
+
+        color: #0759a8;
+
+        font-size: 12px;
+
+        font-weight: 600;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        flex-shrink: 0;
+    }
+
+    .cashbook-icon {
+        font-size: 18px;
+        margin-right: 5px;
+    }
+
+    /* =====================================================
+       CUSTOMER LIST
+       ===================================================== */
+
+    .customer-list {
+        background: #fff;
+
+        border-top: 1px solid #e8eaed;
+        border-bottom: 1px solid #e8eaed;
+    }
+
+    .customer-row {
+        min-height: 69px;
+
+        display: flex;
+        align-items: center;
+
+        padding: 8px 13px 8px 20px;
+
+        border-bottom: 1px solid #eeeeee;
+
+        text-decoration: none;
+
+        color: inherit;
+
+        background: #fff;
+    }
+
+    .customer-row:last-child {
+        border-bottom: none;
+    }
+
+    .customer-row:active {
+        background: #f7f9fb;
+    }
+
+    /* =====================================================
+       CUSTOMER AVATAR
+       ===================================================== */
+
+    .customer-avatar {
+        width: 43px;
+        height: 43px;
+
+        border-radius: 50%;
+
+        background: #f3f4f5;
+
+        color: #626970;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 15px;
+        font-weight: 700;
+
+        flex-shrink: 0;
+
+        position: relative;
+
+        margin-right: 11px;
+    }
+
+    .customer-avatar.has-alert::after {
+        content: "";
+
+        position: absolute;
+
+        width: 14px;
+        height: 14px;
+
+        border-radius: 50%;
+
+        background: #dc2448;
+
+        right: -1px;
+        top: -1px;
+
+        border: 2px solid #fff;
+    }
+
+    /* =====================================================
+       CUSTOMER INFO
+       ===================================================== */
+
+    .customer-info {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .customer-name {
+        font-family:
+            Georgia,
+            "Times New Roman",
+            serif;
+
+        font-size: 17px;
+
+        color: #222;
+
+        white-space: nowrap;
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+
+        line-height: 21px;
+    }
+
+    .customer-time {
+        color: #68717a;
+
+        font-size: 12px;
+
+        margin-top: 2px;
+    }
+
+    /* =====================================================
+       AMOUNT
+       ===================================================== */
+
+    .customer-money {
+        min-width: 105px;
+
+        text-align: right;
+
+        align-self: stretch;
+
+        display: flex;
+        flex-direction: column;
+
+        justify-content: center;
+        align-items: flex-end;
+
+        background: linear-gradient(
+            to right,
+            rgba(255,255,255,0),
+            #fff8f9
+        );
+
+        margin-left: 6px;
+    }
+
+    .amount {
+        font-size: 18px;
+
+        font-weight: 600;
+
+        color: #b3263e;
+
+        white-space: nowrap;
+    }
+
+    .amount.zero {
+        color: #555b61;
+    }
+
+    .remind {
+        color: #0759a8;
+
+        font-size: 12px;
+
+        margin-top: 4px;
+
+        font-weight: 600;
+    }
+
+    .arrow {
+        font-size: 15px;
+        margin-left: 2px;
+    }
+
+    /* =====================================================
+       EMPTY
+       ===================================================== */
+
+    .empty-customers {
+        padding: 50px 20px;
+
+        text-align: center;
+
+        color: #777f88;
+
+        background: #fff;
+    }
+
+    .empty-icon {
+        font-size: 45px;
+        margin-bottom: 8px;
+    }
+
+    .empty-customers strong {
+        display: block;
+
+        font-size: 16px;
+
+        color: #333;
+
+        margin-bottom: 5px;
+    }
+
+    .empty-customers p {
+        margin: 0;
+
+        font-size: 13px;
+    }
+
+    /* =====================================================
+       ADD CUSTOMER FLOATING BUTTON
+       ===================================================== */
+
+    .add-customer-button {
+        position: fixed;
+
+        right: 18px;
+
+        bottom: 82px;
+
+        min-width: 190px;
+        height: 54px;
+
+        padding: 0 20px;
+
+        border: 0;
+
+        border-radius: 28px;
+
+        background: #b00055;
+
+        color: #fff;
+
+        box-shadow:
+            0 5px 15px rgba(0,0,0,.22);
+
+        display: flex;
+
+        align-items: center;
+        justify-content: center;
+
+        gap: 9px;
+
+        font-size: 15px;
+
+        font-weight: 700;
+
+        z-index: 500;
+
+        cursor: pointer;
+    }
+
+    .add-customer-button:active {
+        transform: scale(.97);
+    }
+
+    .add-customer-icon {
+        font-size: 24px;
+        line-height: 1;
+    }
+
+    /* =====================================================
+       ADD CUSTOMER MODAL
+       ===================================================== */
+
+    .customer-modal {
+        position: fixed;
+
+        inset: 0;
+
+        background: rgba(0,0,0,.45);
+
+        display: none;
+
+        align-items: flex-end;
+
+        justify-content: center;
+
+        z-index: 10000;
+    }
+
+    .customer-modal.show {
+        display: flex;
+    }
+
+    .customer-modal-box {
+        width: 100%;
+
+        max-width: 600px;
+
+        background: #fff;
+
+        border-radius: 20px 20px 0 0;
+
+        padding: 18px 16px 25px;
+
+        box-shadow: 0 -5px 25px rgba(0,0,0,.2);
+
+        animation: slideUp .22s ease;
+    }
+
+    @keyframes slideUp {
+
+        from {
+            transform: translateY(100%);
+        }
+
+        to {
+            transform: translateY(0);
+        }
+
+    }
+
+    .modal-handle {
+        width: 42px;
+        height: 4px;
+
+        border-radius: 5px;
+
+        background: #d4d7da;
+
+        margin: 0 auto 15px;
+    }
+
+    .modal-title {
+        display: flex;
+
+        align-items: center;
+        justify-content: space-between;
+
+        margin-bottom: 16px;
+    }
+
+    .modal-title h2 {
+        margin: 0;
+
+        font-size: 19px;
+    }
+
+    .modal-close {
+        width: 34px;
+        height: 34px;
+
+        border: 0;
+
+        border-radius: 50%;
+
+        background: #f1f2f3;
+
+        font-size: 20px;
+
+        color: #555;
+    }
+
+    .customer-form input {
+        width: 100%;
+
+        height: 50px;
+
+        border: 1px solid #d8dce0;
+
+        border-radius: 9px;
+
+        padding: 0 13px;
+
+        margin-bottom: 11px;
+
+        outline: none;
+
+        font-size: 15px;
+    }
+
+    .customer-form input:focus {
+        border-color: #0759a8;
+
+        box-shadow:
+            0 0 0 2px rgba(7,89,168,.08);
+    }
+
+    .save-customer {
+        width: 100%;
+
+        height: 50px;
+
+        border: 0;
+
+        border-radius: 9px;
+
+        background: #0759a8;
+
+        color: #fff;
+
+        font-size: 15px;
+
+        font-weight: 700;
+    }
+
+    /* =====================================================
+       DESKTOP
+       ===================================================== */
+
+    @media (min-width: 701px) {
+
+        .customers-page {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .customer-list {
+            border-radius: 12px;
+            border: 1px solid #e4e6e8;
+            overflow: hidden;
+        }
+
+        .customer-tools {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .add-customer-button {
+            right: 30px;
+            bottom: 30px;
+        }
+
+        .customer-modal {
+            align-items: center;
+        }
+
+        .customer-modal-box {
+            border-radius: 16px;
+            margin: 20px;
+        }
+    }
+
+    /* =====================================================
+       SMALL MOBILE
+       ===================================================== */
+
+    @media (max-width: 380px) {
+
+        .customer-tools {
+            gap: 5px;
+            padding-left: 6px;
+            padding-right: 6px;
+        }
+
+        .cashbook-button {
+            padding: 0 7px;
+        }
+
+        .filter-button {
+            width: 49px;
+        }
+
+        .customer-money {
+            min-width: 88px;
+        }
+
+        .customer-name {
+            font-size: 16px;
+        }
+
+        .amount {
+            font-size: 16px;
+        }
+
+        .add-customer-button {
+            right: 12px;
+            bottom: 80px;
+
+            min-width: 175px;
+        }
+    }
+
+</style>
+
+
+<div class="customers-page">
+
+    <!-- =================================================
+         SUMMARY
+         ================================================= -->
+
+    <section class="customer-summary">
+
+        <div class="summary-money-row">
+
+            <div class="summary-money-box">
+
+                <span>
+                    You will give
+                </span>
+
+                <strong class="give-money">
+                    ₹ 0
+                </strong>
+
+            </div>
+
+
+            <div class="summary-money-box">
+
+                <span>
+                    You will get
+                </span>
+
+                <strong class="get-money">
+                    ₹ 0
+                </strong>
+
+            </div>
+
         </div>
+
+
+        <a
+            href="/reports"
+            class="reports-strip"
+        >
+
+            <span>▣</span>
+
+            View Reports
+
+        </a>
+
+    </section>
+
+
+    <!-- =================================================
+         SEARCH / FILTER / CASHBOOK
+         ================================================= -->
+
+    <div class="customer-tools">
+
+        <div class="search-box">
+
+            <span class="search-icon">
+                ⌕
+            </span>
+
+            <input
+                type="search"
+                id="customerSearch"
+                placeholder="Search Customer"
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <button
+            type="button"
+            class="filter-button"
+            onclick="filterCustomers()"
+        >
+
+            <span class="filter-icon">
+                ♢
+            </span>
+
+            <span>
+                Filters
+            </span>
+
+        </button>
+
+
+        <a
+            href="/reports"
+            class="cashbook-button"
+        >
+
+            <span class="cashbook-icon">
+                ▣
+            </span>
+
+            Cashbook
+
+        </a>
+
     </div>
 
 
-    <!-- =========================
-         ADD CUSTOMER FORM
-         ========================= -->
+    <!-- =================================================
+         CUSTOMER LIST
+         ================================================= -->
 
-    <section class="panel">
+    <section
+        class="customer-list"
+        id="customerList"
+    >
 
-        <form class="formgrid">
+        {% for c in customers %}
+
+        <div
+            class="customer-row"
+            data-name="{{ c.name|lower }}"
+            data-phone="{{ c.phone or '' }}"
+        >
+
+            <!-- AVATAR -->
+
+            <div
+                class="customer-avatar
+                {% if c.phone %}has-alert{% endif %}"
+            >
+
+                {% set parts = c.name.split() %}
+
+                {% if parts|length >= 2 %}
+
+                    {{ parts[0][0]|upper }}{{ parts[1][0]|upper }}
+
+                {% else %}
+
+                    {{ c.name[:2]|upper }}
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- INFO -->
+
+            <div class="customer-info">
+
+                <div class="customer-name">
+                    {{ c.name }}
+                </div>
+
+                <div class="customer-time">
+
+                    {% if c.phone %}
+
+                        {{ c.phone }}
+
+                    {% else %}
+
+                        Customer
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- MONEY -->
+
+            <div class="customer-money">
+
+                <div class="amount zero">
+                    ₹ 0
+                </div>
+
+                {% if c.phone %}
+
+                <a
+                    href="tel:{{ c.phone }}"
+                    class="remind"
+                    onclick="event.stopPropagation();"
+                >
+                    REMIND
+                    <span class="arrow">›</span>
+                </a>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        {% else %}
+
+        <div class="empty-customers">
+
+            <div class="empty-icon">
+                👥
+            </div>
+
+            <strong>
+                No customers yet
+            </strong>
+
+            <p>
+                Add your first customer to start keeping records.
+            </p>
+
+        </div>
+
+        {% endfor %}
+
+    </section>
+
+</div>
+
+
+<!-- =====================================================
+     ADD CUSTOMER BUTTON
+     ===================================================== -->
+
+<button
+    type="button"
+    class="add-customer-button"
+    onclick="openCustomerModal()"
+>
+
+    <span class="add-customer-icon">
+        ＋
+    </span>
+
+    ADD CUSTOMER
+
+</button>
+
+
+<!-- =====================================================
+     ADD CUSTOMER MODAL
+     ===================================================== -->
+
+<div
+    class="customer-modal"
+    id="customerModal"
+    onclick="closeCustomerModal(event)"
+>
+
+    <div
+        class="customer-modal-box"
+        onclick="event.stopPropagation();"
+    >
+
+        <div class="modal-handle"></div>
+
+
+        <div class="modal-title">
+
+            <h2>
+                Add Customer
+            </h2>
+
+            <button
+                type="button"
+                class="modal-close"
+                onclick="closeCustomerModal()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form
+            method="post"
+            action="/customers/add"
+            class="customer-form"
+        >
 
             <input
+                type="text"
                 name="name"
-                placeholder="Name"
+                placeholder="Customer Name"
                 required
+                autocomplete="name"
             >
 
             <input
+                type="tel"
                 name="phone"
-                placeholder="Mobile"
+                placeholder="Mobile Number"
+                autocomplete="tel"
             >
 
             <input
+                type="text"
                 name="address"
                 placeholder="Address"
+                autocomplete="street-address"
             >
 
             <button
-                class="btn"
-                formaction="/customers/add"
-                formmethod="post"
+                type="submit"
+                class="save-customer"
             >
-                Add Customer
+                Save Customer
             </button>
 
         </form>
 
-    </section>
+    </div>
 
+</div>
 
-    <!-- =========================
-         CUSTOMER LIST
-         ========================= -->
 
-    <section class="panel customer-list-panel">
+<script>
 
-        <table class="customer-table">
+    /* =====================================================
+       SEARCH CUSTOMER
+       ===================================================== */
 
-            <thead>
+    const customerSearch =
+        document.getElementById("customerSearch");
 
-                <tr>
-                    <th>Name</th>
-                    <th>Phone</th>
-                    <th>Address</th>
-                </tr>
+    if (customerSearch) {
 
-            </thead>
+        customerSearch.addEventListener(
+            "input",
+            function () {
 
+                const value =
+                    this.value
+                        .trim()
+                        .toLowerCase();
 
-            <tbody>
+                const rows =
+                    document.querySelectorAll(
+                        ".customer-row"
+                    );
 
-                {% for c in customers %}
+                rows.forEach(function(row) {
 
-                <tr class="customer-row">
+                    const name =
+                        row.dataset.name || "";
 
+                    const phone =
+                        row.dataset.phone || "";
 
-                    <!-- NAME -->
+                    if (
+                        name.includes(value) ||
+                        phone.includes(value)
+                    ) {
 
-                    <td data-label="Name">
+                        row.style.display =
+                            "flex";
 
-                        <span class="customer-label">
-                            Name
-                        </span>
+                    } else {
 
-                        <span class="customer-value">
-                            {{ c.name }}
-                        </span>
+                        row.style.display =
+                            "none";
 
-                    </td>
+                    }
 
+                });
 
-                    <!-- PHONE -->
-
-                    <td data-label="Phone">
-
-                        <span class="customer-label">
-                            Phone
-                        </span>
-
-                        <span class="customer-value">
-
-                            {% if c.phone %}
-                                {{ c.phone }}
-                            {% else %}
-                                -
-                            {% endif %}
-
-                        </span>
-
-                    </td>
-
-
-                    <!-- ADDRESS -->
-
-                    <td data-label="Address">
-
-                        <span class="customer-label">
-                            Address
-                        </span>
-
-                        <span class="customer-value">
-
-                            {% if c.address %}
-                                {{ c.address }}
-                            {% else %}
-                                -
-                            {% endif %}
-
-                        </span>
-
-                    </td>
-
-
-                </tr>
-
-                {% else %}
-
-                <tr>
-
-                    <td
-                        colspan="3"
-                        class="no-customer"
-                    >
-                        No customers found.
-                    </td>
-
-                </tr>
-
-                {% endfor %}
-
-            </tbody>
-
-        </table>
-
-    </section>
-
-</main>
-
-
-<!-- =========================
-     CUSTOMER PAGE CSS
-     ========================= -->
-
-<style>
-
-
-/* =====================================
-   DESKTOP TABLE
-   ===================================== */
-
-.customer-table {
-
-    width: 100%;
-
-    border-collapse: collapse;
-
-}
-
-
-.customer-table th {
-
-    text-align: left;
-
-}
-
-
-.customer-label {
-
-    display: none;
-
-}
-
-
-
-/* =====================================
-   MOBILE VIEW
-   ===================================== */
-
-@media (max-width: 600px) {
-
-
-    /* TABLE */
-
-    table.customer-table {
-
-        display: block !important;
-
-        width: 100% !important;
-
-        min-width: 0 !important;
-
-        background: transparent !important;
+            }
+        );
 
     }
 
 
-    /* HIDE DESKTOP HEADER */
+    /* =====================================================
+       FILTER
+       ===================================================== */
 
-    table.customer-table thead {
+    function filterCustomers() {
 
-        display: none !important;
+        const rows =
+            document.querySelectorAll(
+                ".customer-row"
+            );
 
-    }
+        let visible =
+            Array.from(rows)
+                .filter(
+                    row =>
+                    row.style.display !== "none"
+                );
 
+        visible.sort(function(a, b) {
 
-    /* TBODY */
+            return (
+                a.dataset.name
+                || ""
+            ).localeCompare(
+                b.dataset.name
+                || ""
+            );
 
-    table.customer-table tbody {
+        });
 
-        display: block !important;
+        const list =
+            document.getElementById(
+                "customerList"
+            );
 
-        width: 100% !important;
+        visible.forEach(function(row) {
 
-    }
+            list.appendChild(row);
 
-
-    /* EACH CUSTOMER CARD */
-
-    table.customer-table tr.customer-row {
-
-        display: block !important;
-
-        width: 100% !important;
-
-        margin-bottom: 16px !important;
-
-        border: 1px solid #dddddd !important;
-
-        border-radius: 12px !important;
-
-        overflow: hidden !important;
-
-        background: #ffffff !important;
-
-    }
-
-
-    /* EACH ROW */
-
-    table.customer-table tr.customer-row td {
-
-        display: flex !important;
-
-        width: 100% !important;
-
-        align-items: center !important;
-
-        justify-content: space-between !important;
-
-        gap: 15px !important;
-
-        padding: 16px 20px !important;
-
-        border: none !important;
-
-        border-bottom: 1px solid #eeeeee !important;
-
-        box-sizing: border-box !important;
-
-        text-align: left !important;
-
-        min-height: 58px !important;
-
-        background: #ffffff !important;
+        });
 
     }
 
 
-    /* LAST ROW */
+    /* =====================================================
+       MODAL
+       ===================================================== */
 
-    table.customer-table
-    tr.customer-row
-    td:last-child {
+    function openCustomerModal() {
 
-        border-bottom: none !important;
+        const modal =
+            document.getElementById(
+                "customerModal"
+            );
 
-    }
+        modal.classList.add("show");
 
+        document.body.style.overflow =
+            "hidden";
 
-    /* =====================================
-       LEFT SIDE LABEL
-       ===================================== */
+        setTimeout(function() {
 
-    table.customer-table .customer-label {
+            const input =
+                modal.querySelector(
+                    'input[name="name"]'
+                );
 
-        display: block !important;
+            if (input) {
+                input.focus();
+            }
 
-        width: 85px !important;
-
-        flex-shrink: 0 !important;
-
-        font-weight: 700 !important;
-
-        color: #5d5149 !important;
-
-        text-align: left !important;
-
-    }
-
-
-    /* =====================================
-       RIGHT SIDE VALUE
-       ===================================== */
-
-    table.customer-table .customer-value {
-
-        display: block !important;
-
-        flex: 1 !important;
-
-        text-align: right !important;
-
-        word-break: break-word !important;
-
-        overflow-wrap: anywhere !important;
+        }, 150);
 
     }
 
 
-    /* ADDRESS ROW */
+    function closeCustomerModal(event) {
 
-    table.customer-table
-    tr.customer-row
-    td:nth-child(3) {
+        if (
+            event &&
+            event.target !== event.currentTarget
+        ) {
+            return;
+        }
 
-        align-items: flex-start !important;
+        const modal =
+            document.getElementById(
+                "customerModal"
+            );
 
-    }
+        modal.classList.remove("show");
 
-
-    /* EMPTY CUSTOMER */
-
-    .no-customer {
-
-        display: block !important;
-
-        text-align: center !important;
-
-        padding: 20px !important;
+        document.body.style.overflow =
+            "";
 
     }
 
-}
 
+    /* =====================================================
+       ESC KEY
+       ===================================================== */
 
-</style>
+    document.addEventListener(
+        "keydown",
+        function(event) {
 
+            if (event.key === "Escape") {
+                closeCustomerModal();
+            }
+
+        }
+    );
+
+</script>
 
 {% endblock %}
