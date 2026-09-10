@@ -1,37 +1,645 @@
 <!doctype html>
 <html lang="en">
+
 <head>
+
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="theme-color" content="#7b3f18">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="stylesheet" href="/static/css/style.css">
-    <title>{{ title or 'Sawariya Confectionary' }}</title>
+
+    <meta
+        name="viewport"
+        content="width=device-width,initial-scale=1"
+    >
+
+    <meta
+        name="theme-color"
+        content="#7b3f18"
+    >
+
+    <meta
+        name="mobile-web-app-capable"
+        content="yes"
+    >
+
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes"
+    >
+
+    <link
+        rel="manifest"
+        href="/manifest.json"
+    >
+
+    <link
+        rel="stylesheet"
+        href="/static/css/style.css"
+    >
+
+    <title>
+        {{ title or 'Sawariya Confectionary' }}
+    </title>
+
 </head>
+
+
 <body>
-<nav>
-    <div class="logo">🍬 SAWARIYA</div>
-    <div class="links">
-        <a href="/dashboard">Dashboard</a>
-        <a href="/billing">Billing</a>
-        <a href="/products">Products</a>
-        <a href="/stock">Stock</a>
-        <a href="/customers">Customers</a>
-        <a href="/reports">Reports</a>
-        <a href="/logout">Logout</a>
+
+
+<!-- =====================================================
+     NAVBAR
+     ===================================================== -->
+
+<nav class="main-navbar">
+
+
+    <!-- LOGO -->
+
+    <div class="logo">
+        🍬 SAWARIYA
     </div>
+
+
+    <!-- DESKTOP LINKS -->
+
+    <div class="desktop-links">
+
+        <a href="/dashboard">
+            Dashboard
+        </a>
+
+        <a href="/billing">
+            Billing
+        </a>
+
+        <a href="/products">
+            Products
+        </a>
+
+        <a href="/stock">
+            Stock
+        </a>
+
+        <a href="/customers">
+            Customers
+        </a>
+
+        <a href="/reports">
+            Reports
+        </a>
+
+        <a href="/logout">
+            Logout
+        </a>
+
+    </div>
+
+
+    <!-- MOBILE MENU BUTTON -->
+
+    <button
+        type="button"
+        class="menu-button"
+        id="menuButton"
+        aria-label="Open Menu"
+        aria-expanded="false"
+    >
+
+        <span></span>
+        <span></span>
+        <span></span>
+
+    </button>
+
+
 </nav>
 
-{% block content %}{% endblock %}
+
+
+<!-- =====================================================
+     MOBILE MENU
+     ===================================================== -->
+
+<div
+    class="mobile-menu"
+    id="mobileMenu"
+>
+
+
+    <a href="/dashboard">
+        🏠 Dashboard
+    </a>
+
+
+    <a href="/billing">
+        🧾 Billing
+    </a>
+
+
+    <a href="/products">
+        📦 Products
+    </a>
+
+
+    <a href="/stock">
+        📊 Stock
+    </a>
+
+
+    <a href="/customers">
+        👤 Customers
+    </a>
+
+
+    <a href="/reports">
+        📋 Reports
+    </a>
+
+
+    <a
+        href="/logout"
+        class="logout-link"
+    >
+        🚪 Logout
+    </a>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     PAGE CONTENT
+     ===================================================== -->
+
+{% block content %}
+
+{% endblock %}
+
+
+
+<!-- =====================================================
+     MOBILE MENU SCRIPT
+     ===================================================== -->
 
 <script>
-if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/service-worker.js").catch(console.warn);
-    });
-}
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const menuButton =
+            document.getElementById(
+                "menuButton"
+            );
+
+        const mobileMenu =
+            document.getElementById(
+                "mobileMenu"
+            );
+
+
+        if (
+            !menuButton ||
+            !mobileMenu
+        ) {
+            return;
+        }
+
+
+        menuButton.addEventListener(
+            "click",
+            function () {
+
+                const isOpen =
+                    mobileMenu.classList.toggle(
+                        "open"
+                    );
+
+
+                menuButton.classList.toggle(
+                    "active",
+                    isOpen
+                );
+
+
+                menuButton.setAttribute(
+                    "aria-expanded",
+                    isOpen
+                );
+
+            }
+        );
+
+
+        /*
+         * Menu item click hone ke baad
+         * menu automatically close hoga.
+         */
+
+        const menuLinks =
+            mobileMenu.querySelectorAll(
+                "a"
+            );
+
+
+        menuLinks.forEach(
+            function (link) {
+
+                link.addEventListener(
+                    "click",
+                    function () {
+
+                        mobileMenu.classList.remove(
+                            "open"
+                        );
+
+                        menuButton.classList.remove(
+                            "active"
+                        );
+
+                        menuButton.setAttribute(
+                            "aria-expanded",
+                            "false"
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+    }
+);
+
 </script>
+
+
+
+<!-- =====================================================
+     MENU CSS
+     ===================================================== -->
+
+<style>
+
+/* =========================================================
+   NAVBAR
+   ========================================================= */
+
+.main-navbar {
+
+    width: 100%;
+
+    min-height: 64px;
+
+    background: #4b2d1d;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 0 20px;
+
+    box-sizing: border-box;
+
+    position: relative;
+
+    z-index: 1000;
+
+}
+
+
+/* =========================================================
+   LOGO
+   ========================================================= */
+
+.main-navbar .logo {
+
+    color: #ffffff;
+
+    font-size: 21px;
+
+    font-weight: 800;
+
+    white-space: nowrap;
+
+}
+
+
+/* =========================================================
+   DESKTOP LINKS
+   ========================================================= */
+
+.desktop-links {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+}
+
+
+.desktop-links a {
+
+    color: #ffffff;
+
+    text-decoration: none;
+
+    padding: 10px 12px;
+
+    border-radius: 7px;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+
+}
+
+
+.desktop-links a:hover {
+
+    background: #7b3f18;
+
+    transform: translateY(-1px);
+
+}
+
+
+/* =========================================================
+   MOBILE MENU BUTTON
+   ========================================================= */
+
+.menu-button {
+
+    display: none;
+
+    width: 44px;
+
+    height: 44px;
+
+    padding: 8px;
+
+    border: none;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 5px;
+
+}
+
+
+.menu-button span {
+
+    display: block;
+
+    width: 25px;
+
+    height: 3px;
+
+    background: #ffffff;
+
+    border-radius: 3px;
+
+    transition:
+        transform 0.25s ease,
+        opacity 0.2s ease;
+
+}
+
+
+/* =========================================================
+   MOBILE MENU
+   ========================================================= */
+
+.mobile-menu {
+
+    display: none;
+
+    width: 100%;
+
+    background: #ffffff;
+
+    box-sizing: border-box;
+
+    border-bottom: 1px solid #ddd;
+
+    box-shadow:
+        0 5px 15px rgba(0,0,0,0.12);
+
+    position: relative;
+
+    z-index: 999;
+
+}
+
+
+.mobile-menu.open {
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+
+.mobile-menu a {
+
+    display: flex;
+
+    align-items: center;
+
+    min-height: 50px;
+
+    padding: 13px 20px;
+
+    box-sizing: border-box;
+
+    color: #24150d;
+
+    background: #ffffff;
+
+    text-decoration: none;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    border-bottom: 1px solid #eee;
+
+}
+
+
+.mobile-menu a:active {
+
+    background: #f3ebe5;
+
+}
+
+
+.mobile-menu .logout-link {
+
+    color: #9b2c2c;
+
+}
+
+
+/* =========================================================
+   HAMBURGER → X
+   ========================================================= */
+
+.menu-button.active span:nth-child(1) {
+
+    transform:
+        translateY(8px)
+        rotate(45deg);
+
+}
+
+
+.menu-button.active span:nth-child(2) {
+
+    opacity: 0;
+
+}
+
+
+.menu-button.active span:nth-child(3) {
+
+    transform:
+        translateY(-8px)
+        rotate(-45deg);
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    .main-navbar {
+
+        min-height: 60px;
+
+        padding:
+            0 14px;
+
+    }
+
+
+    .main-navbar .logo {
+
+        font-size: 19px;
+
+    }
+
+
+    .desktop-links {
+
+        display: none;
+
+    }
+
+
+    .menu-button {
+
+        display: flex;
+
+    }
+
+}
+
+
+/* =========================================================
+   DESKTOP
+   ========================================================= */
+
+@media (min-width: 769px) {
+
+    .mobile-menu {
+
+        display: none !important;
+
+    }
+
+}
+
+
+/* =========================================================
+   SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 380px) {
+
+    .main-navbar .logo {
+
+        font-size: 17px;
+
+    }
+
+
+    .menu-button {
+
+        width: 42px;
+
+        height: 42px;
+
+    }
+
+}
+
+</style>
+
+
+
+<!-- =====================================================
+     SERVICE WORKER
+     ===================================================== -->
+
+<script>
+
+if (
+    "serviceWorker"
+    in navigator
+) {
+
+    window.addEventListener(
+        "load",
+        () => {
+
+            navigator.serviceWorker
+                .register(
+                    "/service-worker.js"
+                )
+                .catch(
+                    console.warn
+                );
+
+        }
+    );
+
+}
+
+</script>
+
+
 </body>
+
 </html>
