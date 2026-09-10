@@ -4,10 +4,6 @@
 
 <main>
 
-    <!-- =====================================================
-         PAGE HEADER
-         ===================================================== -->
-
     <div class="top">
 
         <div>
@@ -15,19 +11,12 @@
             <p>Customer details update करें या customer delete करें.</p>
         </div>
 
-        <a
-            class="btn secondary"
-            href="/customers"
-        >
+        <a class="btn secondary" href="/customers">
             ← Back to Customers
         </a>
 
     </div>
 
-
-    <!-- =====================================================
-         EDIT CUSTOMER PANEL
-         ===================================================== -->
 
     <section class="panel">
 
@@ -37,17 +26,12 @@
             action="/customers/{{ customer.id }}/update"
         >
 
-            <!-- Customer Name -->
-
             <input
                 name="name"
                 value="{{ customer.name or '' }}"
                 placeholder="Customer name"
                 required
             >
-
-
-            <!-- Phone -->
 
             <input
                 name="phone"
@@ -56,17 +40,11 @@
                 placeholder="Phone number"
             >
 
-
-            <!-- Address -->
-
             <textarea
                 name="address"
                 rows="4"
                 placeholder="Customer address"
             >{{ customer.address or '' }}</textarea>
-
-
-            <!-- Update Button -->
 
             <button
                 class="btn primary"
@@ -80,10 +58,6 @@
 
         <hr>
 
-
-        <!-- =================================================
-             DELETE CUSTOMER
-             ================================================= -->
 
         <form
             method="post"
@@ -103,112 +77,5 @@
     </section>
 
 </main>
-
-
-<!-- =========================================================
-     CUSTOMER EDIT PAGE CSS
-     Product Edit ke same theme ke according
-     ========================================================= -->
-
-<style>
-
-.customer-edit-page {
-    width: 100%;
-}
-
-
-/* =========================================================
-   TEXTAREA
-   ========================================================= */
-
-.formgrid textarea {
-    width: 100%;
-    box-sizing: border-box;
-
-    padding: 12px 14px;
-
-    border: 1px solid #d8c8bd;
-    border-radius: 10px;
-
-    background: #fff;
-
-    color: #24150d;
-
-    font-family: inherit;
-    font-size: 15px;
-
-    outline: none;
-
-    resize: vertical;
-
-    min-height: 110px;
-}
-
-
-.formgrid textarea:focus {
-    border-color: #7b3f18;
-
-    box-shadow:
-        0 0 0 3px
-        rgba(123, 63, 24, 0.10);
-}
-
-
-/* =========================================================
-   INPUT FOCUS
-   ========================================================= */
-
-.formgrid input:focus {
-    border-color: #7b3f18;
-
-    box-shadow:
-        0 0 0 3px
-        rgba(123, 63, 24, 0.10);
-}
-
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
-@media (max-width: 600px) {
-
-    .top {
-        gap: 12px;
-    }
-
-    .top .btn {
-        width: 100%;
-        box-sizing: border-box;
-
-        min-height: 48px;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .panel {
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-    .formgrid textarea {
-        min-height: 120px;
-    }
-
-    .formgrid .btn {
-        width: 100%;
-        min-height: 50px;
-    }
-
-    .dangerbtn {
-        width: 100%;
-        min-height: 50px;
-    }
-
-}
-
-</style>
 
 {% endblock %}
