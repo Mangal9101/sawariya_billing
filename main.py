@@ -8,7 +8,7 @@ from fastapi.responses import (
     HTMLResponse,
     RedirectResponse,
     JSONResponse,
-    FileResponse
+    FileResponse,
 )
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -25,6 +25,7 @@ from sqlalchemy import (
     ForeignKey,
     Text,
     func,
+    event,
 )
 
 from sqlalchemy.orm import (
@@ -47,7 +48,6 @@ IST = timezone(
 
 
 def utc_to_ist(dt):
-
     if not dt:
         return dt
 
@@ -90,54 +90,98 @@ def ist_day_to_utc_range(selected_date):
 # =========================================================
 # DATABASE
 # =========================================================
-
-# Online (Render): PostgreSQL via DATABASE_URL
-# Offline/local: SQLite file next to this application.
 #
-# This is intentionally automatic:
-# - DATABASE_URL present  -> PostgreSQL
-# - DATABASE_URL missing  -> local SQLite
+# Online:
+#   DATABASE_URL present -> PostgreSQL
 #
-# Therefore the same FastAPI routes, templates and business logic work
-# in both environments. The two databases are separate unless you add
-# an explicit sync/import process.
+# Offline/local:
+#   DATABASE_URL missing -> SQLite
+#
+# Optional:
+#   OFFLINE_DB_PATH=/path/to/database.db
+#
+# =========================================================
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(
+    os.path.abspath(__file__)
+)
 
-DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    ""
+).strip()
 
-if DATABASE_URL.startswith("postgres://"):
-    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+if DATABASE_URL.startswith(
+    "postgres://"
+):
+
+    DATABASE_URL = DATABASE_URL.replace(
+        "postgres://",
+        "postgresql://",
+        1
+    )
+
 
 if DATABASE_URL:
-    # Render/online database
+
+    # =====================================================
+    # ONLINE DATABASE
+    # =====================================================
+
     engine = create_engine(
         DATABASE_URL,
         pool_pre_ping=True,
         future=True
     )
-    DATABASE_MODE = "PostgreSQL (online)"
+
+    DATABASE_MODE = (
+        "PostgreSQL (online)"
+    )
+
 else:
-    # Local/offline database
+
+    # =====================================================
+    # OFFLINE / LOCAL DATABASE
+    # =====================================================
+
     sqlite_path = os.getenv(
         "OFFLINE_DB_PATH",
-        os.path.join(BASE_DIR, "sawariya_billing.db")
+        os.path.join(
+            BASE_DIR,
+            "sawariya_billing.db"
+        )
     )
 
     engine = create_engine(
         f"sqlite:///{sqlite_path}",
-        connect_args={"check_same_thread": False},
+        connect_args={
+            "check_same_thread": False
+        },
         future=True
     )
-    DATABASE_MODE = "SQLite (offline/local)"
 
-    # SQLite does not enforce foreign keys by default.
-    from sqlalchemy import event
+    DATABASE_MODE = (
+        "SQLite (offline/local)"
+    )
 
-    @event.listens_for(engine, "connect")
-    def _enable_sqlite_foreign_keys(dbapi_connection, connection_record):
-        cursor = dbapi_connection.cursor()
-        cursor.execute("PRAGMA foreign_keys=ON")
+    @event.listens_for(
+        engine,
+        "connect"
+    )
+    def _enable_sqlite_foreign_keys(
+        dbapi_connection,
+        connection_record
+    ):
+
+        cursor = (
+            dbapi_connection.cursor()
+        )
+
+        cursor.execute(
+            "PRAGMA foreign_keys=ON"
+        )
+
         cursor.close()
 
 
@@ -154,6 +198,7 @@ Base = declarative_base()
 # =========================================================
 # MODELS
 # =========================================================
+
 
 class Product(Base):
 
@@ -244,7 +289,9 @@ class Invoice(Base):
 
     customer_id = Column(
         Integer,
-        ForeignKey("customers.id"),
+        ForeignKey(
+            "customers.id"
+        ),
         nullable=True
     )
 
@@ -304,12 +351,16 @@ class InvoiceItem(Base):
 
     invoice_id = Column(
         Integer,
-        ForeignKey("invoices.id")
+        ForeignKey(
+            "invoices.id"
+        )
     )
 
     product_id = Column(
         Integer,
-        ForeignKey("products.id"),
+        ForeignKey(
+            "products.id"
+        ),
         nullable=True
     )
 
@@ -372,7 +423,9 @@ class StockMovement(Base):
 
     product_id = Column(
         Integer,
-        ForeignKey("products.id")
+        ForeignKey(
+            "products.id"
+        )
     )
 
     movement_type = Column(
@@ -436,30 +489,56 @@ app.add_middleware(
 app.mount(
     "/static",
     StaticFiles(
-        directory=os.path.join(BASE_DIR, "static")
+        directory=os.path.join(
+            BASE_DIR,
+            "static"
+        )
     ),
     name="static"
 )
+
 
 # =========================================================
 # PWA FILES
 # =========================================================
 
-@app.get("/manifest.json")
+@app.get(
+    "/manifest.json"
+)
 def manifest():
 
     return FileResponse(
-        os.path.join(BASE_DIR, "static", "manifest.json"),
-        media_type="application/manifest+json"
+        os.path.join(
+            BASE_DIR,
+            "static",
+            "manifest.json"
+        ),
+        media_type=(
+            "application/manifest+json"
+        )
     )
 
 
-@app.get("/service-worker.js")
+@app.get(
+    "/service-worker.js"
+)
 def service_worker():
 
     return FileResponse(
-        os.path.join(BASE_DIR, "static", "service-worker.js"),
-        media_type="application/javascript"
+        os.path.join(
+            BASE_DIR,
+            "static",
+            "service-worker.js"
+        ),
+        media_type=(
+            "application/javascript"
+        ),
+        headers={
+            "Cache-Control":
+                "no-cache, no-store, must-revalidate",
+            "Service-Worker-Allowed":
+                "/"
+        }
     )
 
 
@@ -468,7 +547,10 @@ def service_worker():
 # =========================================================
 
 templates = Jinja2Templates(
-    directory=os.path.join(BASE_DIR, "templates")
+    directory=os.path.join(
+        BASE_DIR,
+        "templates"
+    )
 )
 
 
@@ -476,9 +558,18 @@ templates.env.filters[
     "ist_time"
 ] = utc_to_ist
 
+
 def ist_time_text(dt):
+
     value = utc_to_ist(dt)
-    return value.strftime("%d-%m-%Y %H:%M") if value else ""
+
+    if not value:
+        return ""
+
+    return value.strftime(
+        "%d-%m-%Y %H:%M"
+    )
+
 
 templates.env.filters[
     "ist_time_text"
@@ -496,22 +587,32 @@ USERS = {
 
 
 # =========================================================
-# HELPERS
+# DATABASE HELPER
 # =========================================================
 
 def db():
     return SessionLocal()
 
 
+# =========================================================
+# LOGIN HELPER
+# =========================================================
+
 def login_required(
     request: Request
 ):
+
     return request.session.get(
         "username"
     )
 
 
+# =========================================================
+# MONEY HELPER
+# =========================================================
+
 def money(value):
+
     return float(
         value or 0
     )
@@ -532,6 +633,7 @@ def home(
     if not login_required(
         request
     ):
+
         return RedirectResponse(
             "/login",
             status_code=303
@@ -637,6 +739,7 @@ def dashboard(
     )
 
     if not username:
+
         return RedirectResponse(
             "/login",
             status_code=303
@@ -656,7 +759,9 @@ def dashboard(
             )
         )
 
+        # -------------------------------------------------
         # TODAY SALES
+        # -------------------------------------------------
 
         sales = (
             d.query(
@@ -679,7 +784,9 @@ def dashboard(
             or 0
         )
 
+        # -------------------------------------------------
         # TODAY BILLS
+        # -------------------------------------------------
 
         bills = (
             d.query(
@@ -699,7 +806,9 @@ def dashboard(
             or 0
         )
 
+        # -------------------------------------------------
         # TOTAL STOCK
+        # -------------------------------------------------
 
         stock = (
             d.query(
@@ -714,7 +823,9 @@ def dashboard(
             or 0
         )
 
+        # -------------------------------------------------
         # LOW STOCK
+        # -------------------------------------------------
 
         low = (
             d.query(
@@ -741,12 +852,18 @@ def dashboard(
             request=request,
             name="dashboard.html",
             context={
-                "username": username,
-                "sales": sales,
-                "bills": bills,
-                "stock": stock,
-                "low": low,
-                "products": products
+                "username":
+                    username,
+                "sales":
+                    sales,
+                "bills":
+                    bills,
+                "stock":
+                    stock,
+                "low":
+                    low,
+                "products":
+                    products
             }
         )
 
@@ -772,6 +889,7 @@ def products_page(
     )
 
     if not username:
+
         return RedirectResponse(
             "/login",
             status_code=303
@@ -795,8 +913,10 @@ def products_page(
             request=request,
             name="products.html",
             context={
-                "username": username,
-                "products": products
+                "username":
+                    username,
+                "products":
+                    products
             }
         )
 
@@ -826,6 +946,7 @@ def add_product(
     if not login_required(
         request
     ):
+
         return RedirectResponse(
             "/login",
             status_code=303
@@ -889,7 +1010,10 @@ def add_product(
 
         product = Product(
             name=clean_name,
-            sku=clean_sku or None,
+            sku=(
+                clean_sku
+                or None
+            ),
             quantity=max(
                 quantity,
                 0
@@ -964,6 +1088,7 @@ def edit_product(
     )
 
     if not username:
+
         return RedirectResponse(
             "/login",
             status_code=303
@@ -989,8 +1114,10 @@ def edit_product(
             request=request,
             name="product_edit.html",
             context={
-                "username": username,
-                "p": product
+                "username":
+                    username,
+                "p":
+                    product
             }
         )
 
@@ -1021,6 +1148,7 @@ def update_product(
     if not login_required(
         request
     ):
+
         return RedirectResponse(
             "/login",
             status_code=303
@@ -1119,7 +1247,9 @@ def update_product(
             or None
         )
 
-        product.quantity = new_quantity
+        product.quantity = (
+            new_quantity
+        )
 
         product.min_stock = max(
             min_stock,
@@ -1141,7 +1271,14 @@ def update_product(
             0
         )
 
-        if old_quantity != new_quantity:
+        # -------------------------------------------------
+        # STOCK ADJUSTMENT
+        # -------------------------------------------------
+
+        if (
+            old_quantity
+            != new_quantity
+        ):
 
             difference = (
                 new_quantity
@@ -1204,6 +1341,7 @@ def delete_product(
     if not login_required(
         request
     ):
+
         return RedirectResponse(
             "/login",
             status_code=303
@@ -1239,7 +1377,8 @@ def delete_product(
         if invoice_item_exists:
 
             return RedirectResponse(
-                "/products?error=used_in_invoice",
+                "/products"
+                "?error=used_in_invoice",
                 status_code=303
             )
 
@@ -1263,7 +1402,8 @@ def delete_product(
         d.rollback()
 
         return RedirectResponse(
-            "/products?error=delete_failed",
+            "/products"
+            "?error=delete_failed",
             status_code=303
         )
 
@@ -1272,7 +1412,8 @@ def delete_product(
         d.rollback()
 
         return RedirectResponse(
-            "/products?error=server",
+            "/products"
+            "?error=server",
             status_code=303
         )
 
@@ -1407,23 +1548,63 @@ def billing(
             .all()
         )
 
+        products = (
+            d.query(
+                Product
+            )
+            .order_by(
+                Product.name
+            )
+            .all()
+        )
+
+        product_data = []
+
+        for p in products:
+
+            product_data.append(
+                {
+                    "id":
+                        p.id,
+
+                    "name":
+                        p.name,
+
+                    "stock":
+                        int(
+                            p.quantity
+                            or 0
+                        ),
+
+                    "purchase":
+                        money(
+                            p.purchase_price
+                        ),
+
+                    "wholesale":
+                        money(
+                            p.wholesale_price
+                        ),
+
+                    "retail":
+                        money(
+                            p.retailer_price
+                        )
+                }
+            )
+
         return templates.TemplateResponse(
             request=request,
             name="billing.html",
             context={
-                "username": username,
-                "customers": customers,
-                "products": [
-                    {
-                        "id": p.id,
-                        "name": p.name,
-                        "stock": int(p.quantity or 0),
-                        "purchase": money(p.purchase_price),
-                        "wholesale": money(p.wholesale_price),
-                        "retail": money(p.retailer_price)
-                    }
-                    for p in d.query(Product).order_by(Product.name).all()
-                ]
+                "username":
+                    username,
+
+                "customers":
+                    customers,
+
+                "products":
+                    product_data
             }
         )
 
@@ -1484,6 +1665,10 @@ async def save_bill(
             status_code=400
         )
 
+    # =====================================================
+    # BILL VALUES
+    # =====================================================
+
     try:
 
         discount = Decimal(
@@ -1497,6 +1682,7 @@ async def save_bill(
         )
 
         if discount < 0:
+
             discount = Decimal(
                 "0"
             )
@@ -1520,6 +1706,7 @@ async def save_bill(
         )
 
         if paid < 0:
+
             paid = Decimal(
                 "0"
             )
@@ -1545,6 +1732,7 @@ async def save_bill(
         customer,
         dict
     ):
+
         customer = {}
 
     d = db()
@@ -1557,63 +1745,143 @@ async def save_bill(
 
     try:
 
+        # =================================================
         # PRODUCTS
-        #
-        # Aggregate duplicate product lines before checking stock. This
-        # prevents a cart containing the same product twice from selling
-        # more units than are actually available.
+        # =================================================
 
         requested = {}
 
         for item in items:
+
             try:
-                product_id = int(item.get("product_id"))
-                qty = int(item.get("quantity"))
-            except (TypeError, ValueError):
-                raise ValueError("Invalid product or quantity")
 
-            if qty <= 0:
-                raise ValueError("Invalid quantity")
-
-            requested[product_id] = requested.get(product_id, 0) + qty
-
-        for product_id, qty in requested.items():
-
-            product = d.get(Product, product_id)
-
-            if not product:
-                raise ValueError("Invalid product")
-
-            available_stock = int(product.quantity or 0)
-
-            if available_stock < qty:
-                raise ValueError(
-                    f"Insufficient stock: {product.name} "
-                    f"({available_stock} available, {qty} requested)"
+                product_id = int(
+                    item.get(
+                        "product_id"
+                    )
                 )
 
-            price = Decimal(str(product.wholesale_price or 0))
+                qty = int(
+                    item.get(
+                        "quantity"
+                    )
+                )
+
+            except (
+                TypeError,
+                ValueError
+            ):
+
+                raise ValueError(
+                    "Invalid product or quantity"
+                )
+
+            if qty <= 0:
+
+                raise ValueError(
+                    "Invalid quantity"
+                )
+
+            requested[
+                product_id
+            ] = (
+                requested.get(
+                    product_id,
+                    0
+                )
+                + qty
+            )
+
+        # =================================================
+        # CHECK STOCK
+        # =================================================
+
+        for (
+            product_id,
+            qty
+        ) in requested.items():
+
+            product = d.get(
+                Product,
+                product_id
+            )
+
+            if not product:
+
+                raise ValueError(
+                    "Invalid product"
+                )
+
+            available_stock = int(
+                product.quantity
+                or 0
+            )
+
+            if available_stock < qty:
+
+                raise ValueError(
+                    f"Insufficient stock: "
+                    f"{product.name} "
+                    f"({available_stock} available, "
+                    f"{qty} requested)"
+                )
+
+            # ALWAYS WHOLESALE PRICE
+            price = Decimal(
+                str(
+                    product.wholesale_price
+                    or 0
+                )
+            )
 
             if price < 0:
-                price = Decimal("0")
 
-            amount = price * qty
+                price = Decimal(
+                    "0"
+                )
+
+            amount = (
+                price
+                * qty
+            )
+
             subtotal += amount
 
-            clean.append((product, qty, price, amount))
+            clean.append(
+                (
+                    product,
+                    qty,
+                    price,
+                    amount
+                )
+            )
 
+        # =================================================
         # TOTAL
+        # =================================================
 
         if discount > subtotal:
+
             discount = subtotal
 
-        total = subtotal - discount
+        total = (
+            subtotal
+            - discount
+        )
 
-        paid = min(paid, total)
+        paid = min(
+            paid,
+            total
+        )
 
-        due = total - paid
+        due = (
+            total
+            - paid
+        )
 
+        # =================================================
         # CUSTOMER
+        # =================================================
 
         customer_id = None
 
@@ -1669,44 +1937,97 @@ async def save_bill(
                 new_customer.id
             )
 
+        # =================================================
         # INVOICE NUMBER
+        # =================================================
 
-        # The browser may supply a stable offline invoice number. This makes
-        # queued offline bills safe to retry when the connection returns.
-        supplied_invoice_no = str(data.get("invoice_no") or "").strip()
-        invoice_no = supplied_invoice_no or (
-            "INV-"
-            + datetime.utcnow().strftime(
-                "%Y%m%d%H%M%S%f"
-            )[:-3]
+        supplied_invoice_no = str(
+            data.get(
+                "invoice_no"
+            )
+            or ""
+        ).strip()
+
+        invoice_no = (
+            supplied_invoice_no
+            or (
+                "INV-"
+                + datetime.utcnow().strftime(
+                    "%Y%m%d%H%M%S%f"
+                )[:-3]
+            )
         )
 
-        # If an offline bill was already synced and the browser retries it,
-        # return the existing invoice instead of creating a duplicate.
-        existing_invoice = d.query(Invoice).filter(
-            Invoice.invoice_no == invoice_no
-        ).first()
+        # =================================================
+        # DUPLICATE OFFLINE SYNC PROTECTION
+        # =================================================
+
+        existing_invoice = (
+            d.query(
+                Invoice
+            )
+            .filter(
+                Invoice.invoice_no
+                == invoice_no
+            )
+            .first()
+        )
+
         if existing_invoice:
+
             return {
-                "ok": True,
-                "invoice_id": existing_invoice.id,
-                "invoice_no": existing_invoice.invoice_no,
-                "total": float(existing_invoice.total or 0),
-                "due": float(existing_invoice.due or 0),
-                "already_saved": True
+                "ok":
+                    True,
+
+                "invoice_id":
+                    existing_invoice.id,
+
+                "invoice_no":
+                    existing_invoice.invoice_no,
+
+                "total":
+                    float(
+                        existing_invoice.total
+                        or 0
+                    ),
+
+                "due":
+                    float(
+                        existing_invoice.due
+                        or 0
+                    ),
+
+                "already_saved":
+                    True
             }
 
+        # =================================================
         # CREATE INVOICE
+        # =================================================
 
         invoice = Invoice(
             invoice_no=invoice_no,
-            customer_id=customer_id,
-            subtotal=subtotal,
-            discount=discount,
-            total=total,
-            payment_mode=payment,
-            paid=paid,
-            due=due
+
+            customer_id=
+                customer_id,
+
+            subtotal=
+                subtotal,
+
+            discount=
+                discount,
+
+            total=
+                total,
+
+            payment_mode=
+                payment,
+
+            paid=
+                paid,
+
+            due=
+                due
         )
 
         d.add(
@@ -1715,8 +2036,9 @@ async def save_bill(
 
         d.flush()
 
-        # SAVE ITEMS
-        # UPDATE STOCK
+        # =================================================
+        # SAVE ITEMS + STOCK
+        # =================================================
 
         for (
             product,
@@ -1731,12 +2053,23 @@ async def save_bill(
             )
 
             invoice_item = InvoiceItem(
-                invoice_id=invoice.id,
-                product_id=product.id,
-                product_name=product.name,
-                quantity=qty,
-                price=price,
-                amount=amount
+                invoice_id=
+                    invoice.id,
+
+                product_id=
+                    product.id,
+
+                product_name=
+                    product.name,
+
+                quantity=
+                    qty,
+
+                price=
+                    price,
+
+                amount=
+                    amount
             )
 
             d.add(
@@ -1745,21 +2078,37 @@ async def save_bill(
 
             d.add(
                 StockMovement(
-                    product_id=product.id,
-                    movement_type="Sale",
-                    quantity=-qty,
-                    note=invoice_no
+                    product_id=
+                        product.id,
+
+                    movement_type=
+                        "Sale",
+
+                    quantity=
+                        -qty,
+
+                    note=
+                        invoice_no
                 )
             )
 
         d.commit()
 
         return {
-            "ok": True,
-            "invoice_id": invoice.id,
-            "invoice_no": invoice_no,
-            "total": float(total),
-            "due": float(due)
+            "ok":
+                True,
+
+            "invoice_id":
+                invoice.id,
+
+            "invoice_no":
+                invoice_no,
+
+            "total":
+                float(total),
+
+            "due":
+                float(due)
         }
 
     except Exception as e:
@@ -1822,6 +2171,7 @@ def customers(
             context={
                 "customers":
                     customers_list,
+
                 "username":
                     username
             }
@@ -1859,16 +2209,34 @@ def add_customer(
 
     try:
 
+        clean_name = (
+            name.strip()
+        )
+
+        clean_phone = (
+            phone.strip()
+        )
+
+        clean_address = (
+            address.strip()
+        )
+
         d.add(
             Customer(
-                name=name.strip()
-                or None,
+                name=(
+                    clean_name
+                    or None
+                ),
 
-                phone=phone.strip()
-                or None,
+                phone=(
+                    clean_phone
+                    or None
+                ),
 
-                address=address.strip()
-                or None
+                address=(
+                    clean_address
+                    or None
+                )
             )
         )
 
@@ -1888,40 +2256,364 @@ def add_customer(
         d.close()
 
     return RedirectResponse(
-        "/customers",
+        "/customers?success=added",
         status_code=303
     )
 
 
-@app.get("/customers/{customer_id}/edit")
+# =========================================================
+# EDIT CUSTOMER PAGE
+# =========================================================
+#
+# FIXED:
+# - No Depends
+# - No undefined Session
+# - No undefined get_db
+# - Uses same username session as rest of app
+# - Uses customer_edit.html
+#
+# =========================================================
+
+@app.get(
+    "/customers/{customer_id}/edit",
+    response_class=HTMLResponse
+)
 def customer_edit(
-    customer_id: int,
     request: Request,
-    db: Session = Depends(get_db)
+    customer_id: int
 ):
-    if not request.session.get("user"):
+
+    username = login_required(
+        request
+    )
+
+    if not username:
+
         return RedirectResponse(
             "/login",
             status_code=303
         )
 
-    customer = db.query(Customer).filter(
-        Customer.id == customer_id
-    ).first()
+    d = db()
 
-    if not customer:
+    try:
+
+        customer = (
+            d.query(
+                Customer
+            )
+            .filter(
+                Customer.id
+                == customer_id
+            )
+            .first()
+        )
+
+        if not customer:
+
+            return RedirectResponse(
+                "/customers?error=not_found",
+                status_code=303
+            )
+
+        return templates.TemplateResponse(
+            request=request,
+            name="customer_edit.html",
+            context={
+                "request":
+                    request,
+
+                "customer":
+                    customer,
+
+                "username":
+                    username
+            }
+        )
+
+    finally:
+
+        d.close()
+
+
+# =========================================================
+# UPDATE CUSTOMER
+# =========================================================
+
+@app.post(
+    "/customers/{customer_id}/update"
+)
+def customer_update(
+    request: Request,
+    customer_id: int,
+    name: str = Form(""),
+    phone: str = Form(""),
+    address: str = Form("")
+):
+
+    username = login_required(
+        request
+    )
+
+    if not username:
+
         return RedirectResponse(
-            "/customers?error=not_found",
+            "/login",
             status_code=303
         )
 
-    return templates.TemplateResponse(
-        "customer-edit.html",
-        {
-            "request": request,
-            "customer": customer
-        }
+    d = db()
+
+    try:
+
+        customer = (
+            d.query(
+                Customer
+            )
+            .filter(
+                Customer.id
+                == customer_id
+            )
+            .first()
+        )
+
+        if not customer:
+
+            return RedirectResponse(
+                "/customers?error=not_found",
+                status_code=303
+            )
+
+        customer.name = (
+            name.strip()
+            or None
+        )
+
+        customer.phone = (
+            phone.strip()
+            or None
+        )
+
+        customer.address = (
+            address.strip()
+            or None
+        )
+
+        d.commit()
+
+    except Exception:
+
+        d.rollback()
+
+        return RedirectResponse(
+            "/customers?error=server",
+            status_code=303
+        )
+
+    finally:
+
+        d.close()
+
+    return RedirectResponse(
+        "/customers?success=updated",
+        status_code=303
     )
+
+
+# =========================================================
+# DELETE CUSTOMER
+# =========================================================
+
+@app.post(
+    "/customers/{customer_id}/delete"
+)
+def customer_delete(
+    request: Request,
+    customer_id: int
+):
+
+    if not login_required(
+        request
+    ):
+
+        return RedirectResponse(
+            "/login",
+            status_code=303
+        )
+
+    d = db()
+
+    try:
+
+        customer = (
+            d.query(
+                Customer
+            )
+            .filter(
+                Customer.id
+                == customer_id
+            )
+            .first()
+        )
+
+        if not customer:
+
+            return RedirectResponse(
+                "/customers?error=not_found",
+                status_code=303
+            )
+
+        # -------------------------------------------------
+        # Do not delete a customer who is linked to invoices.
+        # This protects invoice history.
+        # -------------------------------------------------
+
+        invoice_exists = (
+            d.query(
+                Invoice.id
+            )
+            .filter(
+                Invoice.customer_id
+                == customer_id
+            )
+            .first()
+        )
+
+        if invoice_exists:
+
+            return RedirectResponse(
+                "/customers"
+                "?error=used_in_invoice",
+                status_code=303
+            )
+
+        d.delete(
+            customer
+        )
+
+        d.commit()
+
+    except IntegrityError:
+
+        d.rollback()
+
+        return RedirectResponse(
+            "/customers"
+            "?error=delete_failed",
+            status_code=303
+        )
+
+    except Exception:
+
+        d.rollback()
+
+        return RedirectResponse(
+            "/customers"
+            "?error=server",
+            status_code=303
+        )
+
+    finally:
+
+        d.close()
+
+    return RedirectResponse(
+        "/customers?success=deleted",
+        status_code=303
+    )
+
+
+# =========================================================
+# CUSTOMER SEARCH API
+# =========================================================
+
+@app.get(
+    "/api/customers"
+)
+def api_customers(
+    request: Request,
+    q: str = ""
+):
+
+    if not login_required(
+        request
+    ):
+
+        return JSONResponse(
+            {
+                "error":
+                    "unauthorized"
+            },
+            status_code=401
+        )
+
+    d = db()
+
+    try:
+
+        search = (
+            q.strip()
+        )
+
+        query = (
+            d.query(
+                Customer
+            )
+        )
+
+        if search:
+
+            search_pattern = (
+                f"%{search}%"
+            )
+
+            query = query.filter(
+                (
+                    Customer.name.ilike(
+                        search_pattern
+                    )
+                )
+                |
+                (
+                    Customer.phone.ilike(
+                        search_pattern
+                    )
+                )
+            )
+
+        customers_list = (
+            query
+            .order_by(
+                Customer.name
+            )
+            .limit(30)
+            .all()
+        )
+
+        return [
+            {
+                "id":
+                    customer.id,
+
+                "name":
+                    customer.name
+                    or "",
+
+                "phone":
+                    customer.phone
+                    or "",
+
+                "address":
+                    customer.address
+                    or ""
+            }
+            for customer
+            in customers_list
+        ]
+
+    finally:
+
+        d.close()
 
 
 # =========================================================
@@ -1967,6 +2659,7 @@ def stock(
             context={
                 "products":
                     products,
+
                 "username":
                     username
             }
@@ -2023,8 +2716,10 @@ def reports(
             IST
         ).date()
 
-        report_date = selected.strftime(
-            "%Y-%m-%d"
+        report_date = (
+            selected.strftime(
+                "%Y-%m-%d"
+            )
         )
 
     start_utc, end_utc = (
@@ -2045,6 +2740,7 @@ def reports(
                 joinedload(
                     Invoice.customer
                 ),
+
                 joinedload(
                     Invoice.items
                 ).joinedload(
@@ -2081,6 +2777,10 @@ def reports(
             "0"
         )
 
+        # =================================================
+        # CALCULATE REPORT
+        # =================================================
+
         for invoice in invoices:
 
             invoice_total = Decimal(
@@ -2090,7 +2790,9 @@ def reports(
                 )
             )
 
-            sales += invoice_total
+            sales += (
+                invoice_total
+            )
 
             paid += Decimal(
                 str(
@@ -2106,8 +2808,8 @@ def reports(
                 )
             )
 
-            invoice_profit = Decimal(
-                "0"
+            invoice_profit = (
+                Decimal("0")
             )
 
             for item in invoice.items:
@@ -2119,8 +2821,8 @@ def reports(
                     )
                 )
 
-                purchase_price = Decimal(
-                    "0"
+                purchase_price = (
+                    Decimal("0")
                 )
 
                 if item.product:
@@ -2161,19 +2863,24 @@ def reports(
 
             if invoice_profit < 0:
 
-                invoice_profit = Decimal(
-                    "0"
+                invoice_profit = (
+                    Decimal("0")
                 )
 
-            invoice.net_profit = (
-                invoice_profit
-            )
+            # IMPORTANT:
+            # Invoice model does NOT contain
+            # net_profit column.
+            #
+            # So we only add it to the report
+            # calculation and do NOT save it
+            # into invoice.net_profit.
 
             net_profit += (
                 invoice_profit
             )
 
         summary = {
+
             "bills":
                 len(invoices),
 
@@ -2194,6 +2901,7 @@ def reports(
             request=request,
             name="reports.html",
             context={
+
                 "invoices":
                     invoices,
 
@@ -2214,7 +2922,7 @@ def reports(
 
 
 # =========================================================
-# PRINT / VIEW INVOICE
+# VIEW / PRINT INVOICE
 # =========================================================
 
 @app.get(
@@ -2225,38 +2933,80 @@ def view_invoice(
     request: Request,
     invoice_id: int
 ):
-    if not login_required(request):
-        return RedirectResponse("/login", status_code=303)
+
+    if not login_required(
+        request
+    ):
+
+        return RedirectResponse(
+            "/login",
+            status_code=303
+        )
 
     d = db()
+
     try:
+
         invoice = (
-            d.query(Invoice)
-            .options(
-                joinedload(Invoice.customer),
-                joinedload(Invoice.items)
+            d.query(
+                Invoice
             )
-            .filter(Invoice.id == invoice_id)
+            .options(
+                joinedload(
+                    Invoice.customer
+                ),
+
+                joinedload(
+                    Invoice.items
+                )
+            )
+            .filter(
+                Invoice.id
+                == invoice_id
+            )
             .first()
         )
 
         if not invoice:
-            return RedirectResponse("/reports", status_code=303)
+
+            return RedirectResponse(
+                "/reports",
+                status_code=303
+            )
 
         return templates.TemplateResponse(
             request=request,
             name="invoice.html",
             context={
-                "invoice": invoice,
-                "username": request.session.get("username")
+                "invoice":
+                    invoice,
+
+                "username":
+                    request.session.get(
+                        "username"
+                    )
             }
         )
+
     finally:
+
         d.close()
 
 
 # =========================================================
 # SHARE INVOICE ON WHATSAPP
+# =========================================================
+#
+# NOTE:
+# Browser cannot silently attach a generated PDF directly
+# to WhatsApp through wa.me.
+#
+# This route opens the customer's WhatsApp chat with the
+# invoice message.
+#
+# The PDF attachment/share button can use Web Share API
+# from invoice.html when the browser supports it.
+#
 # =========================================================
 
 @app.get(
@@ -2288,6 +3038,7 @@ def share_invoice_whatsapp(
                 joinedload(
                     Invoice.customer
                 ),
+
                 joinedload(
                     Invoice.items
                 )
@@ -2306,7 +3057,9 @@ def share_invoice_whatsapp(
                 status_code=303
             )
 
+        # =================================================
         # CUSTOMER PHONE
+        # =================================================
 
         phone = ""
 
@@ -2319,11 +3072,29 @@ def share_invoice_whatsapp(
 
         phone = (
             phone
-            .replace(" ", "")
-            .replace("-", "")
-            .replace("+", "")
+            .replace(
+                " ",
+                ""
+            )
+            .replace(
+                "-",
+                ""
+            )
+            .replace(
+                "+",
+                ""
+            )
+            .replace(
+                "(",
+                ""
+            )
+            .replace(
+                ")",
+                ""
+            )
         )
 
+        # Indian 10-digit number
         if (
             phone
             and len(phone) == 10
@@ -2334,7 +3105,9 @@ def share_invoice_whatsapp(
                 + phone
             )
 
+        # =================================================
         # CUSTOMER NAME
+        # =================================================
 
         customer_name = (
             "Walk-in Customer"
@@ -2349,10 +3122,14 @@ def share_invoice_whatsapp(
                 invoice.customer.name
             )
 
+        # =================================================
         # DATE
+        # =================================================
 
-        created_time = utc_to_ist(
-            invoice.created_at
+        created_time = (
+            utc_to_ist(
+                invoice.created_at
+            )
         )
 
         date_text = ""
@@ -2365,7 +3142,9 @@ def share_invoice_whatsapp(
                 )
             )
 
+        # =================================================
         # MESSAGE
+        # =================================================
 
         message = (
             "🧾 *SAWARIYA CONFECTIONARY*\n"
@@ -2449,3 +3228,53 @@ def share_invoice_whatsapp(
     finally:
 
         d.close()
+
+
+# =========================================================
+# HEALTH CHECK
+# =========================================================
+
+@app.get(
+    "/health"
+)
+def health():
+
+    return {
+        "ok":
+            True,
+
+        "database":
+            DATABASE_MODE
+    }
+
+
+# =========================================================
+# DATABASE INFO
+# =========================================================
+
+@app.get(
+    "/api/status"
+)
+def api_status(
+    request: Request
+):
+
+    if not login_required(
+        request
+    ):
+
+        return JSONResponse(
+            {
+                "error":
+                    "unauthorized"
+            },
+            status_code=401
+        )
+
+    return {
+        "ok":
+            True,
+
+        "database":
+            DATABASE_MODE
+    }
