@@ -4,7 +4,40 @@
 
 <main>
 
-    <h1>Stock Management</h1>
+    <!-- =========================
+         PAGE HEADER
+         ========================= -->
+
+    <div class="top">
+
+        <div>
+            <h1>Stock Management</h1>
+            <p>Check current stock and low stock products.</p>
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         SEARCH
+         ========================= -->
+
+    <section class="panel">
+
+        <input
+            type="text"
+            id="stockSearch"
+            class="search-input"
+            placeholder="🔍 Search product..."
+            autocomplete="off"
+        >
+
+    </section>
+
+
+    <!-- =========================
+         STOCK TABLE
+         ========================= -->
 
     <section class="panel">
 
@@ -19,11 +52,14 @@
                 </tr>
             </thead>
 
-            <tbody>
+            <tbody id="stockTableBody">
 
                 {% for p in products %}
 
-                <tr class="stock-row">
+                <tr
+                    class="stock-row"
+                    data-product-name="{{ p.name|lower }}"
+                >
 
                     <td>
                         {{ p.name }}
@@ -63,9 +99,83 @@
 
         </table>
 
+
+        <!-- =========================
+             NO RESULT
+             ========================= -->
+
+        <div
+            id="noStockResult"
+            style="display:none; text-align:center; padding:25px; color:#777;"
+        >
+            No product found.
+        </div>
+
     </section>
 
 </main>
+
+
+<!-- =====================================
+     STOCK SEARCH
+     ===================================== -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const searchInput = document.getElementById("stockSearch");
+    const rows = document.querySelectorAll(".stock-row");
+    const noResult = document.getElementById("noStockResult");
+
+    if (!searchInput) return;
+
+    searchInput.addEventListener("input", function () {
+
+        const searchValue = this.value
+            .trim()
+            .toLowerCase();
+
+        let visibleCount = 0;
+
+        rows.forEach(function (row) {
+
+            const productName =
+                row.getAttribute("data-product-name") || "";
+
+            if (
+                searchValue === "" ||
+                productName.includes(searchValue)
+            ) {
+
+                row.style.display = "";
+
+                visibleCount++;
+
+            } else {
+
+                row.style.display = "none";
+
+            }
+
+        });
+
+
+        if (visibleCount === 0 && searchValue !== "") {
+
+            noResult.style.display = "block";
+
+        } else {
+
+            noResult.style.display = "none";
+
+        }
+
+    });
+
+});
+
+</script>
 
 
 <!-- =====================================
@@ -101,9 +211,7 @@
     }
 
 
-    /* ==============================
-       EACH PRODUCT CARD
-       ============================== */
+    /* EACH PRODUCT CARD */
 
     table.stock-table tr.stock-row {
         display: block !important;
@@ -122,9 +230,7 @@
     }
 
 
-    /* ==============================
-       EACH ROW INSIDE CARD
-       ============================== */
+    /* EACH ROW INSIDE CARD */
 
     table.stock-table tr.stock-row td {
         display: flex !important;
@@ -156,11 +262,10 @@
     }
 
 
-    /* ==============================
-       PRODUCT NAME
-       ============================== */
+    /* PRODUCT NAME */
 
     table.stock-table tr.stock-row td:nth-child(1) {
+
         background: #f8f4f1 !important;
 
         font-size: 17px !important;
@@ -171,9 +276,7 @@
     }
 
 
-    /* ==============================
-       LEFT SIDE LABELS
-       ============================== */
+    /* LABELS */
 
     table.stock-table tr.stock-row td:nth-child(1)::before {
         content: "Product";
@@ -213,9 +316,7 @@
     }
 
 
-    /* ==============================
-       STATUS
-       ============================== */
+    /* STATUS */
 
     table.stock-table .danger,
     table.stock-table .ok {
