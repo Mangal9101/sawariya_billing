@@ -2,462 +2,256 @@
 
 {% block content %}
 
-<main id="reportsPage">
+<main>
 
-    <!-- =====================================================
-         PAGE HEADER
-         ===================================================== -->
+  <div class="top">
+    <div>
+      <h1>Daily Sales Report</h1>
+      <p>हर दिन किस customer ने क्या-क्या लिया, quantity और amount के साथ.</p>
+    </div>
+  </div>
 
-    <div class="top">
+  <!-- DATE FILTER -->
+  <section class="panel">
 
-        <div>
+    <form class="dateform" method="get" action="/reports">
 
-            <h1>Daily Sales Report</h1>
+      <label>
+        <b>Select Date</b>
 
-            <p>
-                हर दिन किस customer ने क्या-क्या लिया,
-                quantity और amount के साथ.
-            </p>
+        <input
+          type="date"
+          name="date"
+          value="{{ report_date }}"
+        >
+      </label>
 
-        </div>
+      <button class="btn" type="submit">
+        View Report
+      </button>
+
+      <a class="btn secondary" href="/reports">
+        Today
+      </a>
+
+    </form>
+
+
+    <!-- REPORT SUMMARY -->
+    <div class="report-summary">
+
+      <!-- TOTAL BILLS -->
+      <div>
+        <span>Total Bills</span>
+        <b>{{ summary.bills }}</b>
+      </div>
+
+
+      <!-- TOTAL SALES -->
+      <div>
+        <span>Total Sales</span>
+        <b>
+          ₹{{ '%.2f'|format(summary.sales|float) }}
+        </b>
+      </div>
+
+
+      <!-- NET PROFIT -->
+      <div>
+        <span>Net Profit</span>
+        <b>
+          ₹{{ '%.2f'|format(summary.net_profit|float) }}
+        </b>
+      </div>
+
+
+      <!-- PAID -->
+      <div>
+        <span>Paid</span>
+        <b>
+          ₹{{ '%.2f'|format(summary.paid|float) }}
+        </b>
+      </div>
+
+
+    </div>
+
+  </section>
+
+
+  <!-- INDIVIDUAL BILLS -->
+
+  {% for i in invoices %}
+
+  <section class="panel invoice-report">
+
+    <!-- INVOICE HEADER -->
+
+    <div class="invoice-title">
+
+      <div>
+        <b>{{ i.invoice_no }}</b>
+
+        —
+
+        {{ i.created_at.strftime('%d-%m-%Y %H:%M') }}
+       
+      </div>
+
+      <div>
+        <b>
+          Total:
+          ₹{{ '%.2f'|format(i.total|float) }}
+        </b>
+      </div>
 
     </div>
 
 
-    <!-- =====================================================
-         DATE FILTER + SUMMARY
-         ===================================================== -->
+    <!-- CUSTOMER DETAILS -->
 
-    <section class="panel">
+    <div class="customer-report">
 
-        <form
-            class="dateform"
-            method="get"
-            action="/reports"
-            id="reportDateForm"
-        >
+      <b>Customer:</b>
 
-            <label>
+      {% if i.customer and i.customer.name %}
+        {{ i.customer.name }}
+      {% else %}
+        Walk-in
+      {% endif %}
 
-                <b>Select Date</b>
 
-                <input
-                    type="date"
-                    name="date"
-                    value="{{ report_date }}"
-                    id="reportDate"
-                >
+      {% if i.customer and i.customer.phone %}
 
-            </label>
+        &nbsp; | &nbsp;
 
+        <b>Mobile:</b>
+        {{ i.customer.phone }}
 
-            <a
-                class="btn secondary"
-                href="/reports"
-            >
-                Today
-            </a>
+      {% endif %}
 
-        </form>
 
+      {% if i.customer and i.customer.address %}
 
-        <!-- =================================================
-             REPORT SUMMARY
-             ================================================= -->
+        &nbsp; | &nbsp;
 
-        <div class="report-summary">
+        <b>Address:</b>
+        {{ i.customer.address }}
 
-            <div>
+      {% endif %}
 
-                <span>Total Bills</span>
+    </div>
 
-                <b>
-                    {{ summary.bills }}
-                </b>
 
-            </div>
+    <!-- PRODUCTS -->
 
+    <div style="overflow-x:auto;">
 
-            <div>
+      <table>
 
-                <span>Total Sales</span>
+        <thead>
 
-                <b>
-                    ₹{{ '%.2f'|format(summary.sales|float) }}
-                </b>
+          <tr>
 
-            </div>
+            <th>Product</th>
 
+            <th>Qty</th>
 
-            <div>
+            <th>Wholesale Price</th>
 
-                <span>Net Profit</span>
+            <th>Amount</th>
 
-                <b>
-                    ₹{{ '%.2f'|format(summary.net_profit|float) }}
-                </b>
+          </tr>
 
-            </div>
+        </thead>
 
 
-            <div>
+        <tbody>
 
-                <span>Paid</span>
+          {% for item in i.items %}
 
-                <b>
-                    ₹{{ '%.2f'|format(summary.paid|float) }}
-                </b>
+          <tr>
 
-            </div>
+            <td>
+              {{ item.product_name }}
+            </td>
 
-        </div>
+            <td>
+              {{ item.quantity }}
+            </td>
 
-    </section>
+            <td>
+              ₹{{ '%.2f'|format(item.price|float) }}
+            </td>
 
+            <td>
+              ₹{{ '%.2f'|format(item.amount|float) }}
+            </td>
 
-    <!-- =====================================================
-         INVOICES
-         ===================================================== -->
+          </tr>
 
-    {% for i in invoices %}
+          {% endfor %}
 
-    <section
-        class="panel invoice-report"
-        id="invoice-{{ i.id }}"
-    >
+        </tbody>
 
-        <!-- =================================================
-             INVOICE HEADER
-             ================================================= -->
+      </table>
 
-        <div class="invoice-title">
+    </div>
 
-            <div>
 
-                <b>
-                    {{ i.invoice_no }}
-                </b>
+    <!-- PAYMENT DETAILS -->
 
-                <span>
-                    —
-                </span>
+    <div class="report-payment">
 
-                {{ i.created_at.strftime('%d-%m-%Y %H:%M') }}
+      <b>Payment:</b>
+      {{ i.payment_mode }}
 
-            </div>
+    </div>
 
+<!-- WHATSAPP SHARE -->
 
-            <div>
+<a
+  href="/invoice/{{ i.id }}/whatsapp"
+  class="whatsapp-btn"
+>
+  📲 Share Invoice on WhatsApp
+</a>
 
-                <b>
-                    Total:
-                    ₹{{ '%.2f'|format(i.total|float) }}
-                </b>
+  </section>
 
-            </div>
 
-        </div>
+  {% else %}
 
+  <!-- NO SALES -->
 
-        <!-- =================================================
-             CUSTOMER
-             ================================================= -->
+  <section class="panel">
 
-        <div class="customer-report">
+    <p>
+      No sales found for
+      <b>{{ report_date }}</b>.
+    </p>
 
-            <b>Customer:</b>
+  </section>
 
-            {% if i.customer and i.customer.name %}
-
-                {{ i.customer.name }}
-
-            {% else %}
-
-                Walk-in Customer
-
-            {% endif %}
-
-
-            {% if i.customer and i.customer.phone %}
-
-                &nbsp; | &nbsp;
-
-                <b>Mobile:</b>
-
-                {{ i.customer.phone }}
-
-            {% endif %}
-
-
-            {% if i.customer and i.customer.address %}
-
-                &nbsp; | &nbsp;
-
-                <b>Address:</b>
-
-                {{ i.customer.address }}
-
-            {% endif %}
-
-        </div>
-
-
-        <!-- =================================================
-             PRODUCTS
-             ================================================= -->
-
-        <div class="report-table-wrapper">
-
-            <table>
-
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            Product
-                        </th>
-
-                        <th>
-                            Qty
-                        </th>
-
-                        <th>
-                            Wholesale Price
-                        </th>
-
-                        <th>
-                            Amount
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody>
-
-                    {% for item in i.items %}
-
-                    <tr>
-
-                        <td>
-                            {{ item.product_name }}
-                        </td>
-
-                        <td>
-                            {{ item.quantity }}
-                        </td>
-
-                        <td>
-                            ₹{{ '%.2f'|format(item.price|float) }}
-                        </td>
-
-                        <td>
-                            ₹{{ '%.2f'|format(item.amount|float) }}
-                        </td>
-
-                    </tr>
-
-                    {% endfor %}
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-
-        <!-- =================================================
-             PAYMENT
-             ================================================= -->
-
-        <div class="report-payment">
-
-            <b>Payment:</b>
-
-            {{ i.payment_mode }}
-
-        </div>
-
-
-        <!-- =================================================
-             ACTIONS
-             ================================================= -->
-
-        <div class="invoice-actions">
-
-            <!-- WHATSAPP -->
-
-            <a
-                href="/invoice/{{ i.id }}/whatsapp"
-                class="whatsapp-btn"
-            >
-                📲 Share Invoice on WhatsApp
-            </a>
-
-
-            <!-- THERMAL PRINT -->
-
-            <button
-                type="button"
-                class="print-pdf-btn"
-                onclick="printInvoiceThermal({{ i.id }})"
-            >
-                🖨️ Print Invoice
-            </button>
-
-        </div>
-
-    </section>
-
-
-    {% else %}
-
-    <!-- =====================================================
-         NO SALES
-         ===================================================== -->
-
-    <section class="panel">
-
-        <p>
-
-            No sales found for
-
-            <b>
-                {{ report_date }}
-            </b>.
-
-        </p>
-
-    </section>
-
-    {% endfor %}
+  {% endfor %}
 
 </main>
-
-
-<!-- =======================================================
-     SCREEN CSS
-     ======================================================= -->
 
 <style>
 
 /* =========================================================
-   DATE FORM
+   WHATSAPP SHARE BUTTON
    ========================================================= */
 
-.dateform {
-
+.whatsapp-btn {
     display: flex;
 
-    align-items: flex-end;
-
-    gap: 12px;
-
-    flex-wrap: wrap;
-
-}
-
-
-.dateform label {
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 7px;
-
-}
-
-
-#reportDate {
-
-    min-height: 44px;
-
-    padding: 9px 12px;
-
-    border: 1px solid #ccc;
-
-    border-radius: 8px;
-
-    font-size: 15px;
-
-    background: #ffffff;
-
-    cursor: pointer;
-
-    box-sizing: border-box;
-
-}
-
-
-/* =========================================================
-   TABLE
-   ========================================================= */
-
-.report-table-wrapper {
-
-    width: 100%;
-
-    overflow-x: auto;
-
-    -webkit-overflow-scrolling: touch;
-
-}
-
-
-.report-table-wrapper table {
-
-    width: 100%;
-
-    border-collapse: collapse;
-
-}
-
-
-.report-table-wrapper th,
-.report-table-wrapper td {
-
-    padding: 9px;
-
-    text-align: left;
-
-}
-
-
-/* =========================================================
-   ACTIONS
-   ========================================================= */
-
-.invoice-actions {
-
-    display: flex;
-
-    gap: 10px;
+    align-items: center;
+    justify-content: center;
 
     width: 100%;
 
     margin-top: 16px;
-
-}
-
-
-/* =========================================================
-   WHATSAPP
-   ========================================================= */
-
-.whatsapp-btn {
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    flex: 1;
-
-    min-height: 48px;
 
     padding: 13px 16px;
 
@@ -470,50 +264,30 @@
     border-radius: 10px;
 
     font-size: 15px;
-
     font-weight: 700;
 
-    text-align: center;
+    transition:
+        transform 0.18s ease,
+        opacity 0.18s ease,
+        box-shadow 0.18s ease;
 
-    box-sizing: border-box;
-
+    box-shadow:
+        0 3px 10px rgba(37, 211, 102, 0.22);
 }
 
+.whatsapp-btn:hover {
+    background: #1ebe5d;
 
-/* =========================================================
-   PRINT BUTTON
-   ========================================================= */
+    color: #ffffff !important;
 
-.print-pdf-btn {
+    transform: translateY(-1px);
 
-    display: flex;
+    box-shadow:
+        0 5px 14px rgba(37, 211, 102, 0.30);
+}
 
-    align-items: center;
-
-    justify-content: center;
-
-    flex: 1;
-
-    min-height: 48px;
-
-    padding: 13px 16px;
-
-    background: #333333;
-
-    color: #ffffff;
-
-    border: none;
-
-    border-radius: 10px;
-
-    font-size: 15px;
-
-    font-weight: 700;
-
-    cursor: pointer;
-
-    box-sizing: border-box;
-
+.whatsapp-btn:active {
+    transform: translateY(0);
 }
 
 
@@ -523,594 +297,20 @@
 
 @media (max-width: 600px) {
 
-    .dateform {
-
-        flex-direction: column;
-
-        align-items: stretch;
-
+    .whatsapp-btn {
         width: 100%;
-
-    }
-
-
-    .dateform label {
-
-        width: 100%;
-
-    }
-
-
-    #reportDate {
-
-        width: 100%;
-
-        min-height: 48px;
-
-        font-size: 16px;
-
-    }
-
-
-    .dateform .secondary {
-
-        width: 100%;
-
-        min-height: 48px;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        box-sizing: border-box;
-
-    }
-
-
-    .invoice-actions {
-
-        flex-direction: column;
-
-        gap: 9px;
-
-    }
-
-
-    .whatsapp-btn,
-    .print-pdf-btn {
-
-        width: 100%;
-
-        flex: none;
 
         min-height: 50px;
 
+        padding: 14px;
+
         font-size: 16px;
 
-    }
-
-
-    .report-table-wrapper {
-
-        overflow-x: auto;
-
-    }
-
-
-    .report-table-wrapper table {
-
-        min-width: 500px;
-
+        border-radius: 10px;
     }
 
 }
 
 </style>
-
-
-<!-- =======================================================
-     THERMAL PRINT JAVASCRIPT
-     ======================================================= -->
-
-<script>
-
-/*
-============================================================
-
-    SAWARIYA BILLING
-    INDIVIDUAL THERMAL INVOICE PRINT
-
-============================================================
-
-    IMPORTANT:
-
-    यह function reports page को print नहीं करता।
-
-    यह selected invoice का data लेकर
-    एक बिल्कुल नया standalone print document बनाता है।
-
-    इसलिए:
-
-        Daily Sales Report       ❌
-        Summary                  ❌
-        दूसरा Customer           ❌
-        दूसरा Invoice            ❌
-        WhatsApp Button          ❌
-
-        Selected Customer        ✅
-        Selected Invoice         ✅
-        Products                 ✅
-        Payment                  ✅
-        Total                    ✅
-
-============================================================
-*/
-
-
-function printInvoiceThermal(invoiceId) {
-
-
-    /* =====================================================
-       SELECT INVOICE
-       ===================================================== */
-
-    const invoice =
-        document.getElementById(
-            "invoice-" + invoiceId
-        );
-
-
-    if (!invoice) {
-
-        alert("Invoice not found.");
-
-        return;
-
-    }
-
-
-    /* =====================================================
-       CLONE SELECTED INVOICE
-       ===================================================== */
-
-    const clone =
-        invoice.cloneNode(true);
-
-
-    /* =====================================================
-       REMOVE ACTION BUTTONS
-       ===================================================== */
-
-    const actions =
-        clone.querySelector(
-            ".invoice-actions"
-        );
-
-
-    if (actions) {
-
-        actions.remove();
-
-    }
-
-
-    /* =====================================================
-       REMOVE ID
-       ===================================================== */
-
-    clone.removeAttribute("id");
-
-
-    /* =====================================================
-       GET ONLY INVOICE CONTENT
-       ===================================================== */
-
-    const invoiceHTML =
-        clone.innerHTML;
-
-
-    /* =====================================================
-       OPEN NEW PRINT WINDOW
-
-       यह सबसे important हिस्सा है.
-
-       नया document केवल invoice का होगा.
-       Base.html की print CSS यहाँ लागू नहीं होगी.
-       ===================================================== */
-
-    const printWindow =
-        window.open(
-            "",
-            "_blank",
-            "width=400,height=700"
-        );
-
-
-    if (!printWindow) {
-
-        alert(
-            "Print window blocked. " +
-            "Browser में pop-up allow करें."
-        );
-
-        return;
-
-    }
-
-
-    /* =====================================================
-       CREATE STANDALONE PRINT DOCUMENT
-       ===================================================== */
-
-    printWindow.document.open();
-
-
-    printWindow.document.write(`
-
-<!DOCTYPE html>
-
-<html>
-
-<head>
-
-<meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>Invoice</title>
-
-
-<style>
-
-/* =====================================================
-   THERMAL PAPER SIZE
-   =====================================================
-
-   DEFAULT:
-   80mm thermal printer
-
-   अगर आपका printer 58mm है तो:
-
-       size: 58mm auto;
-
-   कर देना.
-   ===================================================== */
-
-@page {
-
-    size: 80mm auto;
-
-    margin: 0;
-
-}
-
-
-/* =====================================================
-   BODY
-   ===================================================== */
-
-html,
-body {
-
-    width: 100%;
-
-    margin: 0;
-
-    padding: 0;
-
-    background: #ffffff;
-
-}
-
-
-body {
-
-    font-family:
-        Arial,
-        "Noto Sans",
-        sans-serif;
-
-    font-size: 12px;
-
-    line-height: 1.35;
-
-    color: #000000;
-
-}
-
-
-/* =====================================================
-   INVOICE
-   ===================================================== */
-
-.thermal-invoice {
-
-    width: 72mm;
-
-    margin: 0 auto;
-
-    padding: 4mm 2mm;
-
-    box-sizing: border-box;
-
-}
-
-
-/* =====================================================
-   HEADER
-   ===================================================== */
-
-.invoice-title {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: flex-start;
-
-    gap: 5px;
-
-    padding-bottom: 8px;
-
-    margin-bottom: 8px;
-
-    border-bottom: 1px dashed #000000;
-
-    font-size: 11px;
-
-}
-
-
-.invoice-title > div:last-child {
-
-    text-align: right;
-
-    white-space: nowrap;
-
-}
-
-
-/* =====================================================
-   CUSTOMER
-   ===================================================== */
-
-.customer-report {
-
-    padding-bottom: 8px;
-
-    margin-bottom: 8px;
-
-    border-bottom: 1px dashed #000000;
-
-    word-break: break-word;
-
-    font-size: 11px;
-
-}
-
-
-/* =====================================================
-   TABLE
-   ===================================================== */
-
-.report-table-wrapper {
-
-    width: 100%;
-
-    overflow: visible;
-
-}
-
-
-table {
-
-    width: 100%;
-
-    border-collapse: collapse;
-
-    table-layout: fixed;
-
-}
-
-
-th,
-td {
-
-    padding: 5px 2px;
-
-    text-align: left;
-
-    vertical-align: top;
-
-    border-bottom: 1px dashed #777777;
-
-    font-size: 10px;
-
-    word-break: break-word;
-
-}
-
-
-th {
-
-    font-weight: 700;
-
-    border-bottom:
-        1px solid #000000;
-
-}
-
-
-/* Product column */
-
-th:nth-child(1),
-td:nth-child(1) {
-
-    width: 38%;
-
-}
-
-
-/* Qty */
-
-th:nth-child(2),
-td:nth-child(2) {
-
-    width: 12%;
-
-    text-align: center;
-
-}
-
-
-/* Price */
-
-th:nth-child(3),
-td:nth-child(3) {
-
-    width: 25%;
-
-    text-align: right;
-
-}
-
-
-/* Amount */
-
-th:nth-child(4),
-td:nth-child(4) {
-
-    width: 25%;
-
-    text-align: right;
-
-}
-
-
-/* =====================================================
-   PAYMENT
-   ===================================================== */
-
-.report-payment {
-
-    padding-top: 9px;
-
-    padding-bottom: 9px;
-
-    margin-top: 5px;
-
-    border-bottom:
-        1px dashed #000000;
-
-    font-size: 11px;
-
-}
-
-
-/* =====================================================
-   PRINT
-   ===================================================== */
-
-@media print {
-
-    html,
-    body {
-
-        width: 100%;
-
-        margin: 0;
-
-        padding: 0;
-
-        background: #ffffff;
-
-    }
-
-
-    .thermal-invoice {
-
-        width: 72mm;
-
-        margin: 0 auto;
-
-        padding: 4mm 2mm;
-
-    }
-
-}
-
-</style>
-
-</head>
-
-
-<body>
-
-
-<div class="thermal-invoice">
-
-${invoiceHTML}
-
-</div>
-
-
-</body>
-
-</html>
-
-    `);
-
-
-    printWindow.document.close();
-
-
-    /* =====================================================
-       WAIT FOR DOCUMENT LOAD
-       ===================================================== */
-
-    printWindow.onload =
-        function () {
-
-            setTimeout(
-                function () {
-
-                    printWindow.focus();
-
-                    printWindow.print();
-
-                },
-                500
-            );
-
-        };
-
-
-    /* =====================================================
-       CLOSE AFTER PRINT
-       ===================================================== */
-
-    printWindow.onafterprint =
-        function () {
-
-            setTimeout(
-                function () {
-
-                    printWindow.close();
-
-                },
-                300
-            );
-
-        };
-
-}
-
-</script>
-
 
 {% endblock %}
