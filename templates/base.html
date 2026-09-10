@@ -19,11 +19,8 @@
 
     <title>{{ title or 'Sawariya Confectionary' }}</title>
 
-    <style>
 
-        /* =========================================================
-           SIDEBAR LAYOUT
-           ========================================================= */
+    <style>
 
         * {
             box-sizing: border-box;
@@ -32,12 +29,13 @@
         body {
             margin: 0;
             min-height: 100vh;
+            padding-left: 250px;
         }
 
 
-        /* =========================================================
-           LEFT SIDEBAR
-           ========================================================= */
+        /* =====================================================
+           SIDEBAR
+           ===================================================== */
 
         .sawariya-sidebar {
             position: fixed;
@@ -60,9 +58,10 @@
             display: flex;
             flex-direction: column;
 
-            box-shadow: 4px 0 18px rgba(0,0,0,0.20);
-
             overflow-y: auto;
+
+            box-shadow:
+                4px 0 18px rgba(0,0,0,0.20);
 
             transform: translateX(0);
 
@@ -72,9 +71,9 @@
         }
 
 
-        /* =========================================================
-           BUSINESS NAME
-           ========================================================= */
+        /* =====================================================
+           SIDEBAR BUSINESS NAME
+           ===================================================== */
 
         .sawariya-business {
             min-height: 86px;
@@ -82,10 +81,14 @@
             display: flex;
             align-items: center;
 
-            padding: 18px 18px;
+            padding: 18px;
 
-            border-bottom: 1px solid rgba(255,255,255,0.12);
+            border-bottom:
+                1px solid rgba(255,255,255,0.12);
+
+            position: relative;
         }
+
 
         .sawariya-business-name {
             font-size: 23px;
@@ -93,10 +96,11 @@
 
             letter-spacing: 1px;
 
-            color: #ffffff;
+            color: #fff;
 
             white-space: nowrap;
         }
+
 
         .sawariya-business-subtitle {
             margin-top: 4px;
@@ -109,9 +113,9 @@
         }
 
 
-        /* =========================================================
+        /* =====================================================
            CLOSE BUTTON
-           ========================================================= */
+           ===================================================== */
 
         .sawariya-close {
             display: none;
@@ -127,24 +131,23 @@
             border: none;
             border-radius: 50%;
 
-            background: rgba(255,255,255,0.10);
+            background:
+                rgba(255,255,255,0.10);
 
             color: white;
 
             font-size: 26px;
-            line-height: 1;
 
             cursor: pointer;
+
+            align-items: center;
+            justify-content: center;
         }
 
-        .sawariya-close:hover {
-            background: rgba(255,255,255,0.18);
-        }
 
-
-        /* =========================================================
+        /* =====================================================
            MENU
-           ========================================================= */
+           ===================================================== */
 
         .sawariya-menu {
             padding: 18px 12px 20px;
@@ -166,7 +169,8 @@
 
             border-radius: 10px;
 
-            color: rgba(255,255,255,0.88);
+            color:
+                rgba(255,255,255,0.88);
 
             text-decoration: none;
 
@@ -181,9 +185,10 @@
 
 
         .sawariya-menu a:hover {
-            background: rgba(255,255,255,0.10);
+            background:
+                rgba(255,255,255,0.10);
 
-            color: #ffffff;
+            color: #fff;
 
             transform: translateX(3px);
         }
@@ -192,7 +197,7 @@
         .sawariya-menu a.active {
             background: #7b3f18;
 
-            color: #ffffff;
+            color: #fff;
 
             box-shadow:
                 0 4px 10px rgba(0,0,0,0.16);
@@ -210,62 +215,92 @@
         }
 
 
-        /* =========================================================
+        /* =====================================================
            LOGOUT
-           ========================================================= */
+           ===================================================== */
 
         .sawariya-logout {
             margin-top: 10px !important;
 
-            background: rgba(220, 70, 50, 0.10);
+            background:
+                rgba(220,70,50,0.10);
 
-            color: #ffdddd !important;
+            color:
+                #ffdddd !important;
         }
+
 
         .sawariya-logout:hover {
-            background: rgba(220, 70, 50, 0.22) !important;
+            background:
+                rgba(220,70,50,0.22) !important;
 
-            color: #ffffff !important;
+            color: #fff !important;
         }
 
 
-        /* =========================================================
-           MOBILE TOP BAR
-           ========================================================= */
+        /* =====================================================
+           CENTER HEADER
+           ===================================================== */
 
-        .sawariya-mobile-header {
-            display: none;
-
+        .sawariya-top-header {
             position: sticky;
 
             top: 0;
-            left: 0;
 
             width: 100%;
 
-            height: 58px;
+            height: 64px;
 
-            background: #24150d;
+            background: #fff;
 
-            z-index: 9000;
+            z-index: 8000;
+
+            display: flex;
 
             align-items: center;
 
-            padding: 0 12px;
+            justify-content: center;
+
+            border-bottom:
+                1px solid #e5e5e5;
 
             box-shadow:
-                0 2px 10px rgba(0,0,0,0.18);
+                0 2px 8px rgba(0,0,0,0.08);
         }
 
 
+        .sawariya-center-name {
+            font-size: 25px;
+
+            font-weight: 900;
+
+            letter-spacing: 1.5px;
+
+            color: #7b3f18;
+
+            white-space: nowrap;
+        }
+
+
+        /* =====================================================
+           MOBILE MENU BUTTON
+           ===================================================== */
+
         .sawariya-menu-button {
+            display: none;
+
+            position: absolute;
+
+            left: 10px;
+
             width: 44px;
             height: 44px;
 
             border: none;
+
             border-radius: 10px;
 
-            background: rgba(255,255,255,0.10);
+            background: #24150d;
 
             color: white;
 
@@ -273,19 +308,20 @@
 
             cursor: pointer;
 
-            display: flex;
             align-items: center;
+
             justify-content: center;
         }
+
 
         .sawariya-menu-button:active {
             transform: scale(0.95);
         }
 
 
-        /* =========================================================
+        /* =====================================================
            OVERLAY
-           ========================================================= */
+           ===================================================== */
 
         .sawariya-overlay {
             display: none;
@@ -294,28 +330,21 @@
 
             inset: 0;
 
-            background: rgba(0,0,0,0.48);
+            background:
+                rgba(0,0,0,0.48);
 
             z-index: 9998;
 
             opacity: 0;
 
-            transition: opacity 0.25s ease;
+            transition:
+                opacity 0.25s ease;
         }
 
 
-        /* =========================================================
-           MAIN CONTENT
-           ========================================================= */
-
-        body {
-            padding-left: 250px;
-        }
-
-
-        /* =========================================================
+        /* =====================================================
            MOBILE
-           ========================================================= */
+           ===================================================== */
 
         @media (max-width: 768px) {
 
@@ -327,30 +356,42 @@
             .sawariya-sidebar {
                 width: 280px;
 
-                transform: translateX(-100%);
+                transform:
+                    translateX(-100%);
 
                 box-shadow: none;
             }
 
 
             .sawariya-sidebar.open {
-                transform: translateX(0);
+                transform:
+                    translateX(0);
 
                 box-shadow:
-                    6px 0 25px rgba(0,0,0,0.30);
+                    6px 0 25px
+                    rgba(0,0,0,0.30);
             }
 
 
             .sawariya-close {
                 display: flex;
-
-                align-items: center;
-                justify-content: center;
             }
 
 
-            .sawariya-mobile-header {
+            .sawariya-top-header {
+                height: 58px;
+            }
+
+
+            .sawariya-menu-button {
                 display: flex;
+            }
+
+
+            .sawariya-center-name {
+                font-size: 21px;
+
+                letter-spacing: 1px;
             }
 
 
@@ -372,22 +413,12 @@
                 padding-right: 60px;
             }
 
-
-            .sawariya-business-name {
-                font-size: 22px;
-            }
-
-
-            .sawariya-menu {
-                padding-top: 16px;
-            }
-
         }
 
 
-        /* =========================================================
-           SMALL PHONES
-           ========================================================= */
+        /* =====================================================
+           SMALL MOBILE
+           ===================================================== */
 
         @media (max-width: 380px) {
 
@@ -395,14 +426,16 @@
                 width: 270px;
             }
 
+
+            .sawariya-center-name {
+                font-size: 19px;
+            }
+
+
             .sawariya-menu a {
                 min-height: 46px;
 
                 font-size: 14px;
-            }
-
-            .sawariya-business-name {
-                font-size: 21px;
             }
 
         }
@@ -415,11 +448,14 @@
 <body>
 
 
-<!-- =============================================================
-     MOBILE HEADER
-     ============================================================= -->
+<!-- =========================================================
+     TOP HEADER
+     ========================================================= -->
 
-<header class="sawariya-mobile-header">
+<header class="sawariya-top-header">
+
+
+    <!-- MOBILE HAMBURGER -->
 
     <button
         type="button"
@@ -432,19 +468,28 @@
 
     </button>
 
+
+    <!-- CENTER BUSINESS NAME -->
+
+    <div class="sawariya-center-name">
+        🍬 SAWARIYA
+    </div>
+
+
 </header>
 
 
-<!-- =============================================================
-     SIDEBAR
-     ============================================================= -->
+
+<!-- =========================================================
+     LEFT SIDEBAR
+     ========================================================= -->
 
 <aside
     class="sawariya-sidebar"
     id="sawariyaSidebar">
 
 
-    <!-- BUSINESS NAME -->
+    <!-- BUSINESS NAME INSIDE SIDEBAR -->
 
     <div class="sawariya-business">
 
@@ -476,61 +521,100 @@
     </div>
 
 
-    <!-- MENU -->
+
+    <!-- =====================================================
+         MENU
+         ===================================================== -->
 
     <nav class="sawariya-menu">
 
 
-        <a href="/dashboard" data-path="/dashboard">
+        <a
+            href="/dashboard"
+            data-path="/dashboard">
 
-            <span class="sawariya-menu-icon">🏠</span>
+            <span class="sawariya-menu-icon">
+                🏠
+            </span>
 
-            <span>Dashboard</span>
-
-        </a>
-
-
-        <a href="/billing" data-path="/billing">
-
-            <span class="sawariya-menu-icon">🧾</span>
-
-            <span>Billing</span>
+            <span>
+                Dashboard
+            </span>
 
         </a>
 
 
-        <a href="/products" data-path="/products">
+        <a
+            href="/billing"
+            data-path="/billing">
 
-            <span class="sawariya-menu-icon">📦</span>
+            <span class="sawariya-menu-icon">
+                🧾
+            </span>
 
-            <span>Products</span>
-
-        </a>
-
-
-        <a href="/stock" data-path="/stock">
-
-            <span class="sawariya-menu-icon">📊</span>
-
-            <span>Stock</span>
+            <span>
+                Billing
+            </span>
 
         </a>
 
 
-        <a href="/customers" data-path="/customers">
+        <a
+            href="/products"
+            data-path="/products">
 
-            <span class="sawariya-menu-icon">👥</span>
+            <span class="sawariya-menu-icon">
+                📦
+            </span>
 
-            <span>Customers</span>
+            <span>
+                Products
+            </span>
 
         </a>
 
 
-        <a href="/reports" data-path="/reports">
+        <a
+            href="/stock"
+            data-path="/stock">
 
-            <span class="sawariya-menu-icon">📈</span>
+            <span class="sawariya-menu-icon">
+                📊
+            </span>
 
-            <span>Reports</span>
+            <span>
+                Stock
+            </span>
+
+        </a>
+
+
+        <a
+            href="/customers"
+            data-path="/customers">
+
+            <span class="sawariya-menu-icon">
+                👥
+            </span>
+
+            <span>
+                Customers
+            </span>
+
+        </a>
+
+
+        <a
+            href="/reports"
+            data-path="/reports">
+
+            <span class="sawariya-menu-icon">
+                📈
+            </span>
+
+            <span>
+                Reports
+            </span>
 
         </a>
 
@@ -539,9 +623,13 @@
             href="/logout"
             class="sawariya-logout">
 
-            <span class="sawariya-menu-icon">🚪</span>
+            <span class="sawariya-menu-icon">
+                🚪
+            </span>
 
-            <span>Logout</span>
+            <span>
+                Logout
+            </span>
 
         </a>
 
@@ -551,9 +639,10 @@
 </aside>
 
 
-<!-- =============================================================
+
+<!-- =========================================================
      OVERLAY
-     ============================================================= -->
+     ========================================================= -->
 
 <div
     class="sawariya-overlay"
@@ -561,33 +650,47 @@
 </div>
 
 
-<!-- =============================================================
+
+<!-- =========================================================
      PAGE CONTENT
-     ============================================================= -->
+     ========================================================= -->
 
 {% block content %}{% endblock %}
 
 
-<!-- =============================================================
-     SIDEBAR JAVASCRIPT
-     ============================================================= -->
+
+<!-- =========================================================
+     JAVASCRIPT
+     ========================================================= -->
 
 <script>
 
 (function () {
 
     const sidebar =
-        document.getElementById("sawariyaSidebar");
+        document.getElementById(
+            "sawariyaSidebar"
+        );
 
     const overlay =
-        document.getElementById("sawariyaOverlay");
+        document.getElementById(
+            "sawariyaOverlay"
+        );
 
     const menuButton =
-        document.getElementById("sawariyaMenuButton");
+        document.getElementById(
+            "sawariyaMenuButton"
+        );
 
     const closeButton =
-        document.getElementById("sawariyaCloseButton");
+        document.getElementById(
+            "sawariyaCloseButton"
+        );
 
+
+    /* =====================================================
+       OPEN SIDEBAR
+       ===================================================== */
 
     function openSidebar() {
 
@@ -600,9 +703,14 @@
             "true"
         );
 
-        document.body.style.overflow = "hidden";
+        document.body.style.overflow =
+            "hidden";
     }
 
+
+    /* =====================================================
+       CLOSE SIDEBAR
+       ===================================================== */
 
     function closeSidebar() {
 
@@ -615,9 +723,14 @@
             "false"
         );
 
-        document.body.style.overflow = "";
+        document.body.style.overflow =
+            "";
     }
 
+
+    /* =====================================================
+       BUTTON EVENTS
+       ===================================================== */
 
     if (menuButton) {
 
@@ -649,10 +762,14 @@
     }
 
 
-    /* Close after selecting a page on mobile */
+    /* =====================================================
+       CLOSE AFTER MENU CLICK
+       ===================================================== */
 
     document
-        .querySelectorAll(".sawariya-menu a")
+        .querySelectorAll(
+            ".sawariya-menu a"
+        )
         .forEach(function (link) {
 
             link.addEventListener(
@@ -662,7 +779,9 @@
                     if (
                         window.innerWidth <= 768
                     ) {
+
                         closeSidebar();
+
                     }
 
                 }
@@ -671,13 +790,17 @@
         });
 
 
-    /* ESC key */
+    /* =====================================================
+       ESC KEY
+       ===================================================== */
 
     document.addEventListener(
         "keydown",
         function (event) {
 
-            if (event.key === "Escape") {
+            if (
+                event.key === "Escape"
+            ) {
 
                 closeSidebar();
 
@@ -687,12 +810,13 @@
     );
 
 
-    /* =========================================================
+    /* =====================================================
        ACTIVE MENU
-       ========================================================= */
+       ===================================================== */
 
     const currentPath =
         window.location.pathname;
+
 
     document
         .querySelectorAll(
@@ -701,24 +825,30 @@
         .forEach(function (link) {
 
             const path =
-                link.getAttribute("data-path");
+                link.getAttribute(
+                    "data-path"
+                );
 
 
             if (
                 currentPath === path ||
-                currentPath.startsWith(path + "/")
+                currentPath.startsWith(
+                    path + "/"
+                )
             ) {
 
-                link.classList.add("active");
+                link.classList.add(
+                    "active"
+                );
 
             }
 
         });
 
 
-    /* =========================================================
+    /* =====================================================
        SERVICE WORKER
-       ========================================================= */
+       ===================================================== */
 
     if ("serviceWorker" in navigator) {
 
@@ -727,15 +857,19 @@
             function () {
 
                 navigator.serviceWorker
-                    .register("/service-worker.js")
-                    .catch(function (error) {
+                    .register(
+                        "/service-worker.js"
+                    )
+                    .catch(
+                        function (error) {
 
-                        console.warn(
-                            "Service Worker registration failed:",
-                            error
-                        );
+                            console.warn(
+                                "Service Worker registration failed:",
+                                error
+                            );
 
-                    });
+                        }
+                    );
 
             }
         );
@@ -748,4 +882,5 @@
 
 
 </body>
+
 </html>
