@@ -1893,6 +1893,37 @@ def add_customer(
     )
 
 
+@app.get("/customers/{customer_id}/edit")
+def customer_edit(
+    customer_id: int,
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    if not request.session.get("user"):
+        return RedirectResponse(
+            "/login",
+            status_code=303
+        )
+
+    customer = db.query(Customer).filter(
+        Customer.id == customer_id
+    ).first()
+
+    if not customer:
+        return RedirectResponse(
+            "/customers?error=not_found",
+            status_code=303
+        )
+
+    return templates.TemplateResponse(
+        "customer-edit.html",
+        {
+            "request": request,
+            "customer": customer
+        }
+    )
+
+
 # =========================================================
 # STOCK PAGE
 # =========================================================
