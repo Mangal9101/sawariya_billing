@@ -2,1200 +2,317 @@
 
 {% block content %}
 
-<style>
+<main>
 
-/* =========================================================
-   CUSTOMERS PAGE
-   ========================================================= */
+<!-- =========================================================
+     PAGE HEADER
+     ========================================================= -->
 
-.customers-page {
-    width: 100%;
-    min-height: calc(100vh - 116px);
+<div class="top">
 
-    background: #f5f7fa;
+    <div>
 
-    padding: 20px 0 90px;
+        <h1>Customers</h1>
 
-    box-sizing: border-box;
-}
+        <p>Manage your customers and contact details.</p>
 
+    </div>
 
-/* =========================================================
-   PAGE HEADER
-   ========================================================= */
-
-.customers-header {
-    padding: 0 16px 16px;
-}
-
-.customers-header h1 {
-    margin: 0;
-
-    font-size: 28px;
-
-    color: #222;
-}
-
-.customers-header p {
-    margin: 5px 0 0;
-
-    color: #777;
-
-    font-size: 14px;
-}
-
-
-/* =========================================================
-   ADD CUSTOMER
-   ========================================================= */
-
-.customer-add-area {
-    padding: 0 16px 15px;
-}
-
-.add-customer-button {
-    width: 100%;
-
-    min-height: 52px;
-
-    border: 0;
-
-    border-radius: 11px;
-
-    background: #0759a8;
-
-    color: #fff;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 8px;
-
-    font-size: 16px;
-
-    font-weight: 700;
-
-    cursor: pointer;
-
-    box-shadow:
-        0 3px 10px rgba(7,89,168,.20);
-
-    transition:
-        transform .15s ease,
-        opacity .15s ease;
-}
-
-.add-customer-button:active {
-    transform: scale(.98);
-}
-
-.add-customer-icon {
-    font-size: 25px;
-
-    line-height: 1;
-}
-
-
-/* =========================================================
-   SEARCH / FILTER
-   ========================================================= */
-
-.customer-tools {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 9px;
-
-    padding: 0 16px 15px;
-
-    box-sizing: border-box;
-}
-
-
-/* =========================================================
-   SEARCH
-   ========================================================= */
-
-.search-box {
-
-    flex: 1;
-
-    min-width: 0;
-
-    height: 52px;
-
-    background: #fff;
-
-    border: 1px solid #dfe3e8;
-
-    border-radius: 11px;
-
-    display: flex;
-
-    align-items: center;
-
-    padding: 0 12px;
-
-    box-shadow:
-        0 1px 3px rgba(0,0,0,.04);
-
-    box-sizing: border-box;
-}
-
-.search-icon {
-
-    font-size: 27px;
-
-    color: #0759a8;
-
-    line-height: 1;
-
-    margin-right: 9px;
-
-    flex-shrink: 0;
-}
-
-.search-box input {
-
-    width: 100%;
-
-    min-width: 0;
-
-    border: 0;
-
-    outline: 0;
-
-    background: transparent;
-
-    font-size: 15px;
-
-    color: #333;
-}
-
-.search-box input::placeholder {
-    color: #747b84;
-}
-
-
-/* =========================================================
-   FILTER
-   ========================================================= */
-
-.filter-button {
-
-    width: 62px;
-
-    height: 52px;
-
-    border: 1px solid #dfe3e8;
-
-    border-radius: 11px;
-
-    background: #fff;
-
-    color: #0759a8;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    justify-content: center;
-
-    font-size: 10px;
-
-    flex-shrink: 0;
-
-    cursor: pointer;
-}
-
-.filter-icon {
-
-    font-size: 23px;
-
-    line-height: 20px;
-}
-
-
-/* =========================================================
-   CUSTOMER LIST
-   ========================================================= */
-
-.customer-list {
-
-    padding: 0 16px;
-
-    box-sizing: border-box;
-}
-
-
-/* =========================================================
-   CUSTOMER CARD
-   ========================================================= */
-
-.customer-row {
-
-    width: 100%;
-
-    min-height: 160px;
-
-    margin-bottom: 15px;
-
-    background: #fff;
-
-    border: 1px solid #dcdfe3;
-
-    border-radius: 15px;
-
-    overflow: hidden;
-
-    box-sizing: border-box;
-
-    box-shadow:
-        0 2px 7px rgba(0,0,0,.04);
-}
-
-
-/* =========================================================
-   CARD HEADER
-   ========================================================= */
-
-.customer-card-header {
-
-    min-height: 57px;
-
-    padding: 0 16px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    background: #f8f4f1;
-
-    border-bottom: 1px solid #e6e1de;
-
-    box-sizing: border-box;
-}
-
-
-/* =========================================================
-   LABEL
-   ========================================================= */
-
-.customer-card-label {
-
-    color: #625950;
-
-    font-size: 15px;
-
-    font-weight: 700;
-}
-
-
-/* =========================================================
-   CUSTOMER NAME
-   ========================================================= */
-
-.customer-name {
-
-    max-width: 65%;
-
-    font-size: 17px;
-
-    font-weight: 700;
-
-    color: #0759a8;
-
-    text-align: right;
-
-    white-space: nowrap;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-
-    cursor: pointer;
-
-    text-decoration: underline;
-
-    text-decoration-color: rgba(7,89,168,.35);
-
-    text-underline-offset: 3px;
-}
-
-.customer-name:active {
-
-    opacity: .55;
-
-}
-
-
-/* =========================================================
-   CUSTOMER DETAIL
-   ========================================================= */
-
-.customer-detail {
-
-    min-height: 51px;
-
-    padding: 0 16px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    border-bottom: 1px solid #eeeeee;
-
-    box-sizing: border-box;
-}
-
-.customer-detail:last-child {
-
-    border-bottom: none;
-
-}
-
-
-/* =========================================================
-   DETAIL LABEL
-   ========================================================= */
-
-.customer-detail-label {
-
-    color: #625950;
-
-    font-size: 14px;
-
-    font-weight: 700;
-}
-
-
-/* =========================================================
-   DETAIL VALUE
-   ========================================================= */
-
-.customer-detail-value {
-
-    color: #222;
-
-    font-size: 14px;
-
-    text-align: right;
-
-    max-width: 65%;
-
-    overflow-wrap: anywhere;
-}
-
-
-/* =========================================================
-   PHONE
-   ========================================================= */
-
-.customer-phone {
-
-    color: #0759a8;
-
-    text-decoration: none;
-
-    font-weight: 600;
-}
-
-
-/* =========================================================
-   ADDRESS
-   ========================================================= */
-
-.customer-address {
-
-    line-height: 20px;
-}
-
-
-/* =========================================================
-   EMPTY
-   ========================================================= */
-
-.empty-customers {
-
-    background: #fff;
-
-    border: 1px solid #e0e3e6;
-
-    border-radius: 14px;
-
-    padding: 50px 20px;
-
-    text-align: center;
-
-    color: #777;
-}
-
-.empty-icon {
-
-    font-size: 45px;
-
-    margin-bottom: 10px;
-}
-
-.empty-customers strong {
-
-    display: block;
-
-    font-size: 17px;
-
-    color: #333;
-
-    margin-bottom: 5px;
-}
-
-.empty-customers p {
-
-    margin: 0;
-
-    font-size: 13px;
-}
-
-
-/* =========================================================
-   NO SEARCH RESULT
-   ========================================================= */
-
-.no-results {
-
-    display: none;
-
-    background: #fff;
-
-    border: 1px solid #e0e3e6;
-
-    border-radius: 14px;
-
-    padding: 30px 15px;
-
-    text-align: center;
-
-    color: #777;
-
-    font-weight: 600;
-}
-
-
-/* =========================================================
-   ADD CUSTOMER MODAL
-   ========================================================= */
-
-.customer-modal {
-
-    position: fixed;
-
-    inset: 0;
-
-    background: rgba(0,0,0,.48);
-
-    display: none;
-
-    align-items: flex-end;
-
-    justify-content: center;
-
-    z-index: 10000;
-
-    padding: 0;
-}
-
-.customer-modal.show {
-
-    display: flex;
-
-}
-
-
-/* =========================================================
-   MODAL BOX
-   ========================================================= */
-
-.customer-modal-box {
-
-    width: 100%;
-
-    max-width: 600px;
-
-    max-height: 90vh;
-
-    overflow-y: auto;
-
-    background: #fff;
-
-    border-radius: 20px 20px 0 0;
-
-    padding: 18px 16px 25px;
-
-    box-sizing: border-box;
-
-    box-shadow:
-        0 -5px 25px rgba(0,0,0,.22);
-
-    animation:
-        customerSlideUp .22s ease;
-}
-
-@keyframes customerSlideUp {
-
-    from {
-        transform: translateY(100%);
-    }
-
-    to {
-        transform: translateY(0);
-    }
-
-}
-
-
-/* =========================================================
-   MODAL HANDLE
-   ========================================================= */
-
-.modal-handle {
-
-    width: 42px;
-
-    height: 4px;
-
-    border-radius: 5px;
-
-    background: #d4d7da;
-
-    margin: 0 auto 15px;
-}
-
-
-/* =========================================================
-   MODAL TITLE
-   ========================================================= */
-
-.modal-title {
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    margin-bottom: 16px;
-}
-
-.modal-title h2 {
-
-    margin: 0;
-
-    font-size: 20px;
-
-    color: #222;
-}
-
-
-/* =========================================================
-   CLOSE
-   ========================================================= */
-
-.modal-close {
-
-    width: 35px;
-
-    height: 35px;
-
-    border: 0;
-
-    border-radius: 50%;
-
-    background: #f1f2f3;
-
-    color: #555;
-
-    font-size: 21px;
-
-    cursor: pointer;
-}
-
-
-/* =========================================================
-   CUSTOMER FORM
-   ========================================================= */
-
-.customer-form input {
-
-    width: 100%;
-
-    height: 51px;
-
-    border: 1px solid #d8dce0;
-
-    border-radius: 9px;
-
-    padding: 0 13px;
-
-    margin-bottom: 11px;
-
-    outline: none;
-
-    font-size: 15px;
-
-    color: #333;
-
-    box-sizing: border-box;
-}
-
-.customer-form input:focus {
-
-    border-color: #0759a8;
-
-    box-shadow:
-        0 0 0 2px rgba(7,89,168,.08);
-}
-
-
-/* =========================================================
-   SAVE
-   ========================================================= */
-
-.save-customer {
-
-    width: 100%;
-
-    height: 51px;
-
-    border: 0;
-
-    border-radius: 9px;
-
-    background: #0759a8;
-
-    color: #fff;
-
-    font-size: 15px;
-
-    font-weight: 700;
-
-    cursor: pointer;
-}
-
-.save-customer:active {
-
-    transform: scale(.98);
-
-}
-
-
-/* =========================================================
-   DESKTOP
-   ========================================================= */
-
-@media (min-width: 701px) {
-
-    .customers-page {
-
-        max-width: 1000px;
-
-        margin: auto;
-
-        padding-left: 20px;
-
-        padding-right: 20px;
-
-    }
-
-
-    .customers-header {
-
-        padding-left: 0;
-
-        padding-right: 0;
-
-    }
-
-
-    .customer-add-area {
-
-        padding-left: 0;
-
-        padding-right: 0;
-
-    }
-
-
-    .customer-tools {
-
-        padding-left: 0;
-
-        padding-right: 0;
-
-    }
-
-
-    .customer-list {
-
-        padding-left: 0;
-
-        padding-right: 0;
-
-    }
-
-
-    .customer-modal {
-
-        align-items: center;
-
-    }
-
-
-    .customer-modal-box {
-
-        border-radius: 16px;
-
-        margin: 20px;
-
-    }
-
-}
-
-
-/* =========================================================
-   SMALL MOBILE
-   ========================================================= */
-
-@media (max-width: 380px) {
-
-    .customers-page {
-
-        padding-top: 15px;
-
-    }
-
-
-    .customers-header {
-
-        padding-left: 10px;
-
-        padding-right: 10px;
-
-    }
-
-
-    .customers-header h1 {
-
-        font-size: 25px;
-
-    }
-
-
-    .customer-add-area {
-
-        padding-left: 10px;
-
-        padding-right: 10px;
-
-    }
-
-
-    .customer-tools {
-
-        padding-left: 10px;
-
-        padding-right: 10px;
-
-        gap: 6px;
-
-    }
-
-
-    .customer-list {
-
-        padding-left: 10px;
-
-        padding-right: 10px;
-
-    }
-
-
-    .filter-button {
-
-        width: 52px;
-
-    }
-
-
-    .customer-card-header {
-
-        padding-left: 13px;
-
-        padding-right: 13px;
-
-    }
-
-
-    .customer-detail {
-
-        padding-left: 13px;
-
-        padding-right: 13px;
-
-    }
-
-
-    .customer-name {
-
-        max-width: 62%;
-
-        font-size: 16px;
-
-    }
-
-}
-
-</style>
+</div>
 
 
 <!-- =========================================================
-     CUSTOMERS PAGE
+     CUSTOMER MESSAGES
      ========================================================= -->
 
-<div class="customers-page">
+{% if request.query_params.get('error') == 'customer_exists' %}
+
+<div class="customer-message customer-error">
+    ⚠️ Customer already exists.
+</div>
+
+{% elif request.query_params.get('error') == 'empty' %}
+
+<div class="customer-message customer-error">
+    ⚠️ Customer name cannot be empty.
+</div>
+
+{% elif request.query_params.get('error') == 'server' %}
+
+<div class="customer-message customer-error">
+    ⚠️ Something went wrong. Please try again.
+</div>
+
+{% elif request.query_params.get('success') == 'added' %}
+
+<div class="customer-message customer-success">
+    ✅ Customer added successfully.
+</div>
+
+{% elif request.query_params.get('success') == 'updated' %}
+
+<div class="customer-message customer-success">
+    ✅ Customer updated successfully.
+</div>
+
+{% elif request.query_params.get('success') == 'deleted' %}
+
+<div class="customer-message customer-success">
+    ✅ Customer deleted successfully.
+</div>
+
+{% endif %}
 
 
-    <!-- =====================================================
-         HEADER
-         ===================================================== -->
+<!-- =========================================================
+     ADD CUSTOMER BUTTON
+     ========================================================= -->
 
-    <div class="customers-header">
+<section class="panel add-customer-header">
 
-        <h1>
-            Customers
-        </h1>
-
-        <p>
-            Manage your customers and contact details.
-        </p>
-
-    </div>
-
-
-    <!-- =====================================================
-         ADD CUSTOMER
-         ===================================================== -->
-
-    <div class="customer-add-area">
-
-        <button
-            type="button"
-            class="add-customer-button"
-            onclick="openCustomerModal()"
-        >
-
-            <span class="add-customer-icon">
-                ＋
-            </span>
-
-            ADD CUSTOMER
-
-        </button>
-
-    </div>
-
-
-    <!-- =====================================================
-         SEARCH + FILTER
-         ===================================================== -->
-
-    <div class="customer-tools">
-
-
-        <div class="search-box">
-
-            <span class="search-icon">
-                ⌕
-            </span>
-
-            <input
-                type="search"
-                id="customerSearch"
-                placeholder="Search Customer"
-                autocomplete="off"
-            >
-
-        </div>
-
-
-        <button
-            type="button"
-            class="filter-button"
-            onclick="filterCustomers()"
-        >
-
-            <span class="filter-icon">
-                ♢
-            </span>
-
-            <span>
-                Filters
-            </span>
-
-        </button>
-
-    </div>
-
-
-    <!-- =====================================================
-         CUSTOMER LIST
-         ===================================================== -->
-
-    <section
-        class="customer-list"
-        id="customerList"
+    <button
+        type="button"
+        class="btn add-customer-btn"
+        id="showAddCustomerBtn"
     >
+        ➕ Add Customer
+    </button>
 
-        {% for c in customers %}
-
-        <div
-            class="customer-row"
-            data-name="{{ c.name|lower }}"
-            data-phone="{{ c.phone or '' }}"
-        >
+</section>
 
 
-            <!-- =================================================
-                 CUSTOMER NAME
-                 ================================================= -->
+<!-- =========================================================
+     ADD CUSTOMER FORM
+     HIDDEN BY DEFAULT
+     ========================================================= -->
 
-            <div class="customer-card-header">
+<section
+    class="panel add-customer-panel"
+    id="addCustomerPanel"
+    style="display:none;"
+>
 
-                <span class="customer-card-label">
-                    Customer
-                </span>
+    <div class="add-customer-title">
 
+        <div>
 
-                <!--
-                    NAME CLICK
-                    Opens separate customer-edit.html
-                -->
-
-                <a
-                    href="/customers/{{ c.id }}/edit"
-                    class="customer-name"
-                    title="Edit Customer"
-                >
-                    {{ c.name }}
-                </a>
-
-            </div>
-
-
-            <!-- =================================================
-                 MOBILE
-                 ================================================= -->
-
-            <div class="customer-detail">
-
-                <span class="customer-detail-label">
-                    Mobile
-                </span>
-
-
-                <span class="customer-detail-value">
-
-                    {% if c.phone %}
-
-                        <a
-                            href="tel:{{ c.phone }}"
-                            class="customer-phone"
-                        >
-                            {{ c.phone }}
-                        </a>
-
-                    {% else %}
-
-                        —
-
-                    {% endif %}
-
-                </span>
-
-            </div>
-
-
-            <!-- =================================================
-                 ADDRESS
-                 ================================================= -->
-
-            <div class="customer-detail">
-
-                <span class="customer-detail-label">
-                    Address
-                </span>
-
-
-                <span
-                    class="customer-detail-value customer-address"
-                >
-
-                    {% if c.address %}
-
-                        {{ c.address }}
-
-                    {% else %}
-
-                        —
-
-                    {% endif %}
-
-                </span>
-
-            </div>
-
-
-        </div>
-
-        {% else %}
-
-
-        <!-- =================================================
-             EMPTY
-             ================================================= -->
-
-        <div class="empty-customers">
-
-            <div class="empty-icon">
-                👥
-            </div>
-
-            <strong>
-                No customers yet
-            </strong>
+            <h2>Add Customer</h2>
 
             <p>
-                Add your first customer to start keeping records.
+                Enter customer name and contact details.
             </p>
 
         </div>
 
-        {% endfor %}
-
-
-        <!-- =================================================
-             SEARCH RESULT
-             ================================================= -->
-
-        <div
-            class="no-results"
-            id="noCustomerResults"
+        <button
+            type="button"
+            class="cancel-customer-btn"
+            id="cancelAddCustomerBtn"
         >
-
-            🔍 No customer found.
-
-        </div>
-
-
-    </section>
-
-</div>
-
-
-<!-- =========================================================
-     ADD CUSTOMER MODAL
-     ========================================================= -->
-
-<div
-    class="customer-modal"
-    id="customerModal"
-    onclick="closeCustomerModal(event)"
->
-
-
-    <div
-        class="customer-modal-box"
-        onclick="event.stopPropagation();"
-    >
-
-
-        <div class="modal-handle"></div>
-
-
-        <div class="modal-title">
-
-            <h2>
-                Add Customer
-            </h2>
-
-
-            <button
-                type="button"
-                class="modal-close"
-                onclick="closeCustomerModal()"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <!-- =================================================
-             ADD CUSTOMER FORM
-             ================================================= -->
-
-        <form
-            method="post"
-            action="/customers/add"
-            class="customer-form"
-        >
-
-            <input
-                type="text"
-                name="name"
-                placeholder="Customer Name"
-                required
-                autocomplete="name"
-            >
-
-
-            <input
-                type="tel"
-                name="phone"
-                placeholder="Mobile Number"
-                autocomplete="tel"
-            >
-
-
-            <input
-                type="text"
-                name="address"
-                placeholder="Address"
-                autocomplete="street-address"
-            >
-
-
-            <button
-                type="submit"
-                class="save-customer"
-            >
-                Save Customer
-            </button>
-
-        </form>
+            ✕ Cancel
+        </button>
 
     </div>
 
-</div>
+
+    <form
+        class="formgrid"
+        method="post"
+        action="/customers/add"
+    >
+
+        <!-- CUSTOMER NAME -->
+
+        <input
+            name="name"
+            type="text"
+            placeholder="Customer name"
+            required
+            autocomplete="name"
+        >
+
+
+        <!-- MOBILE -->
+
+        <input
+            name="phone"
+            type="tel"
+            placeholder="Mobile number"
+            autocomplete="tel"
+        >
+
+
+        <!-- ADDRESS -->
+
+        <input
+            name="address"
+            type="text"
+            placeholder="Address"
+            autocomplete="street-address"
+        >
+
+
+        <!-- SAVE -->
+
+        <button
+            type="submit"
+            class="btn save-customer-btn"
+        >
+            ✅ Save Customer
+        </button>
+
+    </form>
+
+</section>
+
+
+<!-- =========================================================
+     CUSTOMER LIST
+     ========================================================= -->
+
+<section class="panel">
+
+
+    <!-- SEARCH -->
+
+    <input
+        id="customerSearch"
+        class="search"
+        type="search"
+        placeholder="🔍 Type to search customer..."
+        autocomplete="off"
+    >
+
+
+    <!-- =====================================================
+         CUSTOMER TABLE
+         ===================================================== -->
+
+    <table class="customer-table">
+
+        <thead>
+
+            <tr>
+
+                <th>Name</th>
+
+                <th>Mobile</th>
+
+                <th>Address</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+        {% for c in customers %}
+
+        <tr
+            class="customerrow"
+            data-customer-name="{{ (c.name or '')|lower }}"
+            data-customer-phone="{{ (c.phone or '')|lower }}"
+            data-customer-address="{{ (c.address or '')|lower }}"
+        >
+
+            <!-- NAME -->
+
+            <td>
+
+                <a
+                    class="customer-link"
+                    href="/customers/{{ c.id }}/edit"
+                >
+                    {{ c.name }}
+                </a>
+
+            </td>
+
+
+            <!-- MOBILE -->
+
+            <td>
+
+                {% if c.phone %}
+
+                    <a
+                        class="customer-phone"
+                        href="tel:{{ c.phone }}"
+                    >
+                        {{ c.phone }}
+                    </a>
+
+                {% else %}
+
+                    —
+
+                {% endif %}
+
+            </td>
+
+
+            <!-- ADDRESS -->
+
+            <td>
+
+                {% if c.address %}
+
+                    {{ c.address }}
+
+                {% else %}
+
+                    —
+
+                {% endif %}
+
+            </td>
+
+        </tr>
+
+        {% else %}
+
+        <tr id="emptyCustomers">
+
+            <td
+                colspan="3"
+                style="
+                    text-align:center;
+                    padding:20px;
+                "
+            >
+                No customers added yet.
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+    <!-- =====================================================
+         NO SEARCH RESULT
+         ===================================================== -->
+
+    <p
+        id="noCustomerResults"
+        style="
+            display:none;
+            text-align:center;
+            padding:15px;
+            font-weight:600;
+        "
+    >
+        No customer found.
+    </p>
+
+
+</section>
+
+</main>
 
 
 <!-- =========================================================
@@ -1204,95 +321,128 @@
 
 <script>
 
-
-/* =========================================================
-   OPEN ADD CUSTOMER MODAL
-   ========================================================= */
-
-function openCustomerModal() {
-
-    const modal =
-        document.getElementById(
-            "customerModal"
-        );
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
 
-    if (!modal) {
-        return;
-    }
+        /* =================================================
+           ADD CUSTOMER OPEN / CLOSE
+           ================================================= */
 
-
-    modal.classList.add("show");
-
-    document.body.style.overflow =
-        "hidden";
-
-
-    setTimeout(function() {
-
-        const input =
-            modal.querySelector(
-                'input[name="name"]'
+        const showAddCustomerBtn =
+            document.getElementById(
+                "showAddCustomerBtn"
             );
 
 
-        if (input) {
+        const cancelAddCustomerBtn =
+            document.getElementById(
+                "cancelAddCustomerBtn"
+            );
 
-            input.focus();
+
+        const addCustomerPanel =
+            document.getElementById(
+                "addCustomerPanel"
+            );
+
+
+        /* =================================================
+           OPEN ADD CUSTOMER
+           ================================================= */
+
+        if (
+            showAddCustomerBtn &&
+            addCustomerPanel
+        ) {
+
+            showAddCustomerBtn.addEventListener(
+                "click",
+                function () {
+
+                    addCustomerPanel.style.display =
+                        "block";
+
+
+                    const addHeader =
+                        showAddCustomerBtn.closest(
+                            ".add-customer-header"
+                        );
+
+
+                    if (addHeader) {
+
+                        addHeader.style.display =
+                            "none";
+
+                    }
+
+
+                    const firstInput =
+                        addCustomerPanel.querySelector(
+                            'input[name="name"]'
+                        );
+
+
+                    if (firstInput) {
+
+                        setTimeout(
+                            function () {
+
+                                firstInput.focus();
+
+                            },
+                            100
+                        );
+
+                    }
+
+                }
+            );
 
         }
 
-    }, 150);
 
-}
+        /* =================================================
+           CANCEL ADD CUSTOMER
+           ================================================= */
 
+        if (
+            cancelAddCustomerBtn &&
+            addCustomerPanel
+        ) {
 
-/* =========================================================
-   CLOSE ADD CUSTOMER MODAL
-   ========================================================= */
+            cancelAddCustomerBtn.addEventListener(
+                "click",
+                function () {
 
-function closeCustomerModal(event) {
-
-    const modal =
-        document.getElementById(
-            "customerModal"
-        );
-
-
-    if (!modal) {
-        return;
-    }
+                    addCustomerPanel.style.display =
+                        "none";
 
 
-    /*
-     * Background click only
-     */
-
-    if (
-        event &&
-        event.target !== modal
-    ) {
-
-        return;
-
-    }
+                    const addHeader =
+                        document.querySelector(
+                            ".add-customer-header"
+                        );
 
 
-    modal.classList.remove("show");
+                    if (addHeader) {
 
-    document.body.style.overflow = "";
+                        addHeader.style.display =
+                            "block";
 
-}
+                    }
+
+                }
+            );
+
+        }
 
 
-/* =========================================================
-   CUSTOMER SEARCH
-   ========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function() {
-
+        /* =================================================
+           CUSTOMER SEARCH
+           ================================================= */
 
         const searchInput =
             document.getElementById(
@@ -1302,7 +452,7 @@ document.addEventListener(
 
         const customerRows =
             document.querySelectorAll(
-                ".customer-row"
+                "table.customer-table tbody tr.customerrow"
             );
 
 
@@ -1313,56 +463,72 @@ document.addEventListener(
 
 
         if (!searchInput) {
+
             return;
+
         }
 
 
-        function searchCustomers() {
+        function filterCustomers() {
 
 
-            const value =
+            const query =
                 searchInput.value
-                    .trim()
-                    .toLowerCase();
+                    .toLowerCase()
+                    .trim();
 
 
             let visibleCount = 0;
 
 
             customerRows.forEach(
-                function(row) {
+                function (row) {
 
 
-                    const name =
+                    const customerName =
                         (
-                            row.dataset.name ||
+                            row.dataset.customerName ||
                             ""
-                        ).toLowerCase();
+                        )
+                        .toLowerCase();
 
 
-                    const phone =
+                    const customerPhone =
                         (
-                            row.dataset.phone ||
+                            row.dataset.customerPhone ||
                             ""
-                        ).toLowerCase();
+                        )
+                        .toLowerCase();
+
+
+                    const customerAddress =
+                        (
+                            row.dataset.customerAddress ||
+                            ""
+                        )
+                        .toLowerCase();
 
 
                     const matches =
-                        name.includes(value) ||
-                        phone.includes(value);
+                        customerName.includes(query) ||
+                        customerPhone.includes(query) ||
+                        customerAddress.includes(query);
 
 
                     if (matches) {
 
-                        row.style.display =
-                            "";
+                        row.classList.remove(
+                            "search-hidden"
+                        );
 
                         visibleCount++;
 
-                    } else {
+                    }
+                    else {
 
-                        row.style.display =
-                            "none";
+                        row.classList.add(
+                            "search-hidden"
+                        );
 
                     }
 
@@ -1371,7 +537,7 @@ document.addEventListener(
 
 
             if (
-                value !== "" &&
+                query !== "" &&
                 visibleCount === 0
             ) {
 
@@ -1382,7 +548,8 @@ document.addEventListener(
 
                 }
 
-            } else {
+            }
+            else {
 
                 if (noResults) {
 
@@ -1398,95 +565,596 @@ document.addEventListener(
 
         searchInput.addEventListener(
             "input",
-            searchCustomers
+            filterCustomers
         );
 
 
         searchInput.addEventListener(
             "search",
-            searchCustomers
+            filterCustomers
         );
-
-    }
-);
-
-
-/* =========================================================
-   FILTER / SORT
-   ========================================================= */
-
-function filterCustomers() {
-
-    const list =
-        document.getElementById(
-            "customerList"
-        );
-
-
-    if (!list) {
-        return;
-    }
-
-
-    const rows =
-        Array.from(
-            list.querySelectorAll(
-                ".customer-row"
-            )
-        );
-
-
-    rows.sort(
-        function(a, b) {
-
-
-            const nameA =
-                a.dataset.name || "";
-
-
-            const nameB =
-                b.dataset.name || "";
-
-
-            return nameA.localeCompare(
-                nameB
-            );
-
-        }
-    );
-
-
-    rows.forEach(
-        function(row) {
-
-            list.appendChild(row);
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   ESC CLOSE
-   ========================================================= */
-
-document.addEventListener(
-    "keydown",
-    function(event) {
-
-        if (
-            event.key === "Escape"
-        ) {
-
-            closeCustomerModal();
-
-        }
 
     }
 );
 
 </script>
+
+
+<!-- =========================================================
+     CUSTOMER PAGE CSS
+     SAME STYLE AS PRODUCT PAGE
+     ========================================================= -->
+
+<style>
+
+
+/* =========================================================
+   ADD CUSTOMER HEADER
+   ========================================================= */
+
+.add-customer-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-start;
+
+    margin-bottom: 15px;
+
+}
+
+
+/* =========================================================
+   ADD CUSTOMER BUTTON
+   ========================================================= */
+
+.add-customer-btn {
+
+    min-height: 46px;
+
+    padding: 11px 20px;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+}
+
+
+/* =========================================================
+   ADD CUSTOMER PANEL
+   ========================================================= */
+
+.add-customer-panel {
+
+    margin-bottom: 20px;
+
+    animation:
+        addCustomerOpen 0.2s ease;
+
+}
+
+
+@keyframes addCustomerOpen {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(-8px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0);
+
+    }
+
+}
+
+
+/* =========================================================
+   ADD CUSTOMER TITLE
+   ========================================================= */
+
+.add-customer-title {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 18px;
+
+}
+
+
+.add-customer-title h2 {
+
+    margin: 0 0 4px;
+
+    font-size: 20px;
+
+}
+
+
+.add-customer-title p {
+
+    margin: 0;
+
+    opacity: 0.7;
+
+    font-size: 14px;
+
+}
+
+
+/* =========================================================
+   CANCEL BUTTON
+   ========================================================= */
+
+.cancel-customer-btn {
+
+    min-height: 42px;
+
+    padding: 9px 15px;
+
+    border: 1px solid #dddddd;
+
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    color: #555555;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+}
+
+
+.cancel-customer-btn:hover {
+
+    background: #f5f5f5;
+
+}
+
+
+/* =========================================================
+   SAVE CUSTOMER
+   ========================================================= */
+
+.save-customer-btn {
+
+    min-height: 46px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+}
+
+
+/* =========================================================
+   SEARCH BAR
+   ========================================================= */
+
+#customerSearch {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    margin-bottom: 15px;
+
+}
+
+
+/* =========================================================
+   SEARCH HIDE
+   ========================================================= */
+
+table.customer-table
+tbody
+tr.customerrow.search-hidden {
+
+    display: none !important;
+
+}
+
+
+/* =========================================================
+   CUSTOMER MESSAGES
+   ========================================================= */
+
+.customer-message {
+
+    width: 100%;
+
+    padding: 12px 15px;
+
+    margin: 12px 0 18px;
+
+    border-radius: 10px;
+
+    font-weight: 600;
+
+    box-sizing: border-box;
+
+    text-align: center;
+
+}
+
+
+.customer-error {
+
+    background: #fff0f0;
+
+    border: 1px solid #f3b8b8;
+
+    color: #b42318;
+
+}
+
+
+.customer-success {
+
+    background: #effaf3;
+
+    border: 1px solid #b7e3c5;
+
+    color: #167a3d;
+
+}
+
+
+/* =========================================================
+   CUSTOMER LINK
+   ========================================================= */
+
+.customer-link {
+
+    font-weight: 700;
+
+    text-decoration: none;
+
+}
+
+
+.customer-link:hover {
+
+    text-decoration: underline;
+
+}
+
+
+/* =========================================================
+   CUSTOMER PHONE
+   ========================================================= */
+
+.customer-phone {
+
+    color: inherit;
+
+    text-decoration: none;
+
+}
+
+
+.customer-phone:hover {
+
+    text-decoration: underline;
+
+}
+
+
+/* =========================================================
+   MOBILE CUSTOMER CARDS
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+
+    .add-customer-header {
+
+        width: 100%;
+
+    }
+
+
+    .add-customer-btn {
+
+        width: 100%;
+
+        min-height: 50px;
+
+        font-size: 16px;
+
+    }
+
+
+    .add-customer-title {
+
+        align-items: stretch;
+
+        flex-direction: column;
+
+    }
+
+
+    .cancel-customer-btn {
+
+        width: 100%;
+
+        min-height: 46px;
+
+    }
+
+
+    .save-customer-btn {
+
+        width: 100%;
+
+        min-height: 50px;
+
+        font-size: 16px;
+
+    }
+
+
+    /* =============================================
+       TABLE → CARD
+       ============================================= */
+
+    table.customer-table {
+
+        display: block !important;
+
+        width: 100% !important;
+
+        max-width: 100% !important;
+
+        min-width: 0 !important;
+
+        background: transparent !important;
+
+        border: none !important;
+
+    }
+
+
+    table.customer-table thead {
+
+        display: none !important;
+
+    }
+
+
+    table.customer-table tbody {
+
+        display: block !important;
+
+        width: 100% !important;
+
+    }
+
+
+    table.customer-table
+    tbody
+    tr.customerrow {
+
+        display: block !important;
+
+        width: 100% !important;
+
+        box-sizing: border-box !important;
+
+        margin-bottom: 16px !important;
+
+        background: #ffffff !important;
+
+        border: 1px solid #dddddd !important;
+
+        border-radius: 12px !important;
+
+        overflow: hidden !important;
+
+    }
+
+
+    table.customer-table
+    tbody
+    tr.customerrow.search-hidden {
+
+        display: none !important;
+
+    }
+
+
+    table.customer-table
+    tbody
+    tr.customerrow
+    td {
+
+        display: flex !important;
+
+        width: 100% !important;
+
+        box-sizing: border-box !important;
+
+        align-items: center !important;
+
+        justify-content: space-between !important;
+
+        padding: 12px 15px !important;
+
+        min-height: 50px !important;
+
+        border: none !important;
+
+        border-bottom:
+            1px solid #eeeeee !important;
+
+        white-space: normal !important;
+
+        overflow: visible !important;
+
+        text-overflow: unset !important;
+
+        text-align: right !important;
+
+        background: #ffffff !important;
+
+    }
+
+
+    table.customer-table
+    tbody
+    tr.customerrow
+    td:last-child {
+
+        border-bottom: none !important;
+
+    }
+
+
+    /* =============================================
+       CUSTOMER NAME
+       ============================================= */
+
+    table.customer-table
+    tbody
+    tr.customerrow
+    td:first-child {
+
+        display: block !important;
+
+        padding: 15px !important;
+
+        background: #f8f4f1 !important;
+
+        text-align: left !important;
+
+        border-bottom:
+            1px solid #e5e5e5 !important;
+
+    }
+
+
+    table.customer-table
+    tbody
+    tr.customerrow
+    td:first-child::before {
+
+        display: none !important;
+
+    }
+
+
+    /* =============================================
+       CUSTOMER LINK
+       ============================================= */
+
+    table.customer-table
+    .customer-link {
+
+        display: block !important;
+
+        width: 100% !important;
+
+        font-size: 17px !important;
+
+        font-weight: 700 !important;
+
+        white-space: normal !important;
+
+        overflow: visible !important;
+
+        text-overflow: unset !important;
+
+        overflow-wrap: anywhere !important;
+
+        word-break: break-word !important;
+
+    }
+
+
+    /* =============================================
+       LABELS
+       ============================================= */
+
+    table.customer-table
+    tbody
+    tr.customerrow
+    td:nth-child(2)::before {
+
+        content: "Mobile";
+
+    }
+
+
+    table.customer-table
+    tbody
+    tr.customerrow
+    td:nth-child(3)::before {
+
+        content: "Address";
+
+    }
+
+
+    table.customer-table
+    tbody
+    tr.customerrow
+    td:not(:first-child)::before {
+
+        display: block !important;
+
+        font-weight: 700 !important;
+
+        color: #5d5149 !important;
+
+        margin-right: 15px !important;
+
+        flex-shrink: 0 !important;
+
+        text-align: left !important;
+
+    }
+
+
+}
+
+
+/* =========================================================
+   DESKTOP
+   ========================================================= */
+
+@media (min-width: 601px) {
+
+    table.customer-table
+    tbody
+    tr.customerrow.search-hidden {
+
+        display: none !important;
+
+    }
+
+}
+
+</style>
 
 
 {% endblock %}
