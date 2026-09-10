@@ -2,12 +2,13 @@
 <html lang="en">
 
 <head>
+
     <meta charset="utf-8">
 
     <meta name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1">
 
-    <meta name="theme-color" content="#7b3f18">
+    <meta name="theme-color" content="#24150d">
 
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -22,121 +23,248 @@
 
     <style>
 
+        /* =========================================================
+           GLOBAL
+           ========================================================= */
+
         * {
             box-sizing: border-box;
+        }
+
+        html {
+            margin: 0;
+            padding: 0;
         }
 
         body {
             margin: 0;
             min-height: 100vh;
-            padding-left: 250px;
+            padding-left: 270px;
+
+            background: #f7f7f8;
         }
 
 
-        /* =====================================================
-           SIDEBAR
-           ===================================================== */
+        /* =========================================================
+           PREMIUM SIDEBAR
+           ========================================================= */
 
-        .sawariya-sidebar {
+        .sw-sidebar {
+
             position: fixed;
-            top: 0;
-            left: 0;
 
-            width: 250px;
-            height: 100vh;
+            top: 14px;
+            left: 14px;
 
-            background: linear-gradient(
-                180deg,
-                #24150d 0%,
-                #4b2d1d 100%
-            );
+            width: 242px;
+            height: calc(100vh - 28px);
 
-            color: white;
+            padding: 12px;
+
+            border-radius: 22px;
+
+            background:
+                linear-gradient(
+                    160deg,
+                    #24150d 0%,
+                    #321b10 48%,
+                    #4b2d1d 100%
+                );
+
+            color: #fff;
 
             z-index: 9999;
 
             display: flex;
             flex-direction: column;
 
-            overflow-y: auto;
-
             box-shadow:
-                4px 0 18px rgba(0,0,0,0.20);
+                0 18px 45px rgba(36,21,13,0.24),
+                inset 0 1px 0 rgba(255,255,255,0.08);
+
+            overflow: hidden;
 
             transform: translateX(0);
 
             transition:
-                transform 0.28s ease,
-                box-shadow 0.28s ease;
+                transform .3s cubic-bezier(.4,0,.2,1),
+                box-shadow .3s ease;
         }
 
 
-        /* =====================================================
-           SIDEBAR BUSINESS NAME
-           ===================================================== */
+        /* =========================================================
+           DECORATIVE GLOW
+           ========================================================= */
 
-        .sawariya-business {
-            min-height: 86px;
+        .sw-sidebar::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 180px;
+            height: 180px;
+
+            top: -90px;
+            right: -70px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(198,116,48,0.18);
+
+            filter: blur(2px);
+
+            pointer-events: none;
+        }
+
+
+        .sw-sidebar::after {
+
+            content: "";
+
+            position: absolute;
+
+            width: 140px;
+            height: 140px;
+
+            bottom: -80px;
+            left: -70px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(255,190,100,0.07);
+
+            pointer-events: none;
+        }
+
+
+        /* =========================================================
+           BRAND AREA
+           ========================================================= */
+
+        .sw-brand {
+
+            position: relative;
+
+            min-height: 92px;
+
+            padding: 13px 12px;
+
+            border-radius: 16px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(255,255,255,0.10),
+                    rgba(255,255,255,0.035)
+                );
+
+            border:
+                1px solid rgba(255,255,255,0.10);
+
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.07);
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 11px;
+        }
+
+
+        .sw-brand-icon {
+
+            width: 45px;
+            height: 45px;
+
+            flex: 0 0 45px;
+
+            border-radius: 13px;
 
             display: flex;
             align-items: center;
+            justify-content: center;
 
-            padding: 18px;
+            background:
+                linear-gradient(
+                    145deg,
+                    #a65d27,
+                    #7b3f18
+                );
 
-            border-bottom:
-                1px solid rgba(255,255,255,0.12);
+            font-size: 23px;
 
-            position: relative;
+            box-shadow:
+                0 7px 16px rgba(0,0,0,0.20);
         }
 
 
-        .sawariya-business-name {
-            font-size: 23px;
+        .sw-brand-text {
+
+            min-width: 0;
+        }
+
+
+        .sw-brand-name {
+
+            font-size: 19px;
+
+            line-height: 1.1;
+
             font-weight: 900;
 
             letter-spacing: 1px;
 
             color: #fff;
-
-            white-space: nowrap;
         }
 
 
-        .sawariya-business-subtitle {
-            margin-top: 4px;
+        .sw-brand-subtitle {
 
-            font-size: 11px;
+            margin-top: 5px;
 
-            color: rgba(255,255,255,0.65);
+            font-size: 9px;
 
-            letter-spacing: 0.7px;
+            line-height: 1;
+
+            letter-spacing: 1.2px;
+
+            text-transform: uppercase;
+
+            color:
+                rgba(255,255,255,0.55);
         }
 
 
-        /* =====================================================
-           CLOSE BUTTON
-           ===================================================== */
+        /* =========================================================
+           MOBILE CLOSE
+           ========================================================= */
 
-        .sawariya-close {
+        .sw-close {
+
             display: none;
 
             position: absolute;
 
-            top: 17px;
-            right: 14px;
+            top: 10px;
+            right: 10px;
 
-            width: 36px;
-            height: 36px;
+            width: 30px;
+            height: 30px;
 
-            border: none;
-            border-radius: 50%;
+            border: 0;
+
+            border-radius: 9px;
 
             background:
-                rgba(255,255,255,0.10);
+                rgba(255,255,255,0.08);
 
-            color: white;
+            color: rgba(255,255,255,0.8);
 
-            font-size: 26px;
+            font-size: 21px;
 
             cursor: pointer;
 
@@ -145,113 +273,258 @@
         }
 
 
-        /* =====================================================
-           MENU
-           ===================================================== */
+        /* =========================================================
+           MENU LABEL
+           ========================================================= */
 
-        .sawariya-menu {
-            padding: 18px 12px 20px;
+        .sw-menu-label {
 
-            display: flex;
-            flex-direction: column;
+            padding:
 
-            gap: 6px;
+                22px 10px
+                9px;
+
+            font-size: 9px;
+
+            font-weight: 800;
+
+            letter-spacing: 1.5px;
+
+            text-transform: uppercase;
+
+            color:
+                rgba(255,255,255,0.38);
         }
 
 
-        .sawariya-menu a {
+        /* =========================================================
+           MENU
+           ========================================================= */
+
+        .sw-menu {
+
+            position: relative;
+
+            flex: 1;
+
+            overflow-y: auto;
+
+            padding: 0 1px 8px;
+
+            scrollbar-width: thin;
+
+            scrollbar-color:
+                rgba(255,255,255,.15)
+                transparent;
+        }
+
+
+        .sw-menu::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sw-menu::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sw-menu::-webkit-scrollbar-thumb {
+            background:
+                rgba(255,255,255,0.15);
+
+            border-radius: 20px;
+        }
+
+
+        /* =========================================================
+           MENU ITEM
+           ========================================================= */
+
+        .sw-menu a {
+
+            position: relative;
+
+            min-height: 47px;
+
+            margin: 4px 0;
+
+            padding: 0 12px;
+
+            border-radius: 13px;
+
             display: flex;
+
             align-items: center;
 
-            min-height: 48px;
-
-            padding: 0 15px;
-
-            border-radius: 10px;
+            gap: 11px;
 
             color:
-                rgba(255,255,255,0.88);
+                rgba(255,255,255,0.70);
 
             text-decoration: none;
 
-            font-size: 15px;
-            font-weight: 600;
+            font-size: 13px;
+
+            font-weight: 650;
+
+            letter-spacing: .15px;
 
             transition:
-                background 0.18s ease,
-                color 0.18s ease,
-                transform 0.18s ease;
+                background .2s ease,
+                color .2s ease,
+                transform .2s ease;
         }
 
 
-        .sawariya-menu a:hover {
+        .sw-menu a:hover {
+
+            color: #fff;
+
+            background:
+                rgba(255,255,255,0.075);
+
+            transform:
+                translateX(2px);
+        }
+
+
+        /* =========================================================
+           ICON BOX
+           ========================================================= */
+
+        .sw-icon {
+
+            width: 34px;
+            height: 34px;
+
+            flex: 0 0 34px;
+
+            border-radius: 10px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            background:
+                rgba(255,255,255,0.055);
+
+            font-size: 16px;
+
+            transition:
+                background .2s ease,
+                transform .2s ease;
+        }
+
+
+        .sw-menu a:hover .sw-icon {
+
             background:
                 rgba(255,255,255,0.10);
 
-            color: #fff;
-
-            transform: translateX(3px);
+            transform:
+                scale(1.04);
         }
 
 
-        .sawariya-menu a.active {
-            background: #7b3f18;
+        /* =========================================================
+           ACTIVE ITEM
+           ========================================================= */
+
+        .sw-menu a.active {
 
             color: #fff;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #8e4b1e,
+                    #6f3515
+                );
 
             box-shadow:
-                0 4px 10px rgba(0,0,0,0.16);
+                0 8px 18px
+                rgba(123,63,24,0.28),
+                inset 0 1px 0
+                rgba(255,255,255,0.10);
         }
 
 
-        .sawariya-menu-icon {
-            width: 30px;
-
-            margin-right: 8px;
-
-            font-size: 19px;
-
-            text-align: center;
-        }
-
-
-        /* =====================================================
-           LOGOUT
-           ===================================================== */
-
-        .sawariya-logout {
-            margin-top: 10px !important;
+        .sw-menu a.active .sw-icon {
 
             background:
-                rgba(220,70,50,0.10);
+                rgba(255,255,255,0.13);
+        }
+
+
+        .sw-menu a.active::before {
+
+            content: "";
+
+            position: absolute;
+
+            left: -1px;
+
+            top: 9px;
+            bottom: 9px;
+
+            width: 3px;
+
+            border-radius: 0 4px 4px 0;
+
+            background: #f3c58b;
+        }
+
+
+        /* =========================================================
+           DIVIDER
+           ========================================================= */
+
+        .sw-divider {
+
+            height: 1px;
+
+            margin: 10px 7px;
+
+            background:
+                rgba(255,255,255,0.08);
+        }
+
+
+        /* =========================================================
+           LOGOUT
+           ========================================================= */
+
+        .sw-logout {
+
+            margin-top: 2px !important;
 
             color:
-                #ffdddd !important;
+                rgba(255,220,215,0.75) !important;
         }
 
 
-        .sawariya-logout:hover {
+        .sw-logout:hover {
+
             background:
-                rgba(220,70,50,0.22) !important;
+                rgba(210,65,50,0.13) !important;
 
             color: #fff !important;
         }
 
 
-        /* =====================================================
-           CENTER HEADER
-           ===================================================== */
+        /* =========================================================
+           TOP HEADER
+           ========================================================= */
 
-        .sawariya-top-header {
+        .sw-topbar {
+
             position: sticky;
 
             top: 0;
 
+            height: 68px;
+
             width: 100%;
-
-            height: 64px;
-
-            background: #fff;
 
             z-index: 8000;
 
@@ -261,90 +534,127 @@
 
             justify-content: center;
 
-            border-bottom:
-                1px solid #e5e5e5;
+            background:
+                rgba(255,255,255,0.92);
 
-            box-shadow:
-                0 2px 8px rgba(0,0,0,0.08);
+            backdrop-filter:
+                blur(12px);
+
+            -webkit-backdrop-filter:
+                blur(12px);
+
+            border-bottom:
+                1px solid #ececef;
         }
 
 
-        .sawariya-center-name {
-            font-size: 25px;
+        /* =========================================================
+           CENTER BRAND
+           ========================================================= */
 
-            font-weight: 900;
+        .sw-center-brand {
 
-            letter-spacing: 1.5px;
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 8px;
 
             color: #7b3f18;
 
-            white-space: nowrap;
+            font-size: 22px;
+
+            font-weight: 950;
+
+            letter-spacing: 1.7px;
         }
 
 
-        /* =====================================================
-           MOBILE MENU BUTTON
-           ===================================================== */
+        .sw-center-brand span {
 
-        .sawariya-menu-button {
+            font-size: 21px;
+        }
+
+
+        /* =========================================================
+           MOBILE MENU BUTTON
+           ========================================================= */
+
+        .sw-menu-button {
+
             display: none;
 
             position: absolute;
 
             left: 10px;
 
-            width: 44px;
-            height: 44px;
+            width: 42px;
+            height: 42px;
 
-            border: none;
+            border: 0;
 
-            border-radius: 10px;
+            border-radius: 12px;
 
-            background: #24150d;
+            background:
+                #24150d;
 
-            color: white;
+            color: #fff;
 
-            font-size: 25px;
+            font-size: 22px;
 
             cursor: pointer;
 
             align-items: center;
-
             justify-content: center;
+
+            box-shadow:
+                0 5px 14px
+                rgba(36,21,13,.20);
         }
 
 
-        .sawariya-menu-button:active {
-            transform: scale(0.95);
+        .sw-menu-button:active {
+
+            transform:
+                scale(.94);
         }
 
 
-        /* =====================================================
+        /* =========================================================
            OVERLAY
-           ===================================================== */
+           ========================================================= */
 
-        .sawariya-overlay {
+        .sw-overlay {
+
             display: none;
 
             position: fixed;
 
             inset: 0;
 
-            background:
-                rgba(0,0,0,0.48);
-
             z-index: 9998;
+
+            background:
+                rgba(20,12,8,.48);
+
+            backdrop-filter:
+                blur(2px);
+
+            -webkit-backdrop-filter:
+                blur(2px);
 
             opacity: 0;
 
             transition:
-                opacity 0.25s ease;
+                opacity .25s ease;
         }
 
 
-        /* =====================================================
+        /* =========================================================
            MOBILE
-           ===================================================== */
+           ========================================================= */
 
         @media (max-width: 768px) {
 
@@ -353,89 +663,107 @@
             }
 
 
-            .sawariya-sidebar {
-                width: 280px;
+            .sw-topbar {
+
+                height: 58px;
+            }
+
+
+            .sw-menu-button {
+
+                display: flex;
+            }
+
+
+            .sw-center-brand {
+
+                font-size: 19px;
+
+                letter-spacing: 1.1px;
+            }
+
+
+            .sw-center-brand span {
+
+                font-size: 18px;
+            }
+
+
+            .sw-sidebar {
+
+                top: 8px;
+                left: 8px;
+
+                width: 286px;
+
+                height:
+                    calc(100vh - 16px);
+
+                border-radius: 22px;
 
                 transform:
-                    translateX(-100%);
+                    translateX(-110%);
 
                 box-shadow: none;
             }
 
 
-            .sawariya-sidebar.open {
+            .sw-sidebar.open {
+
                 transform:
                     translateX(0);
 
                 box-shadow:
-                    6px 0 25px
-                    rgba(0,0,0,0.30);
+                    10px 20px 45px
+                    rgba(0,0,0,.30);
             }
 
 
-            .sawariya-close {
+            .sw-close {
+
                 display: flex;
             }
 
 
-            .sawariya-top-header {
-                height: 58px;
-            }
+            .sw-overlay {
 
-
-            .sawariya-menu-button {
-                display: flex;
-            }
-
-
-            .sawariya-center-name {
-                font-size: 21px;
-
-                letter-spacing: 1px;
-            }
-
-
-            .sawariya-overlay {
                 display: block;
 
                 pointer-events: none;
             }
 
 
-            .sawariya-overlay.open {
+            .sw-overlay.open {
+
                 opacity: 1;
 
                 pointer-events: auto;
             }
 
 
-            .sawariya-business {
-                padding-right: 60px;
+            .sw-brand {
+
+                min-height: 88px;
             }
 
         }
 
 
-        /* =====================================================
-           SMALL MOBILE
-           ===================================================== */
+        /* =========================================================
+           SMALL PHONES
+           ========================================================= */
 
         @media (max-width: 380px) {
 
-            .sawariya-sidebar {
-                width: 270px;
+            .sw-sidebar {
+
+                width: 276px;
             }
 
 
-            .sawariya-center-name {
-                font-size: 19px;
-            }
+            .sw-center-brand {
 
-
-            .sawariya-menu a {
-                min-height: 46px;
-
-                font-size: 14px;
+                font-size: 18px;
             }
 
         }
@@ -449,18 +777,18 @@
 
 
 <!-- =========================================================
-     TOP HEADER
+     TOP BAR
      ========================================================= -->
 
-<header class="sawariya-top-header">
+<header class="sw-topbar">
 
 
-    <!-- MOBILE HAMBURGER -->
+    <!-- MOBILE MENU -->
 
     <button
         type="button"
-        class="sawariya-menu-button"
-        id="sawariyaMenuButton"
+        class="sw-menu-button"
+        id="swMenuButton"
         aria-label="Open menu"
         aria-expanded="false">
 
@@ -471,47 +799,56 @@
 
     <!-- CENTER BUSINESS NAME -->
 
-    <div class="sawariya-center-name">
-        🍬 SAWARIYA
-    </div>
+    <div class="sw-center-brand">
 
+        <span>🍬</span>
+
+        <strong>SAWARIYA</strong>
+
+    </div>
 
 </header>
 
 
 
 <!-- =========================================================
-     LEFT SIDEBAR
+     SIDEBAR
      ========================================================= -->
 
 <aside
-    class="sawariya-sidebar"
-    id="sawariyaSidebar">
+    class="sw-sidebar"
+    id="swSidebar">
 
 
-    <!-- BUSINESS NAME INSIDE SIDEBAR -->
+    <!-- BRAND -->
 
-    <div class="sawariya-business">
+    <div class="sw-brand">
 
-        <div>
 
-            <div class="sawariya-business-name">
-                🍬 SAWARIYA
+        <div class="sw-brand-icon">
+            🍬
+        </div>
+
+
+        <div class="sw-brand-text">
+
+            <div class="sw-brand-name">
+                SAWARIYA
             </div>
 
-            <div class="sawariya-business-subtitle">
-                CONFECTIONARY BILLING
+            <div class="sw-brand-subtitle">
+                Confectionary Billing
             </div>
 
         </div>
 
 
-        <!-- MOBILE CLOSE -->
+        <!-- CLOSE -->
 
         <button
             type="button"
-            class="sawariya-close"
-            id="sawariyaCloseButton"
+            class="sw-close"
+            id="swCloseButton"
             aria-label="Close menu">
 
             ×
@@ -522,18 +859,24 @@
 
 
 
-    <!-- =====================================================
-         MENU
-         ===================================================== -->
+    <!-- MENU TITLE -->
 
-    <nav class="sawariya-menu">
+    <div class="sw-menu-label">
+        Main Menu
+    </div>
+
+
+
+    <!-- MENU -->
+
+    <nav class="sw-menu">
 
 
         <a
             href="/dashboard"
             data-path="/dashboard">
 
-            <span class="sawariya-menu-icon">
+            <span class="sw-icon">
                 🏠
             </span>
 
@@ -548,7 +891,7 @@
             href="/billing"
             data-path="/billing">
 
-            <span class="sawariya-menu-icon">
+            <span class="sw-icon">
                 🧾
             </span>
 
@@ -563,7 +906,7 @@
             href="/products"
             data-path="/products">
 
-            <span class="sawariya-menu-icon">
+            <span class="sw-icon">
                 📦
             </span>
 
@@ -578,7 +921,7 @@
             href="/stock"
             data-path="/stock">
 
-            <span class="sawariya-menu-icon">
+            <span class="sw-icon">
                 📊
             </span>
 
@@ -593,7 +936,7 @@
             href="/customers"
             data-path="/customers">
 
-            <span class="sawariya-menu-icon">
+            <span class="sw-icon">
                 👥
             </span>
 
@@ -608,7 +951,7 @@
             href="/reports"
             data-path="/reports">
 
-            <span class="sawariya-menu-icon">
+            <span class="sw-icon">
                 📈
             </span>
 
@@ -619,11 +962,14 @@
         </a>
 
 
+        <div class="sw-divider"></div>
+
+
         <a
             href="/logout"
-            class="sawariya-logout">
+            class="sw-logout">
 
-            <span class="sawariya-menu-icon">
+            <span class="sw-icon">
                 🚪
             </span>
 
@@ -645,8 +991,8 @@
      ========================================================= -->
 
 <div
-    class="sawariya-overlay"
-    id="sawariyaOverlay">
+    class="sw-overlay"
+    id="swOverlay">
 </div>
 
 
@@ -669,27 +1015,27 @@
 
     const sidebar =
         document.getElementById(
-            "sawariyaSidebar"
+            "swSidebar"
         );
 
     const overlay =
         document.getElementById(
-            "sawariyaOverlay"
+            "swOverlay"
         );
 
     const menuButton =
         document.getElementById(
-            "sawariyaMenuButton"
+            "swMenuButton"
         );
 
     const closeButton =
         document.getElementById(
-            "sawariyaCloseButton"
+            "swCloseButton"
         );
 
 
     /* =====================================================
-       OPEN SIDEBAR
+       OPEN
        ===================================================== */
 
     function openSidebar() {
@@ -709,7 +1055,7 @@
 
 
     /* =====================================================
-       CLOSE SIDEBAR
+       CLOSE
        ===================================================== */
 
     function closeSidebar() {
@@ -729,7 +1075,7 @@
 
 
     /* =====================================================
-       BUTTON EVENTS
+       BUTTON
        ===================================================== */
 
     if (menuButton) {
@@ -763,12 +1109,12 @@
 
 
     /* =====================================================
-       CLOSE AFTER MENU CLICK
+       MENU CLICK
        ===================================================== */
 
     document
         .querySelectorAll(
-            ".sawariya-menu a"
+            ".sw-menu a"
         )
         .forEach(function (link) {
 
@@ -791,7 +1137,7 @@
 
 
     /* =====================================================
-       ESC KEY
+       ESC
        ===================================================== */
 
     document.addEventListener(
@@ -811,7 +1157,7 @@
 
 
     /* =====================================================
-       ACTIVE MENU
+       ACTIVE PAGE
        ===================================================== */
 
     const currentPath =
@@ -820,7 +1166,7 @@
 
     document
         .querySelectorAll(
-            ".sawariya-menu a[data-path]"
+            ".sw-menu a[data-path]"
         )
         .forEach(function (link) {
 
