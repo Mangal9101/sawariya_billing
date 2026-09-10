@@ -452,6 +452,7 @@ templates = Jinja2Templates(
 )
 
 templates.env.filters["ist_time"] = utc_to_ist
+templates.env.filters["ist_time_text"] = lambda dt: utc_to_ist(dt).strftime("%d-%m-%Y %H:%M") if dt else ""
 
 
 # =========================================================
@@ -1111,12 +1112,34 @@ def billing(request: Request):
             .all()
         )
 
+        products = (
+            d.query(Product)
+            .order_by(Product.name)
+            .all()
+        )
+
+        # Never pass SQLAlchemy objects through Jinja's |tojson filter.
+        # The billing page needs a plain JSON-safe catalog for offline search.
+        product_catalog = [
+            {
+                "id": product.id,
+                "name": product.name or "",
+                "sku": product.sku or "",
+                "stock": int(product.quantity or 0),
+                "purchase": float(product.purchase_price or 0),
+                "wholesale": float(product.wholesale_price or 0),
+                "retail": float(product.retailer_price or 0),
+            }
+            for product in products
+        ]
+
         return templates.TemplateResponse(
             request=request,
             name="billing.html",
             context={
                 "username": username,
-                "customers": customers
+                "customers": customers,
+                "products": product_catalog
             }
         )
 
@@ -1177,6 +1200,7 @@ async def save_bill(request: Request):
                 return {
                     "ok": True,
                     "already_saved": True,
+                    "invoice_id": existing_invoice.id,
                     "invoice_no":
                         existing_invoice.invoice_no,
                     "total":
@@ -1273,6 +1297,7 @@ async def save_bill(request: Request):
                 return {
                     "ok": True,
                     "already_saved": True,
+                    "invoice_id": existing_invoice.id,
                     "invoice_no":
                         existing_invoice.invoice_no,
                     "total":
@@ -1461,6 +1486,7 @@ async def save_bill(request: Request):
         return {
             "ok": True,
             "already_saved": False,
+            "invoice_id": invoice.id,
             "invoice_no": invoice_no,
             "total": float(total),
             "due": float(due)
@@ -1603,6 +1629,109 @@ def add_customer(
         "/customers?success=added",
         status_code=303
     )
+
+
+# =========================================================
+# CUSTOMER EDIT / DELETE
+# =========================================================
+
+@app.get("/customers/{customer_id}/edit", response_class=HTMLResponse)
+def edit_customer(request: Request, customer_id: int):
+    username = login_required(request)
+    if not username:
+        return RedirectResponse("/login", status_code=303)
+
+    d = db()
+    try:
+        customer = d.get(Customer, customer_id)
+        if not customer:
+            return RedirectResponse("/customers?error=not_found", status_code=303)
+        return templates.TemplateResponse(
+            request=request,
+            name="customer_edit.html",
+            context={"customer": customer, "username": username}
+        )
+    finally:
+        d.close()
+
+
+@app.post("/customers/{customer_id}/update")
+def update_customer(
+    request: Request,
+    customer_id: int,
+    name: str = Form(""),
+    phone: str = Form(""),
+    address: str = Form("")
+):
+    if not login_required(request):
+        return RedirectResponse("/login", status_code=303)
+
+    clean_name = name.strip()
+    if not clean_name:
+        return RedirectResponse(f"/customers/{customer_id}/edit?error=name", status_code=303)
+
+    d = db()
+    try:
+        customer = d.get(Customer, customer_id)
+        if not customer:
+            return RedirectResponse("/customers?error=not_found", status_code=303)
+        customer.name = clean_name
+        customer.phone = phone.strip() or None
+        customer.address = address.strip() or None
+        d.commit()
+        return RedirectResponse("/customers?success=updated", status_code=303)
+    except Exception:
+        d.rollback()
+        return RedirectResponse(f"/customers/{customer_id}/edit?error=server", status_code=303)
+    finally:
+        d.close()
+
+
+@app.post("/customers/{customer_id}/delete")
+def delete_customer(request: Request, customer_id: int):
+    if not login_required(request):
+        return RedirectResponse("/login", status_code=303)
+
+    d = db()
+    try:
+        customer = d.get(Customer, customer_id)
+        if not customer:
+            return RedirectResponse("/customers?error=not_found", status_code=303)
+        # Existing invoices keep their customer relationship nullable.
+        d.query(Invoice).filter(Invoice.customer_id == customer_id).update(
+            {Invoice.customer_id: None}, synchronize_session=False
+        )
+        d.delete(customer)
+        d.commit()
+        return RedirectResponse("/customers?success=deleted", status_code=303)
+    except Exception:
+        d.rollback()
+        return RedirectResponse("/customers?error=server", status_code=303)
+    finally:
+        d.close()
+
+
+@app.get("/api/customers")
+def api_customers(request: Request, q: str = ""):
+    if not login_required(request):
+        return JSONResponse({"error": "unauthorized"}, status_code=401)
+    d = db()
+    try:
+        query = d.query(Customer)
+        search = (q or "").strip()
+        if search:
+            pattern = f"%{search}%"
+            query = query.filter(
+                Customer.name.ilike(pattern)
+                | Customer.phone.ilike(pattern)
+                | Customer.address.ilike(pattern)
+            )
+        return [
+            {"id": c.id, "name": c.name or "", "phone": c.phone or "", "address": c.address or ""}
+            for c in query.order_by(Customer.name).all()
+        ]
+    finally:
+        d.close()
 
 
 # =========================================================
@@ -2308,6 +2437,39 @@ def api_khatabook_entry_delete(request: Request, entry_id: int):
 
 
 # =========================================================
+# INVOICE PAGE
+# =========================================================
+
+@app.get("/invoice/{invoice_id}", response_class=HTMLResponse)
+def invoice_page(request: Request, invoice_id: int):
+    username = login_required(request)
+    if not username:
+        return RedirectResponse("/login", status_code=303)
+
+    d = db()
+    try:
+        invoice = (
+            d.query(Invoice)
+            .options(
+                joinedload(Invoice.customer),
+                joinedload(Invoice.items)
+            )
+            .filter(Invoice.id == invoice_id)
+            .first()
+        )
+        if not invoice:
+            return RedirectResponse("/reports", status_code=303)
+
+        return templates.TemplateResponse(
+            request=request,
+            name="invoice.html",
+            context={"invoice": invoice, "username": username}
+        )
+    finally:
+        d.close()
+
+
+# =========================================================
 # SHARE INVOICE ON WHATSAPP
 # =========================================================
 
@@ -2450,6 +2612,22 @@ def share_invoice_whatsapp(
 
 
 # =========================================================
+# =========================================================
+# LANGUAGE PAGE
+# =========================================================
+
+@app.get("/language", response_class=HTMLResponse)
+def language_page(request: Request):
+    username = login_required(request)
+    if not username:
+        return RedirectResponse("/login", status_code=303)
+    return templates.TemplateResponse(
+        request=request,
+        name="language.html",
+        context={"username": username}
+    )
+
+
 # HEALTH / STATUS
 # =========================================================
 
