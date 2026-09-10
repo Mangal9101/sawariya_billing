@@ -554,10 +554,30 @@ templates = Jinja2Templates(
 )
 
 
+# =========================================================
+# IST TIME FILTER
+# =========================================================
+
+def ist_time(dt):
+
+    value = utc_to_ist(dt)
+
+    if not value:
+        return ""
+
+    return value.strftime(
+        "%d-%m-%Y %H:%M:%S"
+    )
+
+
 templates.env.filters[
     "ist_time"
-] = utc_to_ist
+] = ist_time
 
+
+# =========================================================
+# IST TIME TEXT FILTER
+# =========================================================
 
 def ist_time_text(dt):
 
