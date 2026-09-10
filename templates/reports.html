@@ -8,7 +8,7 @@
          PAGE HEADER
          ===================================================== -->
 
-    <div class="top report-screen-content">
+    <div class="top">
 
         <div>
 
@@ -28,7 +28,7 @@
          DATE FILTER + SUMMARY
          ===================================================== -->
 
-    <section class="panel report-filter-panel report-screen-content">
+    <section class="panel">
 
         <form
             class="dateform"
@@ -62,7 +62,7 @@
 
 
         <!-- =================================================
-             SUMMARY
+             REPORT SUMMARY
              ================================================= -->
 
         <div class="report-summary">
@@ -116,7 +116,7 @@
 
 
     <!-- =====================================================
-         INDIVIDUAL CUSTOMER INVOICES
+         INVOICES
          ===================================================== -->
 
     {% for i in invoices %}
@@ -138,7 +138,7 @@
                     {{ i.invoice_no }}
                 </b>
 
-                <span class="invoice-separator">
+                <span>
                     —
                 </span>
 
@@ -150,11 +150,8 @@
             <div>
 
                 <b>
-
                     Total:
-
                     ₹{{ '%.2f'|format(i.total|float) }}
-
                 </b>
 
             </div>
@@ -163,7 +160,7 @@
 
 
         <!-- =================================================
-             CUSTOMER DETAILS
+             CUSTOMER
              ================================================= -->
 
         <div class="customer-report">
@@ -183,9 +180,7 @@
 
             {% if i.customer and i.customer.phone %}
 
-                <span class="customer-separator">
-                    &nbsp; | &nbsp;
-                </span>
+                &nbsp; | &nbsp;
 
                 <b>Mobile:</b>
 
@@ -196,9 +191,7 @@
 
             {% if i.customer and i.customer.address %}
 
-                <span class="customer-separator">
-                    &nbsp; | &nbsp;
-                </span>
+                &nbsp; | &nbsp;
 
                 <b>Address:</b>
 
@@ -289,10 +282,10 @@
 
 
         <!-- =================================================
-             ACTION BUTTONS
+             ACTIONS
              ================================================= -->
 
-        <div class="invoice-actions report-screen-only">
+        <div class="invoice-actions">
 
             <!-- WHATSAPP -->
 
@@ -304,14 +297,14 @@
             </a>
 
 
-            <!-- PRINT -->
+            <!-- THERMAL PRINT -->
 
             <button
                 type="button"
                 class="print-pdf-btn"
-                onclick="printInvoice({{ i.id }})"
+                onclick="printInvoiceThermal({{ i.id }})"
             >
-                🖨️ Print / PDF
+                🖨️ Print Invoice
             </button>
 
         </div>
@@ -325,7 +318,7 @@
          NO SALES
          ===================================================== -->
 
-    <section class="panel report-screen-content">
+    <section class="panel">
 
         <p>
 
@@ -345,7 +338,7 @@
 
 
 <!-- =======================================================
-     CSS
+     SCREEN CSS
      ======================================================= -->
 
 <style>
@@ -400,7 +393,7 @@
 
 
 /* =========================================================
-   REPORT TABLE
+   TABLE
    ========================================================= */
 
 .report-table-wrapper {
@@ -426,7 +419,7 @@
 .report-table-wrapper th,
 .report-table-wrapper td {
 
-    padding: 10px;
+    padding: 9px;
 
     text-align: left;
 
@@ -434,14 +427,12 @@
 
 
 /* =========================================================
-   INVOICE ACTIONS
+   ACTIONS
    ========================================================= */
 
 .invoice-actions {
 
     display: flex;
-
-    align-items: stretch;
 
     gap: 10px;
 
@@ -484,17 +475,7 @@
 
     text-align: center;
 
-    box-shadow:
-        0 3px 10px rgba(37, 211, 102, 0.22);
-
-}
-
-
-.whatsapp-btn:hover {
-
-    background: #1ebe5d;
-
-    color: #ffffff !important;
+    box-sizing: border-box;
 
 }
 
@@ -529,9 +510,9 @@
 
     font-weight: 700;
 
-    text-align: center;
-
     cursor: pointer;
+
+    box-sizing: border-box;
 
 }
 
@@ -608,8 +589,6 @@
 
         font-size: 16px;
 
-        box-sizing: border-box;
-
     }
 
 
@@ -628,385 +607,62 @@
 
 }
 
-
-/* =========================================================
-   PRINT
-   ========================================================= */
-
-@media print {
-
-
-    /* =====================================================
-       PAGE
-       ===================================================== */
-
-    @page {
-
-        size: A4;
-
-        margin: 10mm;
-
-    }
-
-
-    html,
-    body {
-
-        width: 100% !important;
-
-        min-width: 0 !important;
-
-        margin: 0 !important;
-
-        padding: 0 !important;
-
-        background: #ffffff !important;
-
-    }
-
-
-    body {
-
-        -webkit-print-color-adjust: exact !important;
-
-        print-color-adjust: exact !important;
-
-    }
-
-
-    /* =====================================================
-       IMPORTANT
-
-       Default में पूरा report hide.
-       ===================================================== */
-
-    body.single-invoice-printing
-    #reportsPage > * {
-
-        display: none !important;
-
-    }
-
-
-    /* =====================================================
-       सिर्फ selected invoice SHOW
-       ===================================================== */
-
-    body.single-invoice-printing
-    #reportsPage
-    > .invoice-report.print-target {
-
-        display: block !important;
-
-        position: static !important;
-
-        width: 100% !important;
-
-        min-width: 0 !important;
-
-        max-width: 100% !important;
-
-        margin: 0 !important;
-
-        padding: 0 !important;
-
-        border: none !important;
-
-        border-radius: 0 !important;
-
-        box-shadow: none !important;
-
-        background: #ffffff !important;
-
-        color: #000000 !important;
-
-        overflow: visible !important;
-
-    }
-
-
-    /* =====================================================
-       SELECTED INVOICE CONTENT
-       ===================================================== */
-
-    body.single-invoice-printing
-    #reportsPage
-    > .invoice-report.print-target * {
-
-        visibility: visible !important;
-
-        opacity: 1 !important;
-
-        color: #000000 !important;
-
-    }
-
-
-    /* =====================================================
-       ACTION BUTTONS HIDE
-       ===================================================== */
-
-    body.single-invoice-printing
-    #reportsPage
-    > .invoice-report.print-target
-    .invoice-actions {
-
-        display: none !important;
-
-    }
-
-
-    /* =====================================================
-       TABLE WRAPPER
-       ===================================================== */
-
-    body.single-invoice-printing
-    #reportsPage
-    > .invoice-report.print-target
-    .report-table-wrapper {
-
-        width: 100% !important;
-
-        overflow: visible !important;
-
-    }
-
-
-    /* =====================================================
-       TABLE
-       ===================================================== */
-
-    body.single-invoice-printing
-    #reportsPage
-    > .invoice-report.print-target table {
-
-        width: 100% !important;
-
-        min-width: 0 !important;
-
-        max-width: 100% !important;
-
-        border-collapse: collapse !important;
-
-        table-layout: auto !important;
-
-    }
-
-
-    body.single-invoice-printing
-    #reportsPage
-    > .invoice-report.print-target
-    th,
-    body.single-invoice-printing
-    #reportsPage
-    > .invoice-report.print-target
-    td {
-
-        border: 1px solid #000000 !important;
-
-        padding: 7px !important;
-
-        background: #ffffff !important;
-
-        color: #000000 !important;
-
-    }
-
-
-    /* =====================================================
-       HEADER
-       ===================================================== */
-
-    body.single-invoice-printing
-    #reportsPage
-    > .invoice-report.print-target
-    .invoice-title {
-
-        display: flex !important;
-
-        align-items: center !important;
-
-        justify-content: space-between !important;
-
-        width: 100% !important;
-
-        margin-bottom: 12px !important;
-
-        padding-bottom: 10px !important;
-
-        border-bottom: 2px solid #000000 !important;
-
-    }
-
-
-    /* =====================================================
-       CUSTOMER
-       ===================================================== */
-
-    body.single-invoice-printing
-    #reportsPage
-    > .invoice-report.print-target
-    .customer-report {
-
-        display: block !important;
-
-        width: 100% !important;
-
-        margin-bottom: 12px !important;
-
-        padding: 8px 0 !important;
-
-        border-bottom: 1px solid #999999 !important;
-
-        word-break: break-word !important;
-
-    }
-
-
-    /* =====================================================
-       PAYMENT
-       ===================================================== */
-
-    body.single-invoice-printing
-    #reportsPage
-    > .invoice-report.print-target
-    .report-payment {
-
-        display: block !important;
-
-        width: 100% !important;
-
-        margin-top: 14px !important;
-
-        padding: 9px 0 !important;
-
-        border-top: 1px solid #000000 !important;
-
-        border-bottom: 1px solid #000000 !important;
-
-    }
-
-
-    /* =====================================================
-       ROW BREAK
-       ===================================================== */
-
-    body.single-invoice-printing
-    #reportsPage
-    > .invoice-report.print-target
-    tr {
-
-        page-break-inside: avoid !important;
-
-        break-inside: avoid !important;
-
-    }
-
-}
-
 </style>
 
 
 <!-- =======================================================
-     JAVASCRIPT
+     THERMAL PRINT JAVASCRIPT
      ======================================================= -->
 
 <script>
 
-/* =========================================================
-   AUTO DATE REPORT
-   ========================================================= */
+/*
+============================================================
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+    SAWARIYA BILLING
+    INDIVIDUAL THERMAL INVOICE PRINT
 
-        const dateInput =
-            document.getElementById("reportDate");
+============================================================
 
-        const form =
-            document.getElementById("reportDateForm");
+    IMPORTANT:
 
+    यह function reports page को print नहीं करता।
 
-        if (!dateInput || !form) {
+    यह selected invoice का data लेकर
+    एक बिल्कुल नया standalone print document बनाता है।
 
-            return;
+    इसलिए:
 
-        }
+        Daily Sales Report       ❌
+        Summary                  ❌
+        दूसरा Customer           ❌
+        दूसरा Invoice            ❌
+        WhatsApp Button          ❌
 
+        Selected Customer        ✅
+        Selected Invoice         ✅
+        Products                 ✅
+        Payment                  ✅
+        Total                    ✅
 
-        dateInput.addEventListener(
-            "change",
-            function () {
-
-                if (!this.value) {
-
-                    return;
-
-                }
-
-                form.submit();
-
-            }
-        );
-
-    }
-);
+============================================================
+*/
 
 
-/* =========================================================
-   PRINT SINGLE CUSTOMER INVOICE
-   =========================================================
-
-   IMPORTANT:
-
-   कोई clone नहीं.
-   कोई नया window नहीं.
-   कोई extra print area नहीं.
-
-   जिस invoice पर click होगा:
-       ↓
-   उसी invoice पर print-target class
-       ↓
-   बाकी invoices display:none
-       ↓
-   summary/header भी display:none
-       ↓
-   सिर्फ selected customer invoice print
-   ========================================================= */
-
-function printInvoice(invoiceId) {
-
-    /* -----------------------------------------
-       सभी पुराने print targets हटाओ
-       ----------------------------------------- */
-
-    document
-        .querySelectorAll(
-            "#reportsPage .print-target"
-        )
-        .forEach(
-            function (invoice) {
-
-                invoice.classList.remove(
-                    "print-target"
-                );
-
-            }
-        );
+function printInvoiceThermal(invoiceId) {
 
 
-    /* -----------------------------------------
-       Selected invoice खोजो
-       ----------------------------------------- */
+    /* =====================================================
+       SELECT INVOICE
+       ===================================================== */
 
-    const selectedInvoice =
+    const invoice =
         document.getElementById(
             "invoice-" + invoiceId
         );
 
 
-    if (!selectedInvoice) {
+    if (!invoice) {
 
         alert("Invoice not found.");
 
@@ -1015,73 +671,444 @@ function printInvoice(invoiceId) {
     }
 
 
-    /* -----------------------------------------
-       Selected invoice को target बनाओ
-       ----------------------------------------- */
+    /* =====================================================
+       CLONE SELECTED INVOICE
+       ===================================================== */
 
-    selectedInvoice.classList.add(
-        "print-target"
-    );
-
-
-    /* -----------------------------------------
-       Body को print mode में डालो
-       ----------------------------------------- */
-
-    document.body.classList.add(
-        "single-invoice-printing"
-    );
+    const clone =
+        invoice.cloneNode(true);
 
 
-    /* -----------------------------------------
-       Browser को DOM render करने दो
-       ----------------------------------------- */
+    /* =====================================================
+       REMOVE ACTION BUTTONS
+       ===================================================== */
 
-    setTimeout(
-        function () {
+    const actions =
+        clone.querySelector(
+            ".invoice-actions"
+        );
 
-            window.print();
 
-        },
-        300
-    );
+    if (actions) {
+
+        actions.remove();
+
+    }
+
+
+    /* =====================================================
+       REMOVE ID
+       ===================================================== */
+
+    clone.removeAttribute("id");
+
+
+    /* =====================================================
+       GET ONLY INVOICE CONTENT
+       ===================================================== */
+
+    const invoiceHTML =
+        clone.innerHTML;
+
+
+    /* =====================================================
+       OPEN NEW PRINT WINDOW
+
+       यह सबसे important हिस्सा है.
+
+       नया document केवल invoice का होगा.
+       Base.html की print CSS यहाँ लागू नहीं होगी.
+       ===================================================== */
+
+    const printWindow =
+        window.open(
+            "",
+            "_blank",
+            "width=400,height=700"
+        );
+
+
+    if (!printWindow) {
+
+        alert(
+            "Print window blocked. " +
+            "Browser में pop-up allow करें."
+        );
+
+        return;
+
+    }
+
+
+    /* =====================================================
+       CREATE STANDALONE PRINT DOCUMENT
+       ===================================================== */
+
+    printWindow.document.open();
+
+
+    printWindow.document.write(`
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Invoice</title>
+
+
+<style>
+
+/* =====================================================
+   THERMAL PAPER SIZE
+   =====================================================
+
+   DEFAULT:
+   80mm thermal printer
+
+   अगर आपका printer 58mm है तो:
+
+       size: 58mm auto;
+
+   कर देना.
+   ===================================================== */
+
+@page {
+
+    size: 80mm auto;
+
+    margin: 0;
 
 }
 
 
-/* =========================================================
-   AFTER PRINT
-   ========================================================= */
+/* =====================================================
+   BODY
+   ===================================================== */
 
-window.addEventListener(
-    "afterprint",
-    function () {
+html,
+body {
 
-        /* Print mode हटाओ */
+    width: 100%;
 
-        document.body.classList.remove(
-            "single-invoice-printing"
-        );
+    margin: 0;
+
+    padding: 0;
+
+    background: #ffffff;
+
+}
 
 
-        /* Target हटाओ */
+body {
 
-        document
-            .querySelectorAll(
-                "#reportsPage .print-target"
-            )
-            .forEach(
-                function (invoice) {
+    font-family:
+        Arial,
+        "Noto Sans",
+        sans-serif;
 
-                    invoice.classList.remove(
-                        "print-target"
-                    );
+    font-size: 12px;
 
-                }
-            );
+    line-height: 1.35;
+
+    color: #000000;
+
+}
+
+
+/* =====================================================
+   INVOICE
+   ===================================================== */
+
+.thermal-invoice {
+
+    width: 72mm;
+
+    margin: 0 auto;
+
+    padding: 4mm 2mm;
+
+    box-sizing: border-box;
+
+}
+
+
+/* =====================================================
+   HEADER
+   ===================================================== */
+
+.invoice-title {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    gap: 5px;
+
+    padding-bottom: 8px;
+
+    margin-bottom: 8px;
+
+    border-bottom: 1px dashed #000000;
+
+    font-size: 11px;
+
+}
+
+
+.invoice-title > div:last-child {
+
+    text-align: right;
+
+    white-space: nowrap;
+
+}
+
+
+/* =====================================================
+   CUSTOMER
+   ===================================================== */
+
+.customer-report {
+
+    padding-bottom: 8px;
+
+    margin-bottom: 8px;
+
+    border-bottom: 1px dashed #000000;
+
+    word-break: break-word;
+
+    font-size: 11px;
+
+}
+
+
+/* =====================================================
+   TABLE
+   ===================================================== */
+
+.report-table-wrapper {
+
+    width: 100%;
+
+    overflow: visible;
+
+}
+
+
+table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    table-layout: fixed;
+
+}
+
+
+th,
+td {
+
+    padding: 5px 2px;
+
+    text-align: left;
+
+    vertical-align: top;
+
+    border-bottom: 1px dashed #777777;
+
+    font-size: 10px;
+
+    word-break: break-word;
+
+}
+
+
+th {
+
+    font-weight: 700;
+
+    border-bottom:
+        1px solid #000000;
+
+}
+
+
+/* Product column */
+
+th:nth-child(1),
+td:nth-child(1) {
+
+    width: 38%;
+
+}
+
+
+/* Qty */
+
+th:nth-child(2),
+td:nth-child(2) {
+
+    width: 12%;
+
+    text-align: center;
+
+}
+
+
+/* Price */
+
+th:nth-child(3),
+td:nth-child(3) {
+
+    width: 25%;
+
+    text-align: right;
+
+}
+
+
+/* Amount */
+
+th:nth-child(4),
+td:nth-child(4) {
+
+    width: 25%;
+
+    text-align: right;
+
+}
+
+
+/* =====================================================
+   PAYMENT
+   ===================================================== */
+
+.report-payment {
+
+    padding-top: 9px;
+
+    padding-bottom: 9px;
+
+    margin-top: 5px;
+
+    border-bottom:
+        1px dashed #000000;
+
+    font-size: 11px;
+
+}
+
+
+/* =====================================================
+   PRINT
+   ===================================================== */
+
+@media print {
+
+    html,
+    body {
+
+        width: 100%;
+
+        margin: 0;
+
+        padding: 0;
+
+        background: #ffffff;
 
     }
-);
+
+
+    .thermal-invoice {
+
+        width: 72mm;
+
+        margin: 0 auto;
+
+        padding: 4mm 2mm;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="thermal-invoice">
+
+${invoiceHTML}
+
+</div>
+
+
+</body>
+
+</html>
+
+    `);
+
+
+    printWindow.document.close();
+
+
+    /* =====================================================
+       WAIT FOR DOCUMENT LOAD
+       ===================================================== */
+
+    printWindow.onload =
+        function () {
+
+            setTimeout(
+                function () {
+
+                    printWindow.focus();
+
+                    printWindow.print();
+
+                },
+                500
+            );
+
+        };
+
+
+    /* =====================================================
+       CLOSE AFTER PRINT
+       ===================================================== */
+
+    printWindow.onafterprint =
+        function () {
+
+            setTimeout(
+                function () {
+
+                    printWindow.close();
+
+                },
+                300
+            );
+
+        };
+
+}
 
 </script>
 
