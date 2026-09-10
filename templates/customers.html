@@ -11,8 +11,11 @@
 .customers-page {
     width: 100%;
     min-height: calc(100vh - 116px);
+
     background: #f5f7fa;
+
     padding: 20px 0 90px;
+
     box-sizing: border-box;
 }
 
@@ -27,19 +30,23 @@
 
 .customers-header h1 {
     margin: 0;
+
     font-size: 28px;
+
     color: #222;
 }
 
 .customers-header p {
     margin: 5px 0 0;
+
     color: #777;
+
     font-size: 14px;
 }
 
 
 /* =========================================================
-   ADD CUSTOMER BUTTON
+   ADD CUSTOMER
    ========================================================= */
 
 .customer-add-area {
@@ -48,21 +55,27 @@
 
 .add-customer-button {
     width: 100%;
+
     min-height: 52px;
 
     border: 0;
+
     border-radius: 11px;
 
     background: #0759a8;
+
     color: #fff;
 
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 
     gap: 8px;
 
     font-size: 16px;
+
     font-weight: 700;
 
     cursor: pointer;
@@ -81,16 +94,19 @@
 
 .add-customer-icon {
     font-size: 25px;
+
     line-height: 1;
 }
 
 
 /* =========================================================
-   SEARCH / FILTER AREA
+   SEARCH / FILTER
    ========================================================= */
 
 .customer-tools {
+
     display: flex;
+
     align-items: center;
 
     gap: 9px;
@@ -101,9 +117,12 @@
 }
 
 
-/* SEARCH */
+/* =========================================================
+   SEARCH
+   ========================================================= */
 
 .search-box {
+
     flex: 1;
 
     min-width: 0;
@@ -117,6 +136,7 @@
     border-radius: 11px;
 
     display: flex;
+
     align-items: center;
 
     padding: 0 12px;
@@ -128,6 +148,7 @@
 }
 
 .search-icon {
+
     font-size: 27px;
 
     color: #0759a8;
@@ -140,11 +161,13 @@
 }
 
 .search-box input {
+
     width: 100%;
 
     min-width: 0;
 
     border: 0;
+
     outline: 0;
 
     background: transparent;
@@ -159,10 +182,14 @@
 }
 
 
-/* FILTER */
+/* =========================================================
+   FILTER
+   ========================================================= */
 
 .filter-button {
+
     width: 62px;
+
     height: 52px;
 
     border: 1px solid #dfe3e8;
@@ -174,9 +201,11 @@
     color: #0759a8;
 
     display: flex;
+
     flex-direction: column;
 
     align-items: center;
+
     justify-content: center;
 
     font-size: 10px;
@@ -187,6 +216,7 @@
 }
 
 .filter-icon {
+
     font-size: 23px;
 
     line-height: 20px;
@@ -198,6 +228,7 @@
    ========================================================= */
 
 .customer-list {
+
     padding: 0 16px;
 
     box-sizing: border-box;
@@ -209,9 +240,10 @@
    ========================================================= */
 
 .customer-row {
+
     width: 100%;
 
-    min-height: 178px;
+    min-height: 160px;
 
     margin-bottom: 15px;
 
@@ -227,8 +259,6 @@
 
     box-shadow:
         0 2px 7px rgba(0,0,0,.04);
-
-    position: relative;
 }
 
 
@@ -237,12 +267,15 @@
    ========================================================= */
 
 .customer-card-header {
+
     min-height: 57px;
 
     padding: 0 16px;
 
     display: flex;
+
     align-items: center;
+
     justify-content: space-between;
 
     background: #f8f4f1;
@@ -253,9 +286,12 @@
 }
 
 
-/* LEFT LABEL */
+/* =========================================================
+   LABEL
+   ========================================================= */
 
 .customer-card-label {
+
     color: #625950;
 
     font-size: 15px;
@@ -264,16 +300,19 @@
 }
 
 
-/* CUSTOMER NAME */
+/* =========================================================
+   CUSTOMER NAME
+   ========================================================= */
 
 .customer-name {
+
     max-width: 65%;
 
     font-size: 17px;
 
     font-weight: 700;
 
-    color: #222;
+    color: #0759a8;
 
     text-align: right;
 
@@ -293,16 +332,19 @@
 }
 
 .customer-name:active {
+
     opacity: .55;
+
 }
 
 
 /* =========================================================
-   CARD ROW
+   CUSTOMER DETAIL
    ========================================================= */
 
 .customer-detail {
-    min-height: 53px;
+
+    min-height: 51px;
 
     padding: 0 16px;
 
@@ -318,13 +360,18 @@
 }
 
 .customer-detail:last-child {
+
     border-bottom: none;
+
 }
 
 
-/* DETAIL LABEL */
+/* =========================================================
+   DETAIL LABEL
+   ========================================================= */
 
 .customer-detail-label {
+
     color: #625950;
 
     font-size: 14px;
@@ -333,9 +380,12 @@
 }
 
 
-/* DETAIL VALUE */
+/* =========================================================
+   DETAIL VALUE
+   ========================================================= */
 
 .customer-detail-value {
+
     color: #222;
 
     font-size: 14px;
@@ -353,6 +403,7 @@
    ========================================================= */
 
 .customer-phone {
+
     color: #0759a8;
 
     text-decoration: none;
@@ -366,18 +417,8 @@
    ========================================================= */
 
 .customer-address {
+
     line-height: 20px;
-}
-
-
-/* =========================================================
-   STATUS
-   ========================================================= */
-
-.customer-status {
-    color: #168c45;
-
-    font-weight: 700;
 }
 
 
@@ -386,6 +427,7 @@
    ========================================================= */
 
 .empty-customers {
+
     background: #fff;
 
     border: 1px solid #e0e3e6;
@@ -400,12 +442,14 @@
 }
 
 .empty-icon {
+
     font-size: 45px;
 
     margin-bottom: 10px;
 }
 
 .empty-customers strong {
+
     display: block;
 
     font-size: 17px;
@@ -416,6 +460,7 @@
 }
 
 .empty-customers p {
+
     margin: 0;
 
     font-size: 13px;
@@ -427,6 +472,7 @@
    ========================================================= */
 
 .no-results {
+
     display: none;
 
     background: #fff;
@@ -446,10 +492,11 @@
 
 
 /* =========================================================
-   MODAL
+   ADD CUSTOMER MODAL
    ========================================================= */
 
 .customer-modal {
+
     position: fixed;
 
     inset: 0;
@@ -468,7 +515,9 @@
 }
 
 .customer-modal.show {
+
     display: flex;
+
 }
 
 
@@ -477,6 +526,7 @@
    ========================================================= */
 
 .customer-modal-box {
+
     width: 100%;
 
     max-width: 600px;
@@ -496,7 +546,8 @@
     box-shadow:
         0 -5px 25px rgba(0,0,0,.22);
 
-    animation: customerSlideUp .22s ease;
+    animation:
+        customerSlideUp .22s ease;
 }
 
 @keyframes customerSlideUp {
@@ -517,6 +568,7 @@
    ========================================================= */
 
 .modal-handle {
+
     width: 42px;
 
     height: 4px;
@@ -534,6 +586,7 @@
    ========================================================= */
 
 .modal-title {
+
     display: flex;
 
     align-items: center;
@@ -544,6 +597,7 @@
 }
 
 .modal-title h2 {
+
     margin: 0;
 
     font-size: 20px;
@@ -553,11 +607,13 @@
 
 
 /* =========================================================
-   CLOSE BUTTON
+   CLOSE
    ========================================================= */
 
 .modal-close {
+
     width: 35px;
+
     height: 35px;
 
     border: 0;
@@ -579,6 +635,7 @@
    ========================================================= */
 
 .customer-form input {
+
     width: 100%;
 
     height: 51px;
@@ -601,6 +658,7 @@
 }
 
 .customer-form input:focus {
+
     border-color: #0759a8;
 
     box-shadow:
@@ -609,10 +667,11 @@
 
 
 /* =========================================================
-   SAVE BUTTON
+   SAVE
    ========================================================= */
 
 .save-customer {
+
     width: 100%;
 
     height: 51px;
@@ -632,34 +691,10 @@
     cursor: pointer;
 }
 
-
-/* =========================================================
-   DELETE BUTTON
-   ========================================================= */
-
-.delete-customer {
-    width: 100%;
-
-    height: 51px;
-
-    border: 0;
-
-    border-radius: 9px;
-
-    background: #dc3545;
-
-    color: #fff;
-
-    font-size: 15px;
-
-    font-weight: 700;
-
-    cursor: pointer;
-}
-
-.delete-customer:active,
 .save-customer:active {
+
     transform: scale(.98);
+
 }
 
 
@@ -670,42 +705,67 @@
 @media (min-width: 701px) {
 
     .customers-page {
+
         max-width: 1000px;
 
         margin: auto;
 
         padding-left: 20px;
+
         padding-right: 20px;
+
     }
+
 
     .customers-header {
+
         padding-left: 0;
+
         padding-right: 0;
+
     }
+
 
     .customer-add-area {
+
         padding-left: 0;
+
         padding-right: 0;
+
     }
+
 
     .customer-tools {
+
         padding-left: 0;
+
         padding-right: 0;
+
     }
+
 
     .customer-list {
+
         padding-left: 0;
+
         padding-right: 0;
+
     }
+
 
     .customer-modal {
+
         align-items: center;
+
     }
 
+
     .customer-modal-box {
+
         border-radius: 16px;
 
         margin: 20px;
+
     }
 
 }
@@ -718,53 +778,88 @@
 @media (max-width: 380px) {
 
     .customers-page {
+
         padding-top: 15px;
+
     }
+
 
     .customers-header {
+
         padding-left: 10px;
+
         padding-right: 10px;
+
     }
+
 
     .customers-header h1 {
+
         font-size: 25px;
+
     }
+
 
     .customer-add-area {
+
         padding-left: 10px;
+
         padding-right: 10px;
+
     }
 
+
     .customer-tools {
+
         padding-left: 10px;
+
         padding-right: 10px;
 
         gap: 6px;
+
     }
+
 
     .customer-list {
+
         padding-left: 10px;
+
         padding-right: 10px;
+
     }
+
 
     .filter-button {
+
         width: 52px;
+
     }
+
 
     .customer-card-header {
+
         padding-left: 13px;
+
         padding-right: 13px;
+
     }
+
 
     .customer-detail {
+
         padding-left: 13px;
+
         padding-right: 13px;
+
     }
 
+
     .customer-name {
+
         max-width: 62%;
 
         font-size: 16px;
+
     }
 
 }
@@ -780,7 +875,7 @@
 
 
     <!-- =====================================================
-         PAGE HEADER
+         HEADER
          ===================================================== -->
 
     <div class="customers-header">
@@ -797,7 +892,7 @@
 
 
     <!-- =====================================================
-         ADD CUSTOMER BUTTON
+         ADD CUSTOMER
          ===================================================== -->
 
     <div class="customer-add-area">
@@ -826,8 +921,6 @@
     <div class="customer-tools">
 
 
-        <!-- SEARCH -->
-
         <div class="search-box">
 
             <span class="search-icon">
@@ -843,8 +936,6 @@
 
         </div>
 
-
-        <!-- FILTER -->
 
         <button
             type="button"
@@ -874,13 +965,7 @@
         id="customerList"
     >
 
-
         {% for c in customers %}
-
-
-        <!-- =================================================
-             CUSTOMER CARD
-             ================================================= -->
 
         <div
             class="customer-row"
@@ -890,7 +975,7 @@
 
 
             <!-- =================================================
-                 CARD HEADER
+                 CUSTOMER NAME
                  ================================================= -->
 
             <div class="customer-card-header">
@@ -901,22 +986,17 @@
 
 
                 <!--
-                    ONLY CUSTOMER NAME IS CLICKABLE
-                    EDIT MODAL OPENS FROM HERE
+                    NAME CLICK
+                    Opens separate customer-edit.html
                 -->
 
-                <span
+                <a
+                    href="/customers/{{ c.id }}/edit"
                     class="customer-name"
-                    title="Click to edit customer"
-                    onclick="openEditCustomer(
-                        '{{ c.id }}',
-                        {{ c.name|tojson }},
-                        {{ (c.phone or '')|tojson }},
-                        {{ (c.address or '')|tojson }}
-                    )"
+                    title="Edit Customer"
                 >
                     {{ c.name }}
-                </span>
+                </a>
 
             </div>
 
@@ -939,7 +1019,6 @@
                         <a
                             href="tel:{{ c.phone }}"
                             class="customer-phone"
-                            onclick="event.stopPropagation();"
                         >
                             {{ c.phone }}
                         </a>
@@ -947,7 +1026,7 @@
                     {% else %}
 
                         —
-                        
+
                     {% endif %}
 
                 </span>
@@ -985,34 +1064,13 @@
             </div>
 
 
-            <!-- =================================================
-                 STATUS
-                 ================================================= -->
-
-            <div class="customer-detail">
-
-                <span class="customer-detail-label">
-                    Status
-                </span>
-
-
-                <span
-                    class="customer-detail-value customer-status"
-                >
-                    Active
-                </span>
-
-            </div>
-
-
         </div>
-
 
         {% else %}
 
 
         <!-- =================================================
-             NO CUSTOMERS
+             EMPTY
              ================================================= -->
 
         <div class="empty-customers">
@@ -1031,12 +1089,11 @@
 
         </div>
 
-
         {% endfor %}
 
 
         <!-- =================================================
-             NO SEARCH RESULT
+             SEARCH RESULT
              ================================================= -->
 
         <div
@@ -1056,7 +1113,6 @@
 
 <!-- =========================================================
      ADD CUSTOMER MODAL
-     HIDDEN BY DEFAULT
      ========================================================= -->
 
 <div
@@ -1074,8 +1130,6 @@
 
         <div class="modal-handle"></div>
 
-
-        <!-- TITLE -->
 
         <div class="modal-title">
 
@@ -1095,14 +1149,15 @@
         </div>
 
 
-        <!-- ADD FORM -->
+        <!-- =================================================
+             ADD CUSTOMER FORM
+             ================================================= -->
 
         <form
             method="post"
             action="/customers/add"
             class="customer-form"
         >
-
 
             <input
                 type="text"
@@ -1136,129 +1191,7 @@
                 Save Customer
             </button>
 
-
         </form>
-
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     EDIT CUSTOMER MODAL
-     HIDDEN BY DEFAULT
-     OPENS ONLY AFTER CUSTOMER NAME CLICK
-     ========================================================= -->
-
-<div
-    class="customer-modal"
-    id="editCustomerModal"
-    onclick="closeEditCustomerModal(event)"
->
-
-
-    <div
-        class="customer-modal-box"
-        onclick="event.stopPropagation();"
-    >
-
-
-        <div class="modal-handle"></div>
-
-
-        <!-- TITLE -->
-
-        <div class="modal-title">
-
-            <h2>
-                Edit Customer
-            </h2>
-
-
-            <button
-                type="button"
-                class="modal-close"
-                onclick="closeEditCustomerModal()"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <!-- =================================================
-             UPDATE FORM
-             ================================================= -->
-
-        <form
-            method="post"
-            id="editCustomerForm"
-            class="customer-form"
-        >
-
-
-            <input
-                type="text"
-                name="name"
-                id="editCustomerName"
-                placeholder="Customer Name"
-                required
-                autocomplete="name"
-            >
-
-
-            <input
-                type="tel"
-                name="phone"
-                id="editCustomerPhone"
-                placeholder="Mobile Number"
-                autocomplete="tel"
-            >
-
-
-            <input
-                type="text"
-                name="address"
-                id="editCustomerAddress"
-                placeholder="Address"
-                autocomplete="street-address"
-            >
-
-
-            <button
-                type="submit"
-                class="save-customer"
-            >
-                💾 Save / Update Customer
-            </button>
-
-
-        </form>
-
-
-        <!-- =================================================
-             DELETE FORM
-             ================================================= -->
-
-        <form
-            method="post"
-            id="deleteCustomerForm"
-            style="margin-top:10px;"
-            onsubmit="return confirmDeleteCustomer();"
-        >
-
-
-            <button
-                type="submit"
-                class="delete-customer"
-            >
-                🗑 Delete Customer
-            </button>
-
-
-        </form>
-
 
     </div>
 
@@ -1273,7 +1206,7 @@
 
 
 /* =========================================================
-   ADD CUSTOMER MODAL
+   OPEN ADD CUSTOMER MODAL
    ========================================================= */
 
 function openCustomerModal() {
@@ -1332,7 +1265,7 @@ function closeCustomerModal(event) {
 
 
     /*
-     * If clicked on dark background
+     * Background click only
      */
 
     if (
@@ -1353,172 +1286,7 @@ function closeCustomerModal(event) {
 
 
 /* =========================================================
-   OPEN EDIT CUSTOMER
-   ========================================================= */
-
-function openEditCustomer(
-    id,
-    name,
-    phone,
-    address
-) {
-
-
-    const modal =
-        document.getElementById(
-            "editCustomerModal"
-        );
-
-
-    const nameInput =
-        document.getElementById(
-            "editCustomerName"
-        );
-
-
-    const phoneInput =
-        document.getElementById(
-            "editCustomerPhone"
-        );
-
-
-    const addressInput =
-        document.getElementById(
-            "editCustomerAddress"
-        );
-
-
-    const updateForm =
-        document.getElementById(
-            "editCustomerForm"
-        );
-
-
-    const deleteForm =
-        document.getElementById(
-            "deleteCustomerForm"
-        );
-
-
-    if (!modal) {
-        return;
-    }
-
-
-    /*
-     * Fill existing customer data
-     */
-
-    nameInput.value =
-        name || "";
-
-
-    phoneInput.value =
-        phone || "";
-
-
-    addressInput.value =
-        address || "";
-
-
-    /*
-     * Set backend update URL
-     */
-
-    updateForm.action =
-        "/customers/" +
-        id +
-        "/update";
-
-
-    /*
-     * Set backend delete URL
-     */
-
-    deleteForm.action =
-        "/customers/" +
-        id +
-        "/delete";
-
-
-    /*
-     * Open modal
-     */
-
-    modal.classList.add("show");
-
-    document.body.style.overflow =
-        "hidden";
-
-
-    /*
-     * Focus name
-     */
-
-    setTimeout(function() {
-
-        nameInput.focus();
-
-        nameInput.select();
-
-    }, 150);
-
-}
-
-
-/* =========================================================
-   CLOSE EDIT MODAL
-   ========================================================= */
-
-function closeEditCustomerModal(event) {
-
-    const modal =
-        document.getElementById(
-            "editCustomerModal"
-        );
-
-
-    if (!modal) {
-        return;
-    }
-
-
-    /*
-     * Close only when dark background is clicked
-     */
-
-    if (
-        event &&
-        event.target !== modal
-    ) {
-
-        return;
-
-    }
-
-
-    modal.classList.remove("show");
-
-    document.body.style.overflow = "";
-
-}
-
-
-/* =========================================================
-   DELETE CONFIRMATION
-   ========================================================= */
-
-function confirmDeleteCustomer() {
-
-    return confirm(
-        "Are you sure you want to delete this customer?"
-    );
-
-}
-
-
-/* =========================================================
-   SEARCH CUSTOMER
+   CUSTOMER SEARCH
    ========================================================= */
 
 document.addEventListener(
@@ -1569,16 +1337,14 @@ document.addEventListener(
                         (
                             row.dataset.name ||
                             ""
-                        )
-                        .toLowerCase();
+                        ).toLowerCase();
 
 
                     const phone =
                         (
                             row.dataset.phone ||
                             ""
-                        )
-                        .toLowerCase();
+                        ).toLowerCase();
 
 
                     const matches =
@@ -1646,11 +1412,10 @@ document.addEventListener(
 
 
 /* =========================================================
-   FILTER / SORT CUSTOMERS
+   FILTER / SORT
    ========================================================= */
 
 function filterCustomers() {
-
 
     const list =
         document.getElementById(
@@ -1670,10 +1435,6 @@ function filterCustomers() {
             )
         );
 
-
-    /*
-     * Sort alphabetically
-     */
 
     rows.sort(
         function(a, b) {
@@ -1695,10 +1456,6 @@ function filterCustomers() {
     );
 
 
-    /*
-     * Put sorted rows back
-     */
-
     rows.forEach(
         function(row) {
 
@@ -1711,32 +1468,23 @@ function filterCustomers() {
 
 
 /* =========================================================
-   ESCAPE KEY CLOSES MODALS
+   ESC CLOSE
    ========================================================= */
 
 document.addEventListener(
     "keydown",
     function(event) {
 
-
         if (
-            event.key !==
-            "Escape"
+            event.key === "Escape"
         ) {
 
-            return;
+            closeCustomerModal();
 
         }
 
-
-        closeCustomerModal();
-
-
-        closeEditCustomerModal();
-
     }
 );
-
 
 </script>
 
