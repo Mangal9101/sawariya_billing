@@ -1,0 +1,1271 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <meta name="theme-color" content="#24150d">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="stylesheet"
+          href="/static/css/style.css">
+
+    <title>{{ title or 'Sawariya Confectionary' }}</title>
+
+
+    <style>
+
+        /* =========================================================
+           RESET
+           ========================================================= */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+        }
+
+        body {
+            padding-left: 245px;
+            background: #f7f5f2;
+        }
+
+
+        /* =========================================================
+           SIDEBAR
+           ========================================================= */
+
+        .sw-sidebar {
+
+            position: fixed;
+
+            top: 0;
+            left: 0;
+
+            width: 245px;
+            height: 100vh;
+
+            background: #24150d;
+
+            color: #fff;
+
+            z-index: 9999;
+
+            display: flex;
+            flex-direction: column;
+
+            border-right:
+                1px solid rgba(255,255,255,.07);
+
+            transition:
+                transform .28s ease;
+        }
+
+
+        /* =========================================================
+           BRAND
+           ========================================================= */
+
+        .sw-brand {
+
+            height: 78px;
+
+            padding: 0 18px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 11px;
+
+            flex-shrink: 0;
+
+            border-bottom:
+                1px solid rgba(255,255,255,.08);
+        }
+
+
+        .sw-brand-icon {
+
+            width: 40px;
+            height: 40px;
+
+            flex: 0 0 40px;
+
+            border-radius: 10px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            background: #7b3f18;
+
+            font-size: 20px;
+        }
+
+
+        .sw-brand-name {
+
+            font-size: 18px;
+
+            font-weight: 900;
+
+            letter-spacing: 1.1px;
+
+            line-height: 1;
+        }
+
+
+        .sw-brand-sub {
+
+            margin-top: 5px;
+
+            font-size: 8px;
+
+            font-weight: 600;
+
+            letter-spacing: 1px;
+
+            text-transform: uppercase;
+
+            color:
+                rgba(255,255,255,.43);
+        }
+
+
+        /* =========================================================
+           SECTION
+           ========================================================= */
+
+        .sw-section-title {
+
+            padding:
+                15px 19px 5px;
+
+            font-size: 8px;
+
+            font-weight: 800;
+
+            letter-spacing: 1.4px;
+
+            text-transform: uppercase;
+
+            color:
+                rgba(255,255,255,.32);
+        }
+
+
+        /* =========================================================
+           NAVIGATION
+           ========================================================= */
+
+        .sw-nav {
+
+            flex: 1;
+
+            overflow-y: auto;
+
+            padding:
+                0 9px 8px;
+
+            scrollbar-width: none;
+        }
+
+        .sw-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+
+        .sw-nav a,
+        .sw-dark-toggle {
+
+            width: 100%;
+
+            height: 42px;
+
+            margin: 1px 0;
+
+            padding: 0 10px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            border: 0;
+
+            border-left:
+                3px solid transparent;
+
+            border-radius: 7px;
+
+            background: transparent;
+
+            color:
+                rgba(255,255,255,.62);
+
+            text-decoration: none;
+
+            font-family: inherit;
+
+            font-size: 12.5px;
+
+            font-weight: 600;
+
+            text-align: left;
+
+            cursor: pointer;
+
+            transition:
+                background .16s ease,
+                color .16s ease,
+                border-color .16s ease;
+        }
+
+
+        .sw-nav a:hover,
+        .sw-dark-toggle:hover {
+
+            background:
+                rgba(255,255,255,.055);
+
+            color: #fff;
+        }
+
+
+        /* =========================================================
+           ICON
+           ========================================================= */
+
+        .sw-icon {
+
+            width: 28px;
+            height: 28px;
+
+            flex: 0 0 28px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 16px;
+        }
+
+
+        /* =========================================================
+           ACTIVE
+           ========================================================= */
+
+        .sw-nav a.active {
+
+            background:
+                rgba(166,93,39,.23);
+
+            color: #fff;
+
+            border-left-color:
+                #c98245;
+        }
+
+
+        .sw-nav a.active .sw-icon {
+            opacity: 1;
+        }
+
+
+        /* =========================================================
+           DIVIDER
+           ========================================================= */
+
+        .sw-divider {
+
+            height: 1px;
+
+            margin:
+                8px 8px;
+
+            background:
+                rgba(255,255,255,.08);
+        }
+
+
+        /* =========================================================
+           SETTINGS ROW
+           ========================================================= */
+
+        .sw-setting-row {
+
+            height: 42px;
+
+            margin: 1px 0;
+
+            padding: 0 10px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            border-radius: 7px;
+
+            color:
+                rgba(255,255,255,.62);
+
+            font-size: 12.5px;
+
+            font-weight: 600;
+        }
+
+
+        /* =========================================================
+           LANGUAGE
+           ========================================================= */
+
+        .sw-language {
+
+            text-decoration: none;
+        }
+
+
+        .sw-language:hover {
+
+            background:
+                rgba(255,255,255,.055);
+
+            color: #fff;
+        }
+
+
+        /* =========================================================
+           DARK MODE TOGGLE
+           ========================================================= */
+
+        .sw-dark-toggle {
+
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+
+        .sw-toggle {
+
+            margin-left: auto;
+
+            width: 31px;
+            height: 18px;
+
+            border-radius: 20px;
+
+            background:
+                rgba(255,255,255,.18);
+
+            position: relative;
+
+            transition:
+                background .2s ease;
+        }
+
+
+        .sw-toggle::after {
+
+            content: "";
+
+            position: absolute;
+
+            width: 14px;
+            height: 14px;
+
+            top: 2px;
+            left: 2px;
+
+            border-radius: 50%;
+
+            background: #fff;
+
+            transition:
+                transform .2s ease;
+        }
+
+
+        .sw-dark-toggle.on .sw-toggle {
+
+            background: #a65d27;
+        }
+
+
+        .sw-dark-toggle.on .sw-toggle::after {
+
+            transform:
+                translateX(13px);
+        }
+
+
+        /* =========================================================
+           LOGOUT
+           ========================================================= */
+
+        .sw-logout {
+
+            color:
+                rgba(255,205,195,.60) !important;
+        }
+
+
+        .sw-logout:hover {
+
+            background:
+                rgba(190,60,45,.12) !important;
+
+            color: #fff !important;
+        }
+
+
+        /* =========================================================
+           SIDEBAR FOOTER
+           ========================================================= */
+
+        .sw-footer {
+
+            flex-shrink: 0;
+
+            padding:
+                11px 17px 14px;
+
+            border-top:
+                1px solid rgba(255,255,255,.08);
+        }
+
+
+        .sw-status {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            font-size: 9px;
+
+            font-weight: 600;
+
+            color:
+                rgba(255,255,255,.42);
+        }
+
+
+        .sw-status-dot {
+
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: #39b96b;
+        }
+
+
+        /* =========================================================
+           TOP BAR
+           ========================================================= */
+
+        .sw-topbar {
+
+            position: sticky;
+
+            top: 0;
+
+            height: 62px;
+
+            width: 100%;
+
+            background:
+                rgba(255,255,255,.97);
+
+            border-bottom:
+                1px solid #e8e4df;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            z-index: 8000;
+        }
+
+
+        /* =========================================================
+           CENTER BUSINESS NAME
+           ========================================================= */
+
+        .sw-center-brand {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            color: #7b3f18;
+
+            font-size: 21px;
+
+            font-weight: 900;
+
+            letter-spacing: 1.8px;
+        }
+
+
+        /* =========================================================
+           MOBILE BUTTON
+           ========================================================= */
+
+        .sw-menu-button {
+
+            display: none;
+
+            position: absolute;
+
+            left: 10px;
+
+            width: 40px;
+            height: 40px;
+
+            border: 0;
+
+            border-radius: 9px;
+
+            background: #24150d;
+
+            color: #fff;
+
+            font-size: 21px;
+
+            align-items: center;
+            justify-content: center;
+
+            cursor: pointer;
+        }
+
+
+        /* =========================================================
+           OVERLAY
+           ========================================================= */
+
+        .sw-overlay {
+
+            display: none;
+
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 9998;
+
+            background:
+                rgba(0,0,0,.50);
+
+            opacity: 0;
+
+            transition:
+                opacity .25s ease;
+        }
+
+
+        /* =========================================================
+           MOBILE
+           ========================================================= */
+
+        @media (max-width: 768px) {
+
+            body {
+                padding-left: 0;
+            }
+
+
+            .sw-topbar {
+                height: 58px;
+            }
+
+
+            .sw-menu-button {
+                display: flex;
+            }
+
+
+            .sw-center-brand {
+
+                font-size: 18px;
+
+                letter-spacing: 1.2px;
+            }
+
+
+            .sw-sidebar {
+
+                width: 280px;
+
+                transform:
+                    translateX(-100%);
+
+                box-shadow:
+                    8px 0 30px
+                    rgba(0,0,0,.28);
+            }
+
+
+            .sw-sidebar.open {
+
+                transform:
+                    translateX(0);
+            }
+
+
+            .sw-overlay {
+
+                display: block;
+
+                pointer-events: none;
+            }
+
+
+            .sw-overlay.open {
+
+                opacity: 1;
+
+                pointer-events: auto;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     TOP HEADER
+     ========================================================= -->
+
+<header class="sw-topbar">
+
+
+    <button
+        type="button"
+        class="sw-menu-button"
+        id="swMenuButton"
+        aria-label="Open menu"
+        aria-expanded="false">
+
+        ☰
+
+    </button>
+
+
+    <div class="sw-center-brand">
+
+        🍬 SAWARIYA
+
+    </div>
+
+</header>
+
+
+
+<!-- =========================================================
+     SIDEBAR
+     ========================================================= -->
+
+<aside
+    class="sw-sidebar"
+    id="swSidebar">
+
+
+    <!-- BRAND -->
+
+    <div class="sw-brand">
+
+        <div class="sw-brand-icon">
+            🍬
+        </div>
+
+        <div>
+
+            <div class="sw-brand-name">
+                SAWARIYA
+            </div>
+
+            <div class="sw-brand-sub">
+                Confectionary Billing
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- MAIN MENU -->
+
+    <div class="sw-section-title">
+        Main Menu
+    </div>
+
+
+    <nav class="sw-nav">
+
+
+        <a
+            href="/dashboard"
+            data-path="/dashboard">
+
+            <span class="sw-icon">🏠</span>
+
+            <span>Dashboard</span>
+
+        </a>
+
+
+        <a
+            href="/billing"
+            data-path="/billing">
+
+            <span class="sw-icon">🧾</span>
+
+            <span>Billing</span>
+
+        </a>
+
+
+        <a
+            href="/products"
+            data-path="/products">
+
+            <span class="sw-icon">📦</span>
+
+            <span>Products</span>
+
+        </a>
+
+
+        <a
+            href="/stock"
+            data-path="/stock">
+
+            <span class="sw-icon">📊</span>
+
+            <span>Stock</span>
+
+        </a>
+
+
+        <a
+            href="/customers"
+            data-path="/customers">
+
+            <span class="sw-icon">👥</span>
+
+            <span>Customers</span>
+
+        </a>
+
+
+        <a
+            href="/khatabook"
+            data-path="/khatabook">
+
+            <span class="sw-icon">📒</span>
+
+            <span>Khatabook</span>
+
+        </a>
+
+
+        <a
+            href="/reports"
+            data-path="/reports">
+
+            <span class="sw-icon">📈</span>
+
+            <span>Reports</span>
+
+        </a>
+
+
+        <a
+            href="/staff"
+            data-path="/staff">
+
+            <span class="sw-icon">👨‍💼</span>
+
+            <span>Staff</span>
+
+        </a>
+
+
+
+        <!-- DIVIDER -->
+
+        <div class="sw-divider"></div>
+
+
+
+        <!-- SETTINGS -->
+
+        <div class="sw-section-title"
+             style="padding-top:4px;">
+
+            Settings
+
+        </div>
+
+
+        <!-- LANGUAGE -->
+
+        <a
+            href="/language"
+            class="sw-language"
+            data-path="/language">
+
+            <span class="sw-icon">🌐</span>
+
+            <span>Language</span>
+
+        </a>
+
+
+        <!-- DARK MODE -->
+
+        <button
+            type="button"
+            class="sw-dark-toggle"
+            id="swDarkToggle">
+
+            <span class="sw-icon">🌙</span>
+
+            <span>Dark Mode</span>
+
+            <span class="sw-toggle"></span>
+
+        </button>
+
+
+
+        <!-- DIVIDER -->
+
+        <div class="sw-divider"></div>
+
+
+
+        <!-- LOGOUT -->
+
+        <a
+            href="/logout"
+            class="sw-logout">
+
+            <span class="sw-icon">🚪</span>
+
+            <span>Logout</span>
+
+        </a>
+
+
+    </nav>
+
+
+
+    <!-- FOOTER -->
+
+    <div class="sw-footer">
+
+        <div class="sw-status">
+
+            <span
+                class="sw-status-dot"
+                id="swStatusDot">
+            </span>
+
+            <span id="swConnectionText">
+                Online
+            </span>
+
+        </div>
+
+    </div>
+
+</aside>
+
+
+
+<!-- =========================================================
+     OVERLAY
+     ========================================================= -->
+
+<div
+    class="sw-overlay"
+    id="swOverlay">
+</div>
+
+
+
+<!-- =========================================================
+     PAGE CONTENT
+     ========================================================= -->
+
+{% block content %}{% endblock %}
+
+
+
+<!-- =========================================================
+     JAVASCRIPT
+     ========================================================= -->
+
+<script>
+
+(function () {
+
+
+    /* =====================================================
+       SIDEBAR
+       ===================================================== */
+
+    const sidebar =
+        document.getElementById(
+            "swSidebar"
+        );
+
+    const overlay =
+        document.getElementById(
+            "swOverlay"
+        );
+
+    const menuButton =
+        document.getElementById(
+            "swMenuButton"
+        );
+
+
+    function openSidebar() {
+
+        sidebar.classList.add("open");
+
+        overlay.classList.add("open");
+
+        menuButton.setAttribute(
+            "aria-expanded",
+            "true"
+        );
+
+        document.body.style.overflow =
+            "hidden";
+    }
+
+
+    function closeSidebar() {
+
+        sidebar.classList.remove("open");
+
+        overlay.classList.remove("open");
+
+        menuButton.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+
+        document.body.style.overflow =
+            "";
+    }
+
+
+    if (menuButton) {
+
+        menuButton.addEventListener(
+            "click",
+            openSidebar
+        );
+
+    }
+
+
+    if (overlay) {
+
+        overlay.addEventListener(
+            "click",
+            closeSidebar
+        );
+
+    }
+
+
+    document
+        .querySelectorAll(
+            ".sw-nav a"
+        )
+        .forEach(function (link) {
+
+            link.addEventListener(
+                "click",
+                function () {
+
+                    if (
+                        window.innerWidth <= 768
+                    ) {
+
+                        closeSidebar();
+
+                    }
+
+                }
+            );
+
+        });
+
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.key === "Escape"
+            ) {
+
+                closeSidebar();
+
+            }
+
+        }
+    );
+
+
+
+    /* =====================================================
+       ACTIVE MENU
+       ===================================================== */
+
+    const currentPath =
+        window.location.pathname;
+
+
+    document
+        .querySelectorAll(
+            ".sw-nav a[data-path]"
+        )
+        .forEach(function (link) {
+
+            const path =
+                link.getAttribute(
+                    "data-path"
+                );
+
+
+            if (
+                currentPath === path ||
+                currentPath.startsWith(
+                    path + "/"
+                )
+            ) {
+
+                link.classList.add(
+                    "active"
+                );
+
+            }
+
+        });
+
+
+
+    /* =====================================================
+       DARK MODE
+       ===================================================== */
+
+    const darkToggle =
+        document.getElementById(
+            "swDarkToggle"
+        );
+
+
+    function setDarkMode(enabled) {
+
+        document.body.classList.toggle(
+            "dark-mode",
+            enabled
+        );
+
+        if (darkToggle) {
+
+            darkToggle.classList.toggle(
+                "on",
+                enabled
+            );
+
+        }
+
+        localStorage.setItem(
+            "sawariya_dark_mode",
+            enabled ? "1" : "0"
+        );
+
+    }
+
+
+    const savedDarkMode =
+        localStorage.getItem(
+            "sawariya_dark_mode"
+        );
+
+
+    if (savedDarkMode === "1") {
+
+        setDarkMode(true);
+
+    }
+
+
+    if (darkToggle) {
+
+        darkToggle.addEventListener(
+            "click",
+            function () {
+
+                const enabled =
+                    !document.body.classList.contains(
+                        "dark-mode"
+                    );
+
+                setDarkMode(enabled);
+
+            }
+        );
+
+    }
+
+
+
+    /* =====================================================
+       ONLINE / OFFLINE
+       ===================================================== */
+
+    const connectionText =
+        document.getElementById(
+            "swConnectionText"
+        );
+
+
+    const statusDot =
+        document.getElementById(
+            "swStatusDot"
+        );
+
+
+    function updateConnection() {
+
+        if (!connectionText) {
+            return;
+        }
+
+
+        if (navigator.onLine) {
+
+            connectionText.textContent =
+                "Online";
+
+            if (statusDot) {
+
+                statusDot.style.background =
+                    "#39b96b";
+
+            }
+
+        } else {
+
+            connectionText.textContent =
+                "Offline";
+
+            if (statusDot) {
+
+                statusDot.style.background =
+                    "#d98b3d";
+
+            }
+
+        }
+
+    }
+
+
+    window.addEventListener(
+        "online",
+        updateConnection
+    );
+
+
+    window.addEventListener(
+        "offline",
+        updateConnection
+    );
+
+
+    updateConnection();
+
+
+
+    /* =====================================================
+       SERVICE WORKER
+       ===================================================== */
+
+    if ("serviceWorker" in navigator) {
+
+        window.addEventListener(
+            "load",
+            function () {
+
+                navigator.serviceWorker
+                    .register(
+                        "/service-worker.js"
+                    )
+                    .catch(
+                        function (error) {
+
+                            console.warn(
+                                "Service Worker registration failed:",
+                                error
+                            );
+
+                        }
+                    );
+
+            }
+        );
+
+    }
+
+
+})();
+
+</script>
+
+
+</body>
+
+</html>
