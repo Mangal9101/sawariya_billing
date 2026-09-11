@@ -1,0 +1,370 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<main>
+
+    <!-- =========================
+         PAGE HEADER
+         ========================= -->
+
+    <div class="top">
+
+        <div>
+            <h1>Stock Management</h1>
+            <p>Check current stock and low stock products.</p>
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         SEARCH
+         ========================= -->
+
+    <section class="panel">
+
+        <input
+            type="search"
+            id="stockSearch"
+            class="search-input"
+            placeholder="🔍 Search product..."
+            autocomplete="off"
+        >
+
+    </section>
+
+
+    <!-- =========================
+         STOCK TABLE
+         ========================= -->
+
+    <section class="panel">
+
+        <table class="stock-table">
+
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Current Stock</th>
+                    <th>Minimum</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody id="stockTableBody">
+
+                {% for p in products %}
+
+                <tr
+                    class="stock-row"
+                    data-name="{{ p.name|lower }}"
+                >
+
+                    <td>
+                        {{ p.name }}
+                    </td>
+
+                    <td>
+                        {{ p.quantity }}
+                    </td>
+
+                    <td>
+                        {{ p.min_stock }}
+                    </td>
+
+                    <td>
+
+                        {% if p.quantity <= p.min_stock %}
+
+                            <span class="danger">
+                                LOW STOCK
+                            </span>
+
+                        {% else %}
+
+                            <span class="ok">
+                                In Stock
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+
+        <!-- NO RESULT -->
+
+        <div
+            id="stockNoResult"
+            style="
+                display:none;
+                text-align:center;
+                padding:25px;
+                color:#777;
+                font-weight:600;
+            "
+        >
+            No product found.
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =====================================
+     SEARCH JAVASCRIPT
+     ===================================== -->
+
+<script>
+
+(function () {
+
+    function initStockSearch() {
+
+        const search = document.getElementById("stockSearch");
+        const rows = document.querySelectorAll(
+            "#stockTableBody .stock-row"
+        );
+        const noResult = document.getElementById("stockNoResult");
+
+        if (!search) {
+            return;
+        }
+
+        search.oninput = function () {
+
+            const value = this.value
+                .toLowerCase()
+                .trim();
+
+            let found = 0;
+
+            rows.forEach(function (row) {
+
+                const name = (
+                    row.getAttribute("data-name") || ""
+                ).toLowerCase();
+
+                if (name.indexOf(value) !== -1) {
+
+                    row.classList.remove("stock-hidden");
+
+                    found++;
+
+                } else {
+
+                    row.classList.add("stock-hidden");
+
+                }
+
+            });
+
+
+            if (found === 0 && value !== "") {
+
+                noResult.style.display = "block";
+
+            } else {
+
+                noResult.style.display = "none";
+
+            }
+
+        };
+
+    }
+
+
+    if (document.readyState === "loading") {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            initStockSearch
+        );
+
+    } else {
+
+        initStockSearch();
+
+    }
+
+})();
+
+</script>
+
+
+<!-- =====================================
+     STOCK SEARCH CSS
+     ===================================== -->
+
+<style>
+
+.stock-hidden {
+    display: none !important;
+}
+
+
+/* SEARCH */
+
+#stockSearch {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+
+/* =====================================
+   MOBILE STOCK
+   ===================================== */
+
+@media (max-width: 600px) {
+
+    table.stock-table {
+        display: block !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        background: transparent !important;
+    }
+
+
+    table.stock-table thead {
+        display: none !important;
+    }
+
+
+    table.stock-table tbody {
+        display: block !important;
+        width: 100% !important;
+    }
+
+
+    table.stock-table tr.stock-row {
+
+        display: block !important;
+
+        width: 100% !important;
+
+        margin-bottom: 16px !important;
+
+        background: #ffffff !important;
+
+        border: 1px solid #dddddd !important;
+
+        border-radius: 12px !important;
+
+        overflow: hidden !important;
+    }
+
+
+    /* IMPORTANT:
+       Hidden row must stay hidden */
+
+    table.stock-table tr.stock-row.stock-hidden {
+        display: none !important;
+    }
+
+
+    table.stock-table tr.stock-row td {
+
+        display: flex !important;
+
+        width: 100% !important;
+
+        box-sizing: border-box !important;
+
+        align-items: center !important;
+
+        justify-content: space-between !important;
+
+        padding: 13px 15px !important;
+
+        border: none !important;
+
+        border-bottom: 1px solid #eeeeee !important;
+
+        text-align: right !important;
+
+        background: #ffffff !important;
+    }
+
+
+    table.stock-table tr.stock-row td:last-child {
+        border-bottom: none !important;
+    }
+
+
+    table.stock-table tr.stock-row td:nth-child(1) {
+
+        background: #f8f4f1 !important;
+
+        font-size: 17px !important;
+
+        font-weight: 700 !important;
+
+        text-align: right !important;
+    }
+
+
+    table.stock-table tr.stock-row td:nth-child(1)::before {
+        content: "Product";
+    }
+
+
+    table.stock-table tr.stock-row td:nth-child(2)::before {
+        content: "Current Stock";
+    }
+
+
+    table.stock-table tr.stock-row td:nth-child(3)::before {
+        content: "Minimum";
+    }
+
+
+    table.stock-table tr.stock-row td:nth-child(4)::before {
+        content: "Status";
+    }
+
+
+    table.stock-table tr.stock-row td::before {
+
+        display: block !important;
+
+        font-weight: 700 !important;
+
+        color: #5d5149 !important;
+
+        margin-right: 15px !important;
+
+        flex-shrink: 0 !important;
+
+        text-align: left !important;
+    }
+
+
+    table.stock-table .danger,
+    table.stock-table .ok {
+
+        display: inline-block !important;
+
+        padding: 5px 10px !important;
+
+        border-radius: 6px !important;
+
+        font-size: 13px !important;
+
+        font-weight: 700 !important;
+    }
+
+}
+
+</style>
+
+{% endblock %}

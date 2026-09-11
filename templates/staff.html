@@ -1,0 +1,1798 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+
+/* =========================================================
+   STAFF PAGE
+   ========================================================= */
+
+.staff-page {
+    width: 100%;
+    min-height: calc(100vh - 62px);
+    background: #f7f5f2;
+    padding: 22px;
+    padding-bottom: 90px;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.staff-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.staff-title-wrap h1 {
+    margin: 0;
+    color: #24150d;
+    font-size: 25px;
+    font-weight: 900;
+}
+
+.staff-title-wrap p {
+    margin: 5px 0 0;
+    color: #777;
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   ADD STAFF BUTTON
+   ========================================================= */
+
+.staff-add-btn {
+    border: 0;
+    border-radius: 9px;
+    background: #7b3f18;
+    color: #fff;
+    padding: 11px 17px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(123,63,24,.18);
+}
+
+.staff-add-btn:hover {
+    background: #a65d27;
+}
+
+
+/* =========================================================
+   SUMMARY CARDS
+   ========================================================= */
+
+.staff-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.staff-card {
+    background: #fff;
+    border: 1px solid #e8e1db;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.04);
+}
+
+.staff-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.staff-card-label {
+    color: #777;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.staff-card-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    background: #f3e7dc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+}
+
+.staff-card-value {
+    margin-top: 8px;
+    color: #24150d;
+    font-size: 23px;
+    font-weight: 900;
+}
+
+
+/* =========================================================
+   STAFF PANEL
+   ========================================================= */
+
+.staff-panel {
+    background: #fff;
+    border: 1px solid #e8e1db;
+    border-radius: 13px;
+    overflow: hidden;
+    box-shadow: 0 3px 14px rgba(0,0,0,.04);
+}
+
+
+/* =========================================================
+   PANEL HEADER
+   ========================================================= */
+
+.staff-panel-header {
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    border-bottom: 1px solid #eee8e2;
+}
+
+.staff-panel-header h2 {
+    margin: 0;
+    color: #24150d;
+    font-size: 16px;
+    font-weight: 900;
+}
+
+.staff-search {
+    width: 230px;
+    height: 37px;
+    border: 1px solid #ddd4cc;
+    border-radius: 8px;
+    padding: 0 11px;
+    outline: none;
+    background: #faf9f7;
+    color: #24150d;
+    font-size: 12px;
+}
+
+.staff-search:focus {
+    border-color: #a65d27;
+}
+
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+.staff-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.staff-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px;
+}
+
+.staff-table th {
+    padding: 12px 15px;
+    text-align: left;
+    background: #faf8f5;
+    color: #7b6b60;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    border-bottom: 1px solid #eee8e2;
+}
+
+.staff-table td {
+    padding: 13px 15px;
+    color: #40362f;
+    font-size: 12px;
+    border-bottom: 1px solid #f0ebe6;
+}
+
+.staff-table tr:last-child td {
+    border-bottom: 0;
+}
+
+.staff-table tr:hover td {
+    background: #fdfbf9;
+}
+
+
+/* =========================================================
+   STAFF NAME
+   ========================================================= */
+
+.staff-name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.staff-avatar {
+    width: 35px;
+    height: 35px;
+    flex: 0 0 35px;
+    border-radius: 50%;
+    background: #7b3f18;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.staff-name-text {
+    font-weight: 800;
+    color: #24150d;
+}
+
+.staff-role {
+    margin-top: 2px;
+    color: #999;
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+.staff-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 9px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.staff-status.active {
+    background: #e7f6ed;
+    color: #198754;
+}
+
+.staff-status.inactive {
+    background: #f8e7e5;
+    color: #b5473b;
+}
+
+.staff-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+
+/* =========================================================
+   ACTION BUTTONS
+   ========================================================= */
+
+.staff-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.staff-action {
+    width: 31px;
+    height: 31px;
+    border: 1px solid #e1d9d2;
+    border-radius: 7px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.staff-action:hover {
+    background: #f6eee8;
+}
+
+.staff-action.delete:hover {
+    background: #fbe9e7;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.staff-empty {
+    display: none;
+    padding: 45px 20px;
+    text-align: center;
+    color: #999;
+}
+
+.staff-empty-icon {
+    font-size: 35px;
+    margin-bottom: 8px;
+}
+
+.staff-empty-title {
+    color: #555;
+    font-weight: 800;
+    font-size: 14px;
+}
+
+.staff-empty-text {
+    margin-top: 4px;
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   ADD / EDIT MODAL
+   ========================================================= */
+
+.staff-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 10050;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    background: rgba(0,0,0,.55);
+}
+
+.staff-modal.show {
+    display: flex;
+}
+
+.staff-modal-box {
+    width: 100%;
+    max-width: 470px;
+    max-height: calc(100vh - 36px);
+    overflow-y: auto;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 15px 50px rgba(0,0,0,.25);
+}
+
+.staff-modal-head {
+    padding: 17px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #eee8e2;
+}
+
+.staff-modal-head h2 {
+    margin: 0;
+    color: #24150d;
+    font-size: 17px;
+    font-weight: 900;
+}
+
+.staff-close {
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 7px;
+    background: #f5f1ed;
+    cursor: pointer;
+    font-size: 18px;
+    color: #555;
+}
+
+.staff-form {
+    padding: 18px;
+}
+
+.staff-field {
+    margin-bottom: 14px;
+}
+
+.staff-field label {
+    display: block;
+    margin-bottom: 6px;
+    color: #4a4039;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.staff-field input,
+.staff-field select {
+    width: 100%;
+    height: 42px;
+    border: 1px solid #ddd4cc;
+    border-radius: 8px;
+    outline: none;
+    padding: 0 11px;
+    background: #fff;
+    color: #24150d;
+    font-family: inherit;
+    font-size: 12px;
+}
+
+.staff-field input:focus,
+.staff-field select:focus {
+    border-color: #a65d27;
+}
+
+.staff-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.staff-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+.staff-cancel,
+.staff-save {
+    height: 39px;
+    padding: 0 16px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.staff-cancel {
+    border: 1px solid #ddd4cc;
+    background: #fff;
+    color: #555;
+}
+
+.staff-save {
+    border: 0;
+    background: #7b3f18;
+    color: #fff;
+}
+
+.staff-save:hover {
+    background: #a65d27;
+}
+
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+
+.staff-toast {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 11000;
+    padding: 11px 15px;
+    border-radius: 8px;
+    background: #24150d;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    box-shadow: 0 8px 25px rgba(0,0,0,.2);
+    transform: translateY(20px);
+    opacity: 0;
+    pointer-events: none;
+    transition: .25s ease;
+}
+
+.staff-toast.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+
+/* =========================================================
+   DARK MODE
+   ========================================================= */
+
+body.dark-mode .staff-page {
+    background: #15100d;
+}
+
+body.dark-mode .staff-title-wrap h1,
+body.dark-mode .staff-card-value,
+body.dark-mode .staff-panel-header h2,
+body.dark-mode .staff-name-text {
+    color: #fff;
+}
+
+body.dark-mode .staff-title-wrap p {
+    color: #aaa;
+}
+
+body.dark-mode .staff-card,
+body.dark-mode .staff-panel,
+body.dark-mode .staff-modal-box {
+    background: #211812;
+    border-color: #3a2b22;
+}
+
+body.dark-mode .staff-card-label {
+    color: #aaa;
+}
+
+body.dark-mode .staff-card-icon {
+    background: #3a261a;
+}
+
+body.dark-mode .staff-panel-header {
+    border-color: #3a2b22;
+}
+
+body.dark-mode .staff-search,
+body.dark-mode .staff-field input,
+body.dark-mode .staff-field select {
+    background: #18120f;
+    border-color: #49362a;
+    color: #fff;
+}
+
+body.dark-mode .staff-table th {
+    background: #2a1d16;
+    color: #b8aaa0;
+    border-color: #3a2b22;
+}
+
+body.dark-mode .staff-table td {
+    color: #ddd;
+    border-color: #33261f;
+}
+
+body.dark-mode .staff-table tr:hover td {
+    background: #281c16;
+}
+
+body.dark-mode .staff-role {
+    color: #999;
+}
+
+body.dark-mode .staff-action {
+    background: #2a1d16;
+    border-color: #49362a;
+    color: #fff;
+}
+
+body.dark-mode .staff-cancel {
+    background: #2a1d16;
+    border-color: #49362a;
+    color: #ddd;
+}
+
+body.dark-mode .staff-modal {
+    background: rgba(0,0,0,.72);
+}
+
+body.dark-mode .staff-modal-head {
+    border-color: #3a2b22;
+}
+
+body.dark-mode .staff-modal-head h2,
+body.dark-mode .staff-field label {
+    color: #fff;
+}
+
+body.dark-mode .staff-close {
+    background: #35261e;
+    color: #fff;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    .staff-page {
+        padding: 16px 12px 80px;
+    }
+
+    .staff-header {
+        align-items: flex-start;
+    }
+
+    .staff-title-wrap h1 {
+        font-size: 21px;
+    }
+
+    .staff-title-wrap p {
+        font-size: 11px;
+    }
+
+    .staff-add-btn {
+        padding: 10px 12px;
+        white-space: nowrap;
+    }
+
+    .staff-summary {
+        grid-template-columns: 1fr 1fr;
+        gap: 9px;
+    }
+
+    .staff-card {
+        padding: 13px;
+    }
+
+    .staff-card:last-child {
+        grid-column: span 2;
+    }
+
+    .staff-card-value {
+        font-size: 20px;
+    }
+
+    .staff-panel-header {
+        align-items: stretch;
+        flex-direction: column;
+        padding: 13px;
+    }
+
+    .staff-search {
+        width: 100%;
+    }
+
+    .staff-table {
+        min-width: 680px;
+    }
+
+    .staff-modal {
+        padding: 10px;
+    }
+
+    .staff-form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .staff-modal-box {
+        max-height: calc(100vh - 20px);
+    }
+
+}
+
+
+/* =========================================================
+   SMALL PHONE
+   ========================================================= */
+
+@media (max-width: 430px) {
+
+    .staff-header {
+        gap: 8px;
+    }
+
+    .staff-title-wrap h1 {
+        font-size: 19px;
+    }
+
+    .staff-add-btn {
+        font-size: 10px;
+        padding: 9px 10px;
+    }
+
+    .staff-card-label {
+        font-size: 10px;
+    }
+
+    .staff-card-value {
+        font-size: 18px;
+    }
+
+}
+
+</style><main class="staff-page"><!-- =====================================================
+     HEADER
+     ===================================================== -->
+
+<div class="staff-header">
+
+    <div class="staff-title-wrap">
+
+        <h1>Staff</h1>
+
+        <p>
+            Manage your shop staff and employees
+        </p>
+
+    </div>
+
+
+    <button
+        type="button"
+        class="staff-add-btn"
+        id="staffAddBtn">
+
+        ＋ Add Staff
+
+    </button>
+
+</div>
+
+
+
+<!-- =====================================================
+     SUMMARY
+     ===================================================== -->
+
+<section class="staff-summary">
+
+
+    <div class="staff-card">
+
+        <div class="staff-card-top">
+
+            <div class="staff-card-label">
+                Total Staff
+            </div>
+
+            <div class="staff-card-icon">
+                👥
+            </div>
+
+        </div>
+
+        <div
+            class="staff-card-value"
+            id="totalStaff">
+
+            0
+
+        </div>
+
+    </div>
+
+
+    <div class="staff-card">
+
+        <div class="staff-card-top">
+
+            <div class="staff-card-label">
+                Active Staff
+            </div>
+
+            <div class="staff-card-icon">
+                ✅
+            </div>
+
+        </div>
+
+        <div
+            class="staff-card-value"
+            id="activeStaff">
+
+            0
+
+        </div>
+
+    </div>
+
+
+    <div class="staff-card">
+
+        <div class="staff-card-top">
+
+            <div class="staff-card-label">
+                Inactive Staff
+            </div>
+
+            <div class="staff-card-icon">
+                ⏸️
+            </div>
+
+        </div>
+
+        <div
+            class="staff-card-value"
+            id="inactiveStaff">
+
+            0
+
+        </div>
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     STAFF LIST
+     ===================================================== -->
+
+<section class="staff-panel">
+
+
+    <div class="staff-panel-header">
+
+        <h2>Staff Members</h2>
+
+        <input
+            type="search"
+            id="staffSearch"
+            class="staff-search"
+            placeholder="Search staff...">
+
+    </div>
+
+
+    <div class="staff-table-wrap">
+
+        <table class="staff-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>Staff</th>
+
+                    <th>Phone</th>
+
+                    <th>Role</th>
+
+                    <th>Status</th>
+
+                    <th>Action</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="staffTableBody">
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <div
+        class="staff-empty"
+        id="staffEmpty">
+
+        <div class="staff-empty-icon">
+            👨‍💼
+        </div>
+
+        <div class="staff-empty-title">
+            No staff found
+        </div>
+
+        <div class="staff-empty-text">
+            Add your first staff member to get started.
+        </div>
+
+    </div>
+
+
+</section>
+
+</main><!-- =========================================================
+     ADD / EDIT MODAL
+     ========================================================= --><div
+    class="staff-modal"
+    id="staffModal"><div class="staff-modal-box">
+
+
+    <div class="staff-modal-head">
+
+        <h2 id="staffModalTitle">
+            Add Staff
+        </h2>
+
+        <button
+            type="button"
+            class="staff-close"
+            id="staffCloseBtn">
+
+            ×
+
+        </button>
+
+    </div>
+
+
+    <form
+        class="staff-form"
+        id="staffForm">
+
+
+        <div class="staff-field">
+
+            <label>
+                Full Name
+            </label>
+
+            <input
+                type="text"
+                id="staffName"
+                placeholder="Enter staff name"
+                required>
+
+        </div>
+
+
+        <div class="staff-form-row">
+
+
+            <div class="staff-field">
+
+                <label>
+                    Phone
+                </label>
+
+                <input
+                    type="tel"
+                    id="staffPhone"
+                    placeholder="Enter phone number">
+
+            </div>
+
+
+            <div class="staff-field">
+
+                <label>
+                    Role
+                </label>
+
+                <select id="staffRole">
+
+                    <option value="Staff">
+                        Staff
+                    </option>
+
+                    <option value="Manager">
+                        Manager
+                    </option>
+
+                    <option value="Cashier">
+                        Cashier
+                    </option>
+
+                    <option value="Sales">
+                        Sales
+                    </option>
+
+                    <option value="Accountant">
+                        Accountant
+                    </option>
+
+                </select>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="staff-field">
+
+            <label>
+                Status
+            </label>
+
+            <select id="staffStatus">
+
+                <option value="Active">
+                    Active
+                </option>
+
+                <option value="Inactive">
+                    Inactive
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="staff-modal-actions">
+
+            <button
+                type="button"
+                class="staff-cancel"
+                id="staffCancelBtn">
+
+                Cancel
+
+            </button>
+
+            <button
+                type="submit"
+                class="staff-save">
+
+                Save Staff
+
+            </button>
+
+        </div>
+
+
+    </form>
+
+
+</div>
+
+</div><!-- =========================================================
+     TOAST
+     ========================================================= --><div
+    class="staff-toast"
+    id="staffToast">Staff saved successfully
+
+</div><script>
+
+/* =========================================================
+   STAFF FRONTEND
+   ========================================================= */
+
+(function () {
+
+    const STORAGE_KEY =
+        "sawariya_staff_local";
+
+
+    let staffList = [];
+
+    let editingId = null;
+
+
+    const modal =
+        document.getElementById("staffModal");
+
+    const form =
+        document.getElementById("staffForm");
+
+    const tableBody =
+        document.getElementById("staffTableBody");
+
+    const emptyState =
+        document.getElementById("staffEmpty");
+
+    const searchInput =
+        document.getElementById("staffSearch");
+
+    const modalTitle =
+        document.getElementById("staffModalTitle");
+
+    const toast =
+        document.getElementById("staffToast");
+
+
+
+    /* =====================================================
+       LOAD DATA
+       ===================================================== */
+
+    function loadStaff() {
+
+        try {
+
+            const saved =
+                localStorage.getItem(
+                    STORAGE_KEY
+                );
+
+            staffList =
+                saved
+                    ? JSON.parse(saved)
+                    : [];
+
+        } catch (error) {
+
+            staffList = [];
+
+        }
+
+        renderStaff();
+
+    }
+
+
+
+    /* =====================================================
+       SAVE DATA
+       ===================================================== */
+
+    function saveStaffData() {
+
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(staffList)
+        );
+
+    }
+
+
+
+    /* =====================================================
+       RENDER
+       ===================================================== */
+
+    function renderStaff() {
+
+        const query =
+            (searchInput.value || "")
+                .trim()
+                .toLowerCase();
+
+
+        const filtered =
+            staffList.filter(function (staff) {
+
+                return (
+
+                    staff.name
+                        .toLowerCase()
+                        .includes(query)
+
+                    ||
+
+                    (staff.phone || "")
+                        .toLowerCase()
+                        .includes(query)
+
+                    ||
+
+                    staff.role
+                        .toLowerCase()
+                        .includes(query)
+
+                );
+
+            });
+
+
+        tableBody.innerHTML = "";
+
+
+        filtered.forEach(function (staff) {
+
+            const row =
+                document.createElement("tr");
+
+
+            const initials =
+                getInitials(staff.name);
+
+
+            const statusClass =
+                staff.status === "Active"
+                    ? "active"
+                    : "inactive";
+
+
+            row.innerHTML = `
+
+                <td>
+
+                    <div class="staff-name">
+
+                        <div class="staff-avatar">
+                            ${escapeHtml(initials)}
+                        </div>
+
+                        <div>
+
+                            <div class="staff-name-text">
+                                ${escapeHtml(staff.name)}
+                            </div>
+
+                            <div class="staff-role">
+                                Employee
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </td>
+
+
+                <td>
+                    ${escapeHtml(staff.phone || "-")}
+                </td>
+
+
+                <td>
+                    ${escapeHtml(staff.role)}
+                </td>
+
+
+                <td>
+
+                    <span class="staff-status ${statusClass}">
+
+                        <span class="staff-status-dot"></span>
+
+                        ${escapeHtml(staff.status)}
+
+                    </span>
+
+                </td>
+
+
+                <td>
+
+                    <div class="staff-actions">
+
+                        <button
+                            type="button"
+                            class="staff-action"
+                            data-edit="${staff.id}"
+                            title="Edit">
+
+                            ✏️
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="staff-action delete"
+                            data-delete="${staff.id}"
+                            title="Delete">
+
+                            🗑️
+
+                        </button>
+
+                    </div>
+
+                </td>
+
+            `;
+
+
+            tableBody.appendChild(row);
+
+        });
+
+
+        if (filtered.length === 0) {
+
+            emptyState.style.display = "block";
+
+        } else {
+
+            emptyState.style.display = "none";
+
+        }
+
+
+        updateSummary();
+
+    }
+
+
+
+    /* =====================================================
+       SUMMARY
+       ===================================================== */
+
+    function updateSummary() {
+
+        const total =
+            staffList.length;
+
+
+        const active =
+            staffList.filter(function (staff) {
+
+                return staff.status === "Active";
+
+            }).length;
+
+
+        const inactive =
+            total - active;
+
+
+        document.getElementById(
+            "totalStaff"
+        ).textContent = total;
+
+
+        document.getElementById(
+            "activeStaff"
+        ).textContent = active;
+
+
+        document.getElementById(
+            "inactiveStaff"
+        ).textContent = inactive;
+
+    }
+
+
+
+    /* =====================================================
+       OPEN ADD MODAL
+       ===================================================== */
+
+    function openAddModal() {
+
+        editingId = null;
+
+        modalTitle.textContent =
+            "Add Staff";
+
+        form.reset();
+
+        document.getElementById(
+            "staffStatus"
+        ).value = "Active";
+
+        modal.classList.add("show");
+
+        setTimeout(function () {
+
+            document.getElementById(
+                "staffName"
+            ).focus();
+
+        }, 100);
+
+    }
+
+
+
+    /* =====================================================
+       OPEN EDIT MODAL
+       ===================================================== */
+
+    function openEditModal(id) {
+
+        const staff =
+            staffList.find(function (item) {
+
+                return item.id === id;
+
+            });
+
+
+        if (!staff) {
+            return;
+        }
+
+
+        editingId = id;
+
+        modalTitle.textContent =
+            "Edit Staff";
+
+
+        document.getElementById(
+            "staffName"
+        ).value = staff.name;
+
+
+        document.getElementById(
+            "staffPhone"
+        ).value = staff.phone || "";
+
+
+        document.getElementById(
+            "staffRole"
+        ).value = staff.role;
+
+
+        document.getElementById(
+            "staffStatus"
+        ).value = staff.status;
+
+
+        modal.classList.add("show");
+
+    }
+
+
+
+    /* =====================================================
+       CLOSE MODAL
+       ===================================================== */
+
+    function closeModal() {
+
+        modal.classList.remove("show");
+
+        editingId = null;
+
+    }
+
+
+
+    /* =====================================================
+       FORM SUBMIT
+       ===================================================== */
+
+    form.addEventListener(
+        "submit",
+        function (event) {
+
+            event.preventDefault();
+
+
+            const name =
+                document.getElementById(
+                    "staffName"
+                ).value.trim();
+
+
+            const phone =
+                document.getElementById(
+                    "staffPhone"
+                ).value.trim();
+
+
+            const role =
+                document.getElementById(
+                    "staffRole"
+                ).value;
+
+
+            const status =
+                document.getElementById(
+                    "staffStatus"
+                ).value;
+
+
+            if (!name) {
+
+                return;
+
+            }
+
+
+            if (editingId) {
+
+                const staff =
+                    staffList.find(function (item) {
+
+                        return item.id === editingId;
+
+                    });
+
+
+                if (staff) {
+
+                    staff.name =
+                        name;
+
+                    staff.phone =
+                        phone;
+
+                    staff.role =
+                        role;
+
+                    staff.status =
+                        status;
+
+                }
+
+
+                showToast(
+                    "Staff updated successfully"
+                );
+
+            } else {
+
+                staffList.push({
+
+                    id:
+                        Date.now().toString(),
+
+                    name:
+                        name,
+
+                    phone:
+                        phone,
+
+                    role:
+                        role,
+
+                    status:
+                        status
+
+                });
+
+
+                showToast(
+                    "Staff added successfully"
+                );
+
+            }
+
+
+            saveStaffData();
+
+            renderStaff();
+
+            closeModal();
+
+        }
+    );
+
+
+
+    /* =====================================================
+       TABLE ACTIONS
+       ===================================================== */
+
+    tableBody.addEventListener(
+        "click",
+        function (event) {
+
+            const editButton =
+                event.target.closest(
+                    "[data-edit]"
+                );
+
+
+            const deleteButton =
+                event.target.closest(
+                    "[data-delete]"
+                );
+
+
+            if (editButton) {
+
+                openEditModal(
+                    editButton.dataset.edit
+                );
+
+                return;
+
+            }
+
+
+            if (deleteButton) {
+
+                const id =
+                    deleteButton.dataset.delete;
+
+
+                const staff =
+                    staffList.find(function (item) {
+
+                        return item.id === id;
+
+                    });
+
+
+                if (!staff) {
+                    return;
+                }
+
+
+                const confirmed =
+                    confirm(
+                        "Delete " +
+                        staff.name +
+                        "?"
+                    );
+
+
+                if (!confirmed) {
+                    return;
+                }
+
+
+                staffList =
+                    staffList.filter(
+                        function (item) {
+
+                            return item.id !== id;
+
+                        }
+                    );
+
+
+                saveStaffData();
+
+                renderStaff();
+
+                showToast(
+                    "Staff deleted"
+                );
+
+            }
+
+        }
+    );
+
+
+
+    /* =====================================================
+       SEARCH
+       ===================================================== */
+
+    searchInput.addEventListener(
+        "input",
+        renderStaff
+    );
+
+
+
+    /* =====================================================
+       BUTTONS
+       ===================================================== */
+
+    document.getElementById(
+        "staffAddBtn"
+    ).addEventListener(
+        "click",
+        openAddModal
+    );
+
+
+    document.getElementById(
+        "staffCloseBtn"
+    ).addEventListener(
+        "click",
+        closeModal
+    );
+
+
+    document.getElementById(
+        "staffCancelBtn"
+    ).addEventListener(
+        "click",
+        closeModal
+    );
+
+
+
+    /* =====================================================
+       MODAL OUTSIDE CLICK
+       ===================================================== */
+
+    modal.addEventListener(
+        "click",
+        function (event) {
+
+            if (
+                event.target === modal
+            ) {
+
+                closeModal();
+
+            }
+
+        }
+    );
+
+
+
+    /* =====================================================
+       ESCAPE
+       ===================================================== */
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.key === "Escape" &&
+                modal.classList.contains("show")
+            ) {
+
+                closeModal();
+
+            }
+
+        }
+    );
+
+
+
+    /* =====================================================
+       TOAST
+       ===================================================== */
+
+    let toastTimer;
+
+
+    function showToast(message) {
+
+        toast.textContent =
+            message;
+
+        toast.classList.add(
+            "show"
+        );
+
+
+        clearTimeout(toastTimer);
+
+
+        toastTimer =
+            setTimeout(
+                function () {
+
+                    toast.classList.remove(
+                        "show"
+                    );
+
+                },
+                2200
+            );
+
+    }
+
+
+
+    /* =====================================================
+       INITIALS
+       ===================================================== */
+
+    function getInitials(name) {
+
+        return name
+            .split(/\s+/)
+            .filter(Boolean)
+            .slice(0, 2)
+            .map(function (word) {
+
+                return word
+                    .charAt(0)
+                    .toUpperCase();
+
+            })
+            .join("");
+
+    }
+
+
+
+    /* =====================================================
+       HTML ESCAPE
+       ===================================================== */
+
+    function escapeHtml(value) {
+
+        return String(value)
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+            .replace(
+                /</g,
+                "&lt;"
+            )
+            .replace(
+                />/g,
+                "&gt;"
+            )
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+            .replace(
+                /'/g,
+                "&#039;"
+            );
+
+    }
+
+
+
+    /* =====================================================
+       START
+       ===================================================== */
+
+    loadStaff();
+
+
+})();
+
+</script>{% endblock %}

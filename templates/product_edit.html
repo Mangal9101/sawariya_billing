@@ -1,0 +1,24 @@
+{% extends 'base.html' %}{% block content %}
+<main>
+  <div class="top">
+    <div><h1>Edit Product</h1><p>Product details update करें या product delete करें.</p></div>
+    <a class="btn secondary" href="/products">← Back to Products</a>
+  </div>
+  <section class="panel">
+    <form class="formgrid" method="post" action="/products/{{p.id}}/update">
+      <input name="name" value="{{p.name}}" placeholder="Product name" required>
+      <input name="sku" value="{{p.sku or ''}}" placeholder="SKU">
+      <input name="quantity" type="number" min="0" value="{{p.quantity}}" placeholder="Stock">
+      <input name="min_stock" type="number" min="0" value="{{p.min_stock}}" placeholder="Min stock">
+      <input name="purchase_price" type="number" step="0.01" min="0" value="{{p.purchase_price}}" placeholder="Purchase price">
+      <input name="wholesale_price" type="number" step="0.01" min="0" value="{{p.wholesale_price}}" placeholder="Wholesale price">
+      <input name="retailer_price" type="number" step="0.01" min="0" value="{{p.retailer_price}}" placeholder="Retail price">
+      <button class="btn primary" type="submit">Save Update</button>
+    </form>
+    <hr>
+    <form method="post" action="/products/{{p.id}}/delete" onsubmit="return confirm('Delete {{p.name}}? This cannot be undone.');">
+      <button class="btn dangerbtn" type="submit">Delete Product</button>
+    </form>
+  </section>
+</main>
+{% endblock %}

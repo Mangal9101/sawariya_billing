@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<main>
+
+    <div class="top">
+
+        <div>
+            <h1>Edit Customer</h1>
+            <p>Customer details update करें या customer delete करें.</p>
+        </div>
+
+        <a class="btn secondary" href="/customers">
+            ← Back to Customers
+        </a>
+
+    </div>
+
+
+    <section class="panel">
+
+        <form
+            class="formgrid"
+            method="post"
+            action="/customers/{{ customer.id }}/update"
+        >
+
+            <input
+                name="name"
+                value="{{ customer.name or '' }}"
+                placeholder="Customer name"
+                required
+            >
+
+            <input
+                name="phone"
+                type="tel"
+                value="{{ customer.phone or '' }}"
+                placeholder="Phone number"
+            >
+
+            <textarea
+                name="address"
+                rows="4"
+                placeholder="Customer address"
+            >{{ customer.address or '' }}</textarea>
+
+            <button
+                class="btn primary"
+                type="submit"
+            >
+                Save Update
+            </button>
+
+        </form>
+
+
+        <hr>
+
+
+        <form
+            method="post"
+            action="/customers/{{ customer.id }}/delete"
+            onsubmit="return confirm('Delete {{ customer.name or 'this customer' }}? This cannot be undone.');"
+        >
+
+            <button
+                class="btn dangerbtn"
+                type="submit"
+            >
+                Delete Customer
+            </button>
+
+        </form>
+
+    </section>
+
+</main>
+
+{% endblock %}
